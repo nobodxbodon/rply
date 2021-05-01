@@ -198,10 +198,15 @@ class ParserGenerator(object):
                 self._write_cache(cache_dir, cache_file, table)
 
         if table.sr_conflicts:
+            conflicts = table.sr_conflicts
+            prod_str = lambda s: str(s)
+            printable = [prod_str(i[0]) + ' 》》 ' + prod_str(i[1]) + ' -- ' + i[2] for i in conflicts]
+            details = '\n'.join(printable)
             warnings.warn(
-                "%d shift/reduce conflict%s" % (
+                "%d bb of shift/reduce conflict%s:\n%s" % (
                     len(table.sr_conflicts),
-                    "s" if len(table.sr_conflicts) > 1 else ""
+                    "s" if len(conflicts) > 1 else "",
+                    details,
                 ),
                 ParserGeneratorWarning,
                 stacklevel=2,
@@ -308,6 +313,7 @@ class LRTable(object):
         sr_conflicts = []
         rr_conflicts = []
         for st, I in enumerate(C):
+            print(str(st) + repr(I))
             st_action = {}
             st_actionp = {}
             st_goto = {}
@@ -329,11 +335,11 @@ class LRTable(object):
                                         st_action[a] = -p.number
                                         st_actionp[a] = p
                                         if not slevel and not rlevel:
-                                            sr_conflicts.append((st, repr(a), "reduce"))
+                                            sr_conflicts.append((st, repr(a), "reduce1"))
                                         grammar.productions[p.number].reduced += 1
                                     elif not (slevel == rlevel and rprec == "nonassoc"):
                                         if not rlevel:
-                                            sr_conflicts.append((st, repr(a), "shift"))
+                                            sr_conflicts.append((st, repr(a), "shift1"))
                                 elif r < 0:
                                     oldp = grammar.productions[-r]
                                     pp = grammar.productions[p.number]
@@ -372,10 +378,10 @@ class LRTable(object):
                                         st_action[a] = j
                                         st_actionp[a] = p
                                         if not rlevel:
-                                            sr_conflicts.append((st, repr(a), "shift"))
+                                            sr_conflicts.append((st, repr(a), "shift2"))
                                     elif not (slevel == rlevel and rprec == "nonassoc"):
                                         if not slevel and not rlevel:
-                                            sr_conflicts.append((st, repr(a), "reduce"))
+                                            sr_conflicts.append((st, repr(a), "reduce2"))
                                 else:
                                     raise ParserGeneratorError("Unknown conflict in state %d" % st)
                             else:
