@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import re
 
 import py
@@ -54,7 +55,7 @@ class BaseTestTranslation(BaseTests):
 
     def test_regex_flags(self):
         lg = LexerGenerator()
-        lg.add("ALL", r".*", re.DOTALL)
+        lg.add("所有", r".*", re.DOTALL)
 
         l = lg.build()
 
@@ -62,7 +63,7 @@ class BaseTestTranslation(BaseTests):
             tokens = l.lex("%d\n%d" % (n, n))
 
             t = tokens.next()
-            if t.name != "ALL":
+            if t.name != "所有":
                 return -1
 
             ended = False
