@@ -198,15 +198,13 @@ class ParserGenerator(object):
                 self._write_cache(cache_dir, cache_file, table)
 
         if table.sr_conflicts:
-            conflicts = table.sr_conflicts
-            prod_str = lambda s: str(s)
-            printable = [prod_str(i[0]) + ' 》》 ' + prod_str(i[1]) + ' -- ' + i[2] for i in conflicts]
-            details = '\n'.join(printable)
+            歧义 = table.sr_conflicts
+            细节 = '\n\n'.join(['此词：' + str(i[1]) + ' 默认采取：' + i[2] + '\n歧义序列：\n' + repr(i[3]) for i in 歧义])
             warnings.warn(
-                "%d bb of shift/reduce conflict%s:\n%s" % (
-                    len(table.sr_conflicts),
-                    "s" if len(conflicts) > 1 else "",
-                    details,
+                "%d of shift/reduce conflict%s:\n%s" % (
+                    len(歧义),
+                    "s" if len(歧义) > 1 else "",
+                    细节,
                 ),
                 ParserGeneratorWarning,
                 stacklevel=2,
@@ -378,7 +376,7 @@ class LRTable(object):
                                         st_action[a] = j
                                         st_actionp[a] = p
                                         if not rlevel:
-                                            sr_conflicts.append((st, repr(a), "shift2"))
+                                            sr_conflicts.append((st, repr(a), "shift2", I))
                                     elif not (slevel == rlevel and rprec == "nonassoc"):
                                         if not slevel and not rlevel:
                                             sr_conflicts.append((st, repr(a), "reduce2"))
