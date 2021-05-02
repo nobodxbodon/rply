@@ -199,7 +199,7 @@ class ParserGenerator(object):
 
         if table.sr_conflicts:
             歧义 = table.sr_conflicts
-            细节 = '\n\n'.join(['此词：' + str(i[1]) + ' 默认采取：' + i[2] + '\n歧义序列：\n' + repr(i[3]) for i in 歧义])
+            细节 = '\n\n'.join(['词' + str(i[1]) + '有歧义，默认进行 ' + i[2] + '\n歧义序列：\n' + self.输出序列(i[3]) for i in 歧义])
             warnings.warn(
                 "%d of shift/reduce conflict%s:\n%s" % (
                     len(歧义),
@@ -219,6 +219,12 @@ class ParserGenerator(object):
                 stacklevel=2,
             )
         return LRParser(table, self.error_handler)
+
+    def 输出序列(self, lr表):
+        信息 = ""
+        for 项 in lr表:
+            信息 += '\t' + 项.name + ": " + " ".join(项.prod) + '\n'
+        return 信息
 
     def _write_cache(self, cache_dir, cache_file, table):
         if not os.path.exists(cache_dir):
@@ -311,7 +317,7 @@ class LRTable(object):
         sr_conflicts = []
         rr_conflicts = []
         for st, I in enumerate(C):
-            print(str(st) + repr(I))
+            # print(str(st) + repr(I))
             st_action = {}
             st_actionp = {}
             st_goto = {}
