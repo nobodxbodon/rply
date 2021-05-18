@@ -42,15 +42,15 @@ class ParserGenerator(object):
 
     def production(self, rule, precedence=None):
         """
-        A decorator that defines one or many production rules and registers
-        the decorated function to be called with the terminals and
-        non-terminals matched by those rules.
+        A decorator that defines a production rule and registers the decorated
+        function to be called with the terminals and non-terminals matched by
+        that rule.
 
         A `rule` should consist of a name defining the non-terminal returned
-        by the decorated function and one or more sequences of pipe-separated
-        non-terminals and terminals that are supposed to be replaced::
+        by the decorated function and a sequence of non-terminals and terminals
+        that are supposed to be replaced::
 
-            replacing_non_terminal : TERMINAL1 non_term1 | TERMINAL2 non_term2
+            replacing_non_terminal : ATERMINAL non_terminal
 
         The name of the non-terminal replacing the sequence is on the left,
         separated from the sequence by a colon. The whitespace around the colon
@@ -75,14 +75,10 @@ class ParserGenerator(object):
         production_name = parts[0]
         if parts[1] != ":":
             raise ParserGeneratorError("Expecting :")
-
-        body = " ".join(parts[2:])
-        prods = body.split("|")
+        syms = parts[2:]
 
         def inner(func):
-            for production in prods:
-                syms = production.split()
-                self.productions.append((production_name, syms, func, precedence))
+            self.productions.append((production_name, syms, func, precedence))
             return func
         return inner
 
@@ -198,10 +194,13 @@ class ParserGenerator(object):
                 self._write_cache(cache_dir, cache_file, table)
 
         if table.sr_conflicts:
+            歧义 = table.sr_conflicts
+            细节 = '\n\n'.join(['词' + str(i[1]) + '有歧义，默认进行 ' + i[2] + '\n歧义序列：\n' + 输出序列(i[3]) for i in 歧义])
             warnings.warn(
-                "%d shift/reduce conflict%s" % (
-                    len(table.sr_conflicts),
-                    "s" if len(table.sr_conflicts) > 1 else ""
+                "%d of shift/reduce conflict%s:\n%s" % (
+                    len(歧义),
+                    "s" if len(歧义) > 1 else "",
+                    细节,
                 ),
                 ParserGeneratorWarning,
                 stacklevel=2,
@@ -230,6 +229,12 @@ class ParserGenerator(object):
             json.dump(self.serialize_table(table), f)
         os.rename(f.name, cache_file)
 
+
+def 输出序列(lr表):
+    信息 = ""
+    for 项 in lr表:
+        信息 += '\t' + 项.name + ": " + " ".join(项.prod) + '\n'
+    return 信息
 
 def digraph(X, R, FP):
     N = dict.fromkeys(X, 0)
@@ -308,6 +313,7 @@ class LRTable(object):
         sr_conflicts = []
         rr_conflicts = []
         for st, I in enumerate(C):
+            # print(str(st) + '\n' + 输出序列(I) + '')
             st_action = {}
             st_actionp = {}
             st_goto = {}
@@ -329,11 +335,11 @@ class LRTable(object):
                                         st_action[a] = -p.number
                                         st_actionp[a] = p
                                         if not slevel and not rlevel:
-                                            sr_conflicts.append((st, repr(a), "reduce"))
+                                            sr_conflicts.append((st, repr(a), "reduce1"))
                                         grammar.productions[p.number].reduced += 1
                                     elif not (slevel == rlevel and rprec == "nonassoc"):
                                         if not rlevel:
-                                            sr_conflicts.append((st, repr(a), "shift"))
+                                            sr_conflicts.append((st, repr(a), "shift1"))
                                 elif r < 0:
                                     oldp = grammar.productions[-r]
                                     pp = grammar.productions[p.number]
@@ -372,10 +378,10 @@ class LRTable(object):
                                         st_action[a] = j
                                         st_actionp[a] = p
                                         if not rlevel:
-                                            sr_conflicts.append((st, repr(a), "shift"))
+                                            sr_conflicts.append((st, repr(a), "shift2", I))
                                     elif not (slevel == rlevel and rprec == "nonassoc"):
                                         if not slevel and not rlevel:
-                                            sr_conflicts.append((st, repr(a), "reduce"))
+                                            sr_conflicts.append((st, repr(a), "reduce2"))
                                 else:
                                     raise ParserGeneratorError("Unknown conflict in state %d" % st)
                             else:
