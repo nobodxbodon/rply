@@ -3,3 +3,7 @@
 *.egg-info
 .tox
 docs/_build
+.cache
+.idea
+build/
+dist/

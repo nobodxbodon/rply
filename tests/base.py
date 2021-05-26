@@ -10,4 +10,4 @@ class BaseTests(object):
             yield
         assert len(w) == 1
         assert w[0].category is cls
-        assert w[0].message.args[0] == message
+        assert w[0].message.args[0].split('\n')[0] == message

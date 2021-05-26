@@ -39,7 +39,7 @@ class TestParser(BaseTests):
             return BoxInt(int(p[0].getstr()))
 
         with self.assert_warns(
-            ParserGeneratorWarning, "1 shift/reduce conflict"
+            ParserGeneratorWarning, "1 shift/reduce conflict:"
         ):
             parser = pg.build()
 
@@ -137,7 +137,7 @@ class TestParser(BaseTests):
             return BoxInt(int(p[0].getstr()))
 
         with self.assert_warns(
-            ParserGeneratorWarning, "1 shift/reduce conflict"
+            ParserGeneratorWarning, "1 shift/reduce conflict:"
         ):
             parser = pg.build()
 

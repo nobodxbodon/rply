@@ -43,7 +43,7 @@ class TestWarnings(BaseTests):
             pass
 
         with self.assert_warns(
-            ParserGeneratorWarning, "20 shift/reduce conflicts"
+            ParserGeneratorWarning, "20 shift/reduce conflicts:"
         ):
             pg.build()
 
