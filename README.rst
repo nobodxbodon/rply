@@ -1,17 +1,18 @@
-RPLY
+RPLY 木兰定制版
 ====
+
+.. image:: https://secure.travis-ci.org/nobodxbodon/rply.png
+    :target: https://travis-ci.org/nobodxbodon/rply
 
 在 rply 0.7.8 的基础上，作了如下修改：
 
 - 为支持 `木兰编程语言重现项目 <https://gitee.com/MulanRevive/mulan-rework>`_ 的 | 运算符，回退了对 | 写法的支持："语法规则: 某词1 | 某词2"，`详见此 <https://gitee.com/MulanRevive/mulan-rework/issues/I3QQ5O>`_。
 - 添加 shift/reduce 歧义的调试信息，`详见此文 <https://zhuanlan.zhihu.com/p/369268306>`_。
+- 为减小工作量，暂时放弃对 pypy、Python 2 等版本的支持，仅支持 Python 3.7。
 
 以下为 rply 原始文档。
 
 ---------------
-
-.. image:: https://secure.travis-ci.org/alex/rply.png
-    :target: https://travis-ci.org/alex/rply
 
 Welcome to RPLY! A pure Python parser generator, that also works with RPython.
 It is a more-or-less direct port of David Beazley's awesome PLY, with a new
