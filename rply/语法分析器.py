@@ -66,7 +66,7 @@ class LRParser(object):
 
     def _reduce_production(self, t, symstack, statestack, state):
         # reduce a symbol on the stack and emit a production
-        p = self.lr_table.grammar.productions[-t]
+        p = self.lr_table.grammar.各规则[-t]
         pname = p.name
         plen = p.getlength()
         start = len(symstack) + (-plen - 1)

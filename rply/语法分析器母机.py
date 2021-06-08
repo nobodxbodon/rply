@@ -96,12 +96,12 @@ class ParserGenerator(object):
     def compute_grammar_hash(self, g):
         hasher = hashlib.sha1()
         hasher.update(g.start.encode())
-        hasher.update(json.dumps(sorted(g.terminals)).encode())
-        for term, (assoc, level) in sorted(iteritems(g.precedence)):
+        hasher.update(json.dumps(sorted(g.各词所在语法表)).encode())
+        for term, (assoc, level) in sorted(iteritems(g.优先级)):
             hasher.update(term.encode())
             hasher.update(assoc.encode())
             hasher.update(bytes(level))
-        for p in g.productions:
+        for p in g.各规则:
             hasher.update(p.name.encode())
             hasher.update(json.dumps(p.prec).encode())
             hasher.update(json.dumps(p.prod).encode())
@@ -115,26 +115,26 @@ class ParserGenerator(object):
             "rr_conflicts": table.rr_conflicts,
             "default_reductions": table.default_reductions,
             "start": table.grammar.start,
-            "terminals": sorted(table.grammar.terminals),
-            "precedence": table.grammar.precedence,
+            "terminals": sorted(table.grammar.各词所在语法表),
+            "precedence": table.grammar.优先级,
             "productions": [
-                (p.name, p.prod, p.prec) for p in table.grammar.productions
+                (p.name, p.prod, p.prec) for p in table.grammar.各规则
             ],
         }
 
     def data_is_valid(self, g, data):
         if g.start != data["start"]:
             return False
-        if sorted(g.terminals) != data["terminals"]:
+        if sorted(g.各词所在语法表) != data["terminals"]:
             return False
-        if sorted(g.precedence) != sorted(data["precedence"]):
+        if sorted(g.优先级) != sorted(data["precedence"]):
             return False
-        for key, (assoc, level) in iteritems(g.precedence):
+        for key, (assoc, level) in iteritems(g.优先级):
             if data["precedence"][key] != [assoc, level]:
                 return False
-        if len(g.productions) != len(data["productions"]):
+        if len(g.各规则) != len(data["productions"]):
             return False
-        for p, (name, prod, (assoc, level)) in zip(g.productions, data["productions"]):
+        for p, (name, prod, (assoc, level)) in zip(g.各规则, data["productions"]):
             if p.name != name:
                 return False
             if p.prod != prod:
@@ -329,26 +329,26 @@ class LRTable(object):
                             if a in st_action:
                                 r = st_action[a]
                                 if r > 0:
-                                    sprec, slevel = grammar.productions[st_actionp[a].number].prec
-                                    rprec, rlevel = grammar.precedence.get(a, ("right", 0))
+                                    sprec, slevel = grammar.各规则[st_actionp[a].number].prec
+                                    rprec, rlevel = grammar.优先级.get(a, ("right", 0))
                                     if (slevel < rlevel) or (slevel == rlevel and rprec == "left"):
                                         st_action[a] = -p.number
                                         st_actionp[a] = p
                                         if not slevel and not rlevel:
                                             sr_conflicts.append((st, repr(a), "reduce1"))
-                                        grammar.productions[p.number].reduced += 1
+                                        grammar.各规则[p.number].reduced += 1
                                     elif not (slevel == rlevel and rprec == "nonassoc"):
                                         if not rlevel:
                                             sr_conflicts.append((st, repr(a), "shift1"))
                                 elif r < 0:
-                                    oldp = grammar.productions[-r]
-                                    pp = grammar.productions[p.number]
+                                    oldp = grammar.各规则[-r]
+                                    pp = grammar.各规则[p.number]
                                     if oldp.number > pp.number:
                                         st_action[a] = -p.number
                                         st_actionp[a] = p
                                         chosenp, rejectp = pp, oldp
-                                        grammar.productions[p.number].reduced += 1
-                                        grammar.productions[oldp.number].reduced -= 1
+                                        grammar.各规则[p.number].reduced += 1
+                                        grammar.各规则[oldp.number].reduced -= 1
                                     else:
                                         chosenp, rejectp = oldp, pp
                                     rr_conflicts.append((st, repr(chosenp), repr(rejectp)))
@@ -357,11 +357,11 @@ class LRTable(object):
                             else:
                                 st_action[a] = -p.number
                                 st_actionp[a] = p
-                                grammar.productions[p.number].reduced += 1
+                                grammar.各规则[p.number].reduced += 1
                 else:
                     i = p.lr_index
                     a = p.prod[i + 1]
-                    if a in grammar.terminals:
+                    if a in grammar.各词所在语法表:
                         g = cls.lr0_goto(I, a, add_count, goto_cache)
                         j = cidhash.get(g, -1)
                         if j >= 0:
@@ -371,10 +371,10 @@ class LRTable(object):
                                     if r != j:
                                         raise ParserGeneratorError("Shift/shift conflict in state %d" % st)
                                 elif r < 0:
-                                    rprec, rlevel = grammar.productions[st_actionp[a].number].prec
-                                    sprec, slevel = grammar.precedence.get(a, ("right", 0))
+                                    rprec, rlevel = grammar.各规则[st_actionp[a].number].prec
+                                    sprec, slevel = grammar.优先级.get(a, ("right", 0))
                                     if (slevel > rlevel) or (slevel == rlevel and rprec == "right"):
-                                        grammar.productions[st_actionp[a].number].reduced -= 1
+                                        grammar.各规则[st_actionp[a].number].reduced -= 1
                                         st_action[a] = j
                                         st_actionp[a] = p
                                         if not rlevel:
@@ -390,7 +390,7 @@ class LRTable(object):
             nkeys = set()
             for ii in I:
                 for s in ii.unique_syms:
-                    if s in grammar.nonterminals:
+                    if s in grammar.各短语对应语法号:
                         nkeys.add(s)
             for n in nkeys:
                 g = cls.lr0_goto(I, n, add_count, goto_cache)
@@ -410,7 +410,7 @@ class LRTable(object):
 
     @classmethod
     def lr0_items(cls, grammar, add_count, cidhash, goto_cache):
-        C = [cls.lr0_closure([grammar.productions[0].lr_next], add_count)]
+        C = [cls.lr0_closure([grammar.各规则[0].lr_next], add_count)]
         for i, I in enumerate(C):
             cidhash[I] = i
 
@@ -486,7 +486,7 @@ class LRTable(object):
         nullable = set()
         num_nullable = 0
         while True:
-            for p in grammar.productions[1:]:
+            for p in grammar.各规则[1:]:
                 if p.getlength() == 0:
                     nullable.add(p.name)
                     continue
@@ -507,7 +507,7 @@ class LRTable(object):
             for p in state:
                 if p.lr_index < p.getlength() - 1:
                     t = (idx, p.prod[p.lr_index + 1])
-                    if t[1] in grammar.nonterminals and t not in trans:
+                    if t[1] in grammar.各短语对应语法号 and t not in trans:
                         trans.append(t)
         return trans
 
@@ -536,9 +536,9 @@ class LRTable(object):
         for p in g:
             if p.lr_index < p.getlength() - 1:
                 a = p.prod[p.lr_index + 1]
-                if a in grammar.terminals and a not in terms:
+                if a in grammar.各词所在语法表 and a not in terms:
                     terms.append(a)
-        if state == 0 and N == grammar.productions[0].prod[0]:
+        if state == 0 and N == grammar.各规则[0].prod[0]:
             terms.append("$end")
         return terms
 
@@ -579,7 +579,7 @@ class LRTable(object):
                     if (j, t) in dtrans:
                         li = lr_index + 1
                         while li < p.getlength():
-                            if p.prod[li] in grammar.terminals:
+                            if p.prod[li] in grammar.各词所在语法表:
                                 break
                             if p.prod[li] not in nullable:
                                 break

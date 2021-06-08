@@ -10,55 +10,50 @@ def rightmost_terminal(symbols, terminals):
 
 
 class 语法(object):
-    def __init__(self, terminals):
-        # A list of all the productions
-        self.productions = [None]
-        # A dictionary mapping the names of non-terminals to a list of all
-        # productions of that nonterminal
-        self.prod_names = {}
-        # A dictionary mapping the names of terminals to a list of the rules
-        # where they are used
-        self.terminals = dict((t, []) for t in terminals)
-        self.terminals["error"] = []
+    def __init__(self, 各词):
+        self.各规则 = [None]
+        self.各短语语法表 = {}
+        self.各词所在语法表 = dict((t, []) for t in 各词)
+        self.各词所在语法表["error"] = []
         # A dictionary mapping names of nonterminals to a list of rule numbers
         # where they are used
-        self.nonterminals = {}
+        self.各短语对应语法号 = {}
         self.first = {}
         self.follow = {}
-        self.precedence = {}
+        self.优先级 = {}
         self.start = None
 
     def add_production(self, prod_name, syms, func, precedence):
-        if prod_name in self.terminals:
+        if prod_name in self.各词所在语法表:
             raise ParserGeneratorError("Illegal rule name %r" % prod_name)
 
         if precedence is None:
-            precname = rightmost_terminal(syms, self.terminals)
-            prod_prec = self.precedence.get(precname, ("right", 0))
+            precname = rightmost_terminal(syms, self.各词所在语法表)
+            prod_prec = self.优先级.get(precname, ("right", 0))
         else:
             try:
-                prod_prec = self.precedence[precedence]
+                prod_prec = self.优先级[precedence]
             except KeyError:
                 raise ParserGeneratorError(
                     "Precedence %r doesn't exist" % precedence
                 )
 
-        pnumber = len(self.productions)
-        self.nonterminals.setdefault(prod_name, [])
+        pnumber = len(self.各规则)
+        self.各短语对应语法号.setdefault(prod_name, [])
 
         for t in syms:
-            if t in self.terminals:
-                self.terminals[t].append(pnumber)
+            if t in self.各词所在语法表:
+                self.各词所在语法表[t].append(pnumber)
             else:
-                self.nonterminals.setdefault(t, []).append(pnumber)
+                self.各短语对应语法号.setdefault(t, []).append(pnumber)
 
         p = Production(pnumber, prod_name, syms, prod_prec, func)
-        self.productions.append(p)
+        self.各规则.append(p)
 
-        self.prod_names.setdefault(prod_name, []).append(p)
+        self.各短语语法表.setdefault(prod_name, []).append(p)
 
     def set_precedence(self, term, assoc, level):
-        if term in self.precedence:
+        if term in self.优先级:
             raise ParserGeneratorError(
                 "Precedence already specified for %s" % term
             )
@@ -68,30 +63,30 @@ class 语法(object):
                     assoc
                 )
             )
-        self.precedence[term] = (assoc, level)
+        self.优先级[term] = (assoc, level)
 
     def set_start(self):
-        start = self.productions[1].name
-        self.productions[0] = Production(0, "S'", [start], ("right", 0), None)
-        self.nonterminals[start].append(0)
+        start = self.各规则[1].name
+        self.各规则[0] = Production(0, "S'", [start], ("right", 0), None)
+        self.各短语对应语法号[start].append(0)
         self.start = start
 
     def unused_terminals(self):
         return [
             t
-            for t, prods in iteritems(self.terminals)
+            for t, prods in iteritems(self.各词所在语法表)
             if not prods and t != "error"
         ]
 
     def 无用规则(self):
-        return [p for p, prods in iteritems(self.nonterminals) if not prods]
+        return [p for p, 各规则 in iteritems(self.各短语对应语法号) if not 各规则]
 
     def build_lritems(self):
         """
         Walks the list of productions and builds a complete set of the LR
         items.
         """
-        for p in self.productions:
+        for p in self.各规则:
             lastlri = p
             i = 0
             lr_items = []
@@ -104,7 +99,7 @@ class 语法(object):
                     except IndexError:
                         before = None
                     try:
-                        after = self.prod_names[p.prod[i]]
+                        after = self.各短语语法表[p.prod[i]]
                     except (IndexError, KeyError):
                         after = []
                     lri = LRItem(p, i, before, after)
@@ -133,26 +128,26 @@ class 语法(object):
         return result
 
     def compute_first(self):
-        for t in self.terminals:
+        for t in self.各词所在语法表:
             self.first[t] = [t]
 
         self.first["$end"] = ["$end"]
 
-        for n in self.nonterminals:
+        for n in self.各短语对应语法号:
             self.first[n] = []
 
         changed = True
         while changed:
             changed = False
-            for n in self.nonterminals:
-                for p in self.prod_names[n]:
+            for n in self.各短语对应语法号:
+                for p in self.各短语语法表[n]:
                     for f in self._first(p.prod):
                         if f not in self.first[n]:
                             self.first[n].append(f)
                             changed = True
 
     def compute_follow(self):
-        for k in self.nonterminals:
+        for k in self.各短语对应语法号:
             self.follow[k] = []
 
         start = self.start
@@ -161,9 +156,9 @@ class 语法(object):
         added = True
         while added:
             added = False
-            for p in self.productions[1:]:
+            for p in self.各规则[1:]:
                 for i, B in enumerate(p.prod):
-                    if B in self.nonterminals:
+                    if B in self.各短语对应语法号:
                         fst = self._first(p.prod[i + 1:])
                         has_empty = False
                         for f in fst:
