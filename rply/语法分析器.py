@@ -1,4 +1,4 @@
-from rply.errors import ParsingError
+from rply.报错 import ParsingError
 
 
 class LRParser(object):
@@ -7,7 +7,7 @@ class LRParser(object):
         self.error_handler = error_handler
 
     def parse(self, tokenizer, state=None):
-        from rply.token import Token
+        from rply.词 import Token
 
         lookahead = None
         lookaheadstack = []

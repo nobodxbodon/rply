@@ -2,7 +2,7 @@ from operator import itemgetter
 
 import py
 
-from rply.utils import IdentityDict
+from rply.功用 import IdentityDict
 
 
 class TestIdentityDict(object):

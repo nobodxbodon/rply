@@ -11,7 +11,7 @@ except ImportError:
     def we_are_translated():
         return False
 
-from rply.lexer import Lexer
+from rply.分词器 import 分词器
 
 
 class Rule(object):
@@ -110,4 +110,4 @@ class LexerGenerator(object):
         called with a string and returns an iterator yielding
         :class:`~rply.Token` instances.
         """
-        return Lexer(self.rules, self.ignore_rules)
+        return 分词器(self.rules, self.ignore_rules)

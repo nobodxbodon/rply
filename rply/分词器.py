@@ -1,8 +1,8 @@
-from rply.errors import LexingError
-from rply.token import SourcePosition, Token
+from rply.报错 import LexingError
+from rply.词 import SourcePosition, Token
 
 
-class Lexer(object):
+class 分词器(object):
     def __init__(self, rules, ignore_rules):
         self.rules = rules
         self.ignore_rules = ignore_rules

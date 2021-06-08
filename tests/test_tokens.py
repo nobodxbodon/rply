@@ -1,4 +1,4 @@
-from rply.token import SourcePosition, Token
+from rply.词 import SourcePosition, Token
 
 
 class TestTokens(object):

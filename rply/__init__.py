@@ -1,7 +1,7 @@
-from rply.errors import LexingError, ParsingError
-from rply.lexergenerator import LexerGenerator
-from rply.parsergenerator import ParserGenerator
-from rply.token import Token
+from rply.报错 import LexingError, ParsingError
+from rply.分词器母机 import LexerGenerator
+from rply.语法分析器母机 import ParserGenerator
+from rply.词 import Token
 
 __version__ = '0.7.10'
 

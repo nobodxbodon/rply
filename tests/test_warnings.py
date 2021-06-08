@@ -1,5 +1,5 @@
 from rply import ParserGenerator
-from rply.errors import ParserGeneratorWarning
+from rply.报错 import ParserGeneratorWarning
 
 from .base import BaseTests
 

@@ -3,8 +3,8 @@ import operator
 import py
 
 from rply import ParserGenerator, ParsingError, Token
-from rply.errors import ParserGeneratorWarning
-from rply.token import SourcePosition
+from rply.报错 import ParserGeneratorWarning
+from rply.词 import SourcePosition
 
 from .base import BaseTests
 from .utils import BoxInt, ParserState, RecordingLexer

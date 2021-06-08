@@ -1,5 +1,5 @@
-from rply.errors import ParserGeneratorError
-from rply.utils import iteritems
+from rply.报错 import ParserGeneratorError
+from rply.功用 import iteritems
 
 
 def rightmost_terminal(symbols, terminals):
@@ -9,7 +9,7 @@ def rightmost_terminal(symbols, terminals):
     return None
 
 
-class Grammar(object):
+class 语法(object):
     def __init__(self, terminals):
         # A list of all the productions
         self.productions = [None]
@@ -83,7 +83,7 @@ class Grammar(object):
             if not prods and t != "error"
         ]
 
-    def unused_productions(self):
+    def 无用规则(self):
         return [p for p, prods in iteritems(self.nonterminals) if not prods]
 
     def build_lritems(self):

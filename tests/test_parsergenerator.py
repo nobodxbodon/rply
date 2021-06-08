@@ -3,7 +3,7 @@ import uuid
 import py
 
 from rply import ParserGenerator, Token
-from rply.errors import ParserGeneratorError
+from rply.报错 import ParserGeneratorError
 
 from .base import BaseTests
 

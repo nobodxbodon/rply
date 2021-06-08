@@ -8,10 +8,10 @@ import warnings
 
 from appdirs import AppDirs
 
-from rply.errors import ParserGeneratorError, ParserGeneratorWarning
-from rply.grammar import Grammar
-from rply.parser import LRParser
-from rply.utils import Counter, IdentityDict, iteritems, itervalues
+from rply.报错 import ParserGeneratorError, ParserGeneratorWarning
+from rply.语法 import 语法
+from rply.语法分析器 import LRParser
+from rply.功用 import Counter, IdentityDict, iteritems, itervalues
 
 
 LARGE_VALUE = sys.maxsize
@@ -144,7 +144,7 @@ class ParserGenerator(object):
         return True
 
     def build(self):
-        g = Grammar(self.tokens)
+        g = 语法(self.tokens)
 
         for level, (assoc, terms) in enumerate(self.precedence, 1):
             for term in terms:
@@ -161,7 +161,7 @@ class ParserGenerator(object):
                 ParserGeneratorWarning,
                 stacklevel=2
             )
-        for unused_prod in g.unused_productions():
+        for unused_prod in g.无用规则():
             warnings.warn(
                 "Production %r is not reachable" % unused_prod,
                 ParserGeneratorWarning,

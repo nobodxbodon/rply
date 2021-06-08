@@ -1,4 +1,4 @@
-from rply.token import BaseBox
+from rply.词 import BaseBox
 
 
 class RecordingLexer(object):

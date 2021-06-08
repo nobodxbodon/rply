@@ -8,6 +8,6 @@ class BaseTests(object):
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
             yield
-        assert len(w) == 1
-        assert w[0].category is cls
-        assert w[0].message.args[0].split('\n')[0] == message
+        assert len(w) == 1, "未报警"
+        assert w[0].category is cls, "报警类型错误"
+        assert w[0].message.args[0].split('\n')[0] == message, "报警信息错误"
