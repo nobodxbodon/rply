@@ -2,7 +2,7 @@ import operator
 
 from rply import LexerGenerator, ParserGenerator
 
-from .utils import BoxInt
+from .功用 import BoxInt
 
 
 class TestBoth(object):

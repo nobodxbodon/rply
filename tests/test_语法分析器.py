@@ -6,8 +6,8 @@ from rply import ParserGenerator, ParsingError, Token
 from rply.报错 import ParserGeneratorWarning
 from rply.词 import SourcePosition
 
-from .base import BaseTests
-from .utils import BoxInt, ParserState, RecordingLexer
+from .基本 import BaseTests
+from .功用 import BoxInt, ParserState, RecordingLexer
 
 
 class TestParser(BaseTests):

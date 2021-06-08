@@ -1,7 +1,7 @@
 from rply import ParserGenerator
 from rply.报错 import ParserGeneratorWarning
 
-from .base import BaseTests
+from .基本 import BaseTests
 
 
 class TestWarnings(BaseTests):
