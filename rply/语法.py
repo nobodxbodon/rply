@@ -79,6 +79,8 @@ class 语法(object):
         ]
 
     def 无用规则(self):
+        # for 短语 in self.各短语对应语法号:
+        #     print(短语 + ' -> ' + str(self.各短语对应语法号[短语]))
         return [p for p, 各规则 in iteritems(self.各短语对应语法号) if not 各规则]
 
     def build_lritems(self):

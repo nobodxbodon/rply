@@ -95,3 +95,37 @@ class TestWarnings(BaseTests):
             ParserGeneratorWarning, "Production 'unused' is not reachable"
         ):
             pg.build()
+
+    def test_报警(self):
+        pg = ParserGenerator(["VALUE"])
+
+        @pg.production("main : VALUE")
+        def main(p):
+            return p[0]
+
+        @pg.production("无用 : main")
+        def unused(p):
+            pass
+
+        with self.assert_warns(
+            ParserGeneratorWarning, "Production '无用' is not reachable"
+        ):
+            pg.build()
+'''
+    上例仅将规则顺序倒换，就不报警
+    def test_不报警(self):
+        pg = ParserGenerator(["VALUE"])
+
+        @pg.production("有用 : main")
+        def unused(p):
+            pass
+
+        @pg.production("main : VALUE")
+        def main(p):
+            return p[0]
+
+        with self.assert_warns(
+            ParserGeneratorWarning, "Production 'main' is not reachable"
+        ):
+            pg.build()
+'''
