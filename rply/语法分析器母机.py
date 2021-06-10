@@ -197,9 +197,8 @@ class ParserGenerator(object):
             歧义 = table.sr_conflicts
             细节 = '\n\n'.join(['词' + str(i[1]) + '有歧义，默认进行 ' + i[2] + '\n歧义序列：\n' + 输出序列(i[3]) for i in 歧义])
             warnings.warn(
-                "%d shift/reduce conflict%s:\n%s" % (
+                "如下 %d 种情形 shift 还是 reduce？\n%s" % (
                     len(歧义),
-                    "s" if len(歧义) > 1 else "",
                     细节,
                 ),
                 ParserGeneratorWarning,
