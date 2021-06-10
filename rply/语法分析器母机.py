@@ -197,7 +197,7 @@ class ParserGenerator(object):
             歧义 = table.sr_conflicts
             细节 = '\n\n'.join(['词' + str(i[1]) + '有歧义，默认进行 ' + i[2] + '\n歧义序列：\n' + 输出序列(i[3]) for i in 歧义])
             warnings.warn(
-                "如下 %d 种情形 shift 还是 reduce？\n%s" % (
+                "如下 %d 种情形取下个词还是合而为一？\n%s" % (
                     len(歧义),
                     细节,
                 ),
@@ -206,7 +206,7 @@ class ParserGenerator(object):
             )
         if table.rr_conflicts:
             warnings.warn(
-                "%d 种情形不确定如何 reduce" % (
+                "%d 种情形不确定如何合而为一" % (
                     len(table.rr_conflicts)
                 ),
                 ParserGeneratorWarning,

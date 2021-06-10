@@ -43,7 +43,7 @@ class TestWarnings(BaseTests):
             pass
 
         with self.assert_warns(
-            ParserGeneratorWarning, "如下 20 种情形 shift 还是 reduce？"
+            ParserGeneratorWarning, "如下 20 种情形取下个词还是合而为一？"
         ):
             pg.build()
 
@@ -64,7 +64,7 @@ class TestWarnings(BaseTests):
             pass
 
         with self.assert_warns(
-            ParserGeneratorWarning, "1 种情形不确定如何 reduce"
+            ParserGeneratorWarning, "1 种情形不确定如何合而为一"
         ):
             pg.build()
 
