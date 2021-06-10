@@ -157,13 +157,13 @@ class ParserGenerator(object):
 
         for unused_term in g.unused_terminals():
             warnings.warn(
-                "Token %r is unused" % unused_term,
+                "词 %r 无用" % unused_term,
                 ParserGeneratorWarning,
                 stacklevel=2
             )
         for unused_prod in g.无用规则():
             warnings.warn(
-                "Production %r is not reachable" % unused_prod,
+                "规则 %r 无用" % unused_prod,
                 ParserGeneratorWarning,
                 stacklevel=2
             )
@@ -206,9 +206,8 @@ class ParserGenerator(object):
             )
         if table.rr_conflicts:
             warnings.warn(
-                "%d reduce/reduce conflict%s" % (
-                    len(table.rr_conflicts),
-                    "s" if len(table.rr_conflicts) > 1 else ""
+                "%d 种情形不确定如何 reduce" % (
+                    len(table.rr_conflicts)
                 ),
                 ParserGeneratorWarning,
                 stacklevel=2,
