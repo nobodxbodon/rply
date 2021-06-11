@@ -40,7 +40,7 @@ class 语法分析器母机(object):
         self.cache_id = cache_id
         self.error_handler = None
 
-    def production(self, rule, precedence=None):
+    def 语法规则(self, rule, precedence=None):
         """
         A decorator that defines a production rule and registers the decorated
         function to be called with the terminals and non-terminals matched by
@@ -143,7 +143,7 @@ class 语法分析器母机(object):
                 return False
         return True
 
-    def build(self):
+    def 产出(self):
         g = 语法(self.tokens)
 
         for level, (assoc, terms) in enumerate(self.precedence, 1):

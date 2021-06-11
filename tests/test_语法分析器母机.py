@@ -12,17 +12,17 @@ class TestParserGenerator(BaseTests):
     def test_production_syntax_error(self):
         pg = 语法分析器母机([])
         with py.test.raises(ParserGeneratorError):
-            pg.production("main VALUE")
+            pg.语法规则("main VALUE")
 
     def test_production_terminal_overlap(self):
         pg = 语法分析器母机(["VALUE"])
 
-        @pg.production("VALUE :")
+        @pg.语法规则("VALUE :")
         def x(p):
             pass
 
         with py.test.raises(ParserGeneratorError):
-            pg.build()
+            pg.产出()
 
     def test_duplicate_precedence(self):
         pg = 语法分析器母机([], precedence=[
@@ -30,7 +30,7 @@ class TestParserGenerator(BaseTests):
         ])
 
         with py.test.raises(ParserGeneratorError):
-            pg.build()
+            pg.产出()
 
     def test_invalid_associativity(self):
         pg = 语法分析器母机([], precedence=[
@@ -38,30 +38,30 @@ class TestParserGenerator(BaseTests):
         ])
 
         with py.test.raises(ParserGeneratorError):
-            pg.build()
+            pg.产出()
 
     def test_nonexistent_precedence(self):
         pg = 语法分析器母机(["VALUE"])
 
-        @pg.production("main : VALUE", precedence="abc")
+        @pg.语法规则("main : VALUE", precedence="abc")
         def main(p):
             pass
 
         with py.test.raises(ParserGeneratorError):
-            pg.build()
+            pg.产出()
 
     def test_error_symbol(self):
         pg = 语法分析器母机(["VALUE"])
 
-        @pg.production("main : VALUE")
+        @pg.语法规则("main : VALUE")
         def main(p):
             pass
 
-        @pg.production("main : error")
+        @pg.语法规则("main : error")
         def main_error(p):
             pass
 
-        pg.build()
+        pg.产出()
 
 
 class TestParserCaching(object):
@@ -70,12 +70,12 @@ class TestParserCaching(object):
         # write and read paths.
         pg = 语法分析器母机(["VALUE"], cache_id=str(uuid.uuid4()))
 
-        @pg.production("main : VALUE")
+        @pg.语法规则("main : VALUE")
         def main(p):
             return p[0]
 
-        pg.build()
-        parser = pg.build()
+        pg.产出()
+        parser = pg.产出()
 
         assert parser.parse(iter([
             词("VALUE", "3")

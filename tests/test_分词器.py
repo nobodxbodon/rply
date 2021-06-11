@@ -8,10 +8,10 @@ from rply import 分词器母机, 分词报错
 class TestLexer(object):
     def test_simple(self):
         lg = 分词器母机()
-        lg.add("NUMBER", r"\d+")
-        lg.add("PLUS", r"\+")
+        lg.添了("NUMBER", r"\d+")
+        lg.添了("PLUS", r"\+")
 
-        l = lg.build()
+        l = lg.产出()
 
         stream = l.lex("2+3")
         t = stream.next()
@@ -30,11 +30,11 @@ class TestLexer(object):
 
     def test_ignore(self):
         lg = 分词器母机()
-        lg.add("NUMBER", r"\d+")
-        lg.add("PLUS", r"\+")
-        lg.ignore(r"\s+")
+        lg.添了("NUMBER", r"\d+")
+        lg.添了("PLUS", r"\+")
+        lg.略过(r"\s+")
 
-        l = lg.build()
+        l = lg.产出()
 
         stream = l.lex("2 + 3")
         t = stream.next()
@@ -53,11 +53,11 @@ class TestLexer(object):
 
     def test_position(self):
         lg = 分词器母机()
-        lg.add("NUMBER", r"\d+")
-        lg.add("PLUS", r"\+")
-        lg.ignore(r"\s+")
+        lg.添了("NUMBER", r"\d+")
+        lg.添了("PLUS", r"\+")
+        lg.略过(r"\s+")
 
-        l = lg.build()
+        l = lg.产出()
 
         stream = l.lex("2 + 3")
         t = stream.next()
@@ -87,10 +87,10 @@ class TestLexer(object):
 
     def test_newline_position(self):
         lg = 分词器母机()
-        lg.add("NEWLINE", r"\n")
-        lg.add("SPACE", r" ")
+        lg.添了("NEWLINE", r"\n")
+        lg.添了("SPACE", r" ")
 
-        l = lg.build()
+        l = lg.产出()
 
         stream = l.lex(" \n ")
         t = stream.next()
@@ -105,9 +105,9 @@ class TestLexer(object):
 
     def test_regex_flags(self):
         lg = 分词器母机()
-        lg.add("ALL", r".*", re.DOTALL)
+        lg.添了("ALL", r".*", re.DOTALL)
 
-        l = lg.build()
+        l = lg.产出()
 
         stream = l.lex("test\ndotall")
         t = stream.next()
@@ -120,10 +120,10 @@ class TestLexer(object):
 
     def test_regex_flags_ignore(self):
         lg = 分词器母机()
-        lg.add("ALL", r".*", re.DOTALL)
-        lg.ignore(r".*", re.DOTALL)
+        lg.添了("ALL", r".*", re.DOTALL)
+        lg.略过(r".*", re.DOTALL)
 
-        l = lg.build()
+        l = lg.产出()
 
         stream = l.lex("test\ndotall")
 
@@ -132,18 +132,18 @@ class TestLexer(object):
 
     def test_ignore_recursion(self):
         lg = 分词器母机()
-        lg.ignore(r"\s")
+        lg.略过(r"\s")
 
-        l = lg.build()
+        l = lg.产出()
 
         assert list(l.lex(" " * 2000)) == []
 
     def test_error(self):
         lg = 分词器母机()
-        lg.add("NUMBER", r"\d+")
-        lg.add("PLUS", r"\+")
+        lg.添了("NUMBER", r"\d+")
+        lg.添了("PLUS", r"\+")
 
-        l = lg.build()
+        l = lg.产出()
 
         stream = l.lex('fail')
         with raises(分词报错) as excinfo:
@@ -153,8 +153,8 @@ class TestLexer(object):
 
     def test_error_line_number(self):
         lg = 分词器母机()
-        lg.add("NEW_LINE", r"\n")
-        l = lg.build()
+        lg.添了("NEW_LINE", r"\n")
+        l = lg.产出()
 
         stream = l.lex("\nfail")
         stream.next()
@@ -165,9 +165,9 @@ class TestLexer(object):
 
     def test_error_column_number(self):
         lg = 分词器母机()
-        lg.add("NUMBER", r"\d+")
-        lg.add("PLUS", r"\+")
-        l = lg.build()
+        lg.添了("NUMBER", r"\d+")
+        lg.添了("PLUS", r"\+")
+        l = lg.产出()
         stream = l.lex("1+2+fail")
         stream.next()
         stream.next()

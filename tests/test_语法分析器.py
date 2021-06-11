@@ -14,11 +14,11 @@ class TestParser(BaseTests):
     def test_simple(self):
         pg = 语法分析器母机(["VALUE"])
 
-        @pg.production("main : VALUE")
+        @pg.语法规则("main : VALUE")
         def main(p):
             return p[0]
 
-        parser = pg.build()
+        parser = pg.产出()
 
         token = parser.parse(iter([词("VALUE", "abc")]))
         assert token == 词("VALUE", "abc")
@@ -26,22 +26,22 @@ class TestParser(BaseTests):
     def test_arithmetic(self):
         pg = 语法分析器母机(["NUMBER", "PLUS"])
 
-        @pg.production("main : expr")
+        @pg.语法规则("main : expr")
         def main(p):
             return p[0]
 
-        @pg.production("expr : expr PLUS expr")
+        @pg.语法规则("expr : expr PLUS expr")
         def expr_op(p):
             return BoxInt(p[0].getint() + p[2].getint())
 
-        @pg.production("expr : NUMBER")
+        @pg.语法规则("expr : NUMBER")
         def expr_num(p):
             return BoxInt(int(p[0].getstr()))
 
         with self.assert_warns(
             ParserGeneratorWarning, "如下 1 种情形取下个词还是合而为一？"
         ):
-            parser = pg.build()
+            parser = pg.产出()
 
         assert parser.parse(iter([
             词("NUMBER", "1"),
@@ -52,27 +52,27 @@ class TestParser(BaseTests):
     def test_null_production(self):
         pg = 语法分析器母机(["VALUE", "SPACE"])
 
-        @pg.production("main : values")
+        @pg.语法规则("main : values")
         def main(p):
             return p[0]
 
-        @pg.production("values : none")
+        @pg.语法规则("values : none")
         def values_empty(p):
             return []
 
-        @pg.production("values : VALUE")
+        @pg.语法规则("values : VALUE")
         def values_value(p):
             return [p[0].getstr()]
 
-        @pg.production("values : values SPACE VALUE")
+        @pg.语法规则("values : values SPACE VALUE")
         def values_values(p):
             return p[0] + [p[2].getstr()]
 
-        @pg.production("none :")
+        @pg.语法规则("none :")
         def none(p):
             return None
 
-        parser = pg.build()
+        parser = pg.产出()
         assert parser.parse(iter([
             词("VALUE", "abc"),
             词("SPACE", " "),
@@ -89,23 +89,23 @@ class TestParser(BaseTests):
             ("left", ["TIMES"]),
         ])
 
-        @pg.production("main : expr")
+        @pg.语法规则("main : expr")
         def main(p):
             return p[0]
 
-        @pg.production("expr : expr PLUS expr")
-        @pg.production("expr : expr TIMES expr")
+        @pg.语法规则("expr : expr PLUS expr")
+        @pg.语法规则("expr : expr TIMES expr")
         def expr_binop(p):
             return BoxInt({
                 "+": operator.add,
                 "*": operator.mul
             }[p[1].getstr()](p[0].getint(), p[2].getint()))
 
-        @pg.production("expr : NUMBER")
+        @pg.语法规则("expr : NUMBER")
         def expr_num(p):
             return BoxInt(int(p[0].getstr()))
 
-        parser = pg.build()
+        parser = pg.产出()
 
         assert parser.parse(iter([
             词("NUMBER", "3"),
@@ -120,26 +120,26 @@ class TestParser(BaseTests):
             ("right", ["UMINUS"]),
         ])
 
-        @pg.production("main : expr")
+        @pg.语法规则("main : expr")
         def main_expr(p):
             return p[0]
 
-        @pg.production("expr : expr MINUS expr")
+        @pg.语法规则("expr : expr MINUS expr")
         def expr_minus(p):
             return BoxInt(p[0].getint() - p[2].getint())
 
-        @pg.production("expr : MINUS expr", precedence="UMINUS")
+        @pg.语法规则("expr : MINUS expr", precedence="UMINUS")
         def expr_uminus(p):
             return BoxInt(-p[1].getint())
 
-        @pg.production("expr : NUMBER")
+        @pg.语法规则("expr : NUMBER")
         def expr_number(p):
             return BoxInt(int(p[0].getstr()))
 
         with self.assert_warns(
             ParserGeneratorWarning, "如下 1 种情形取下个词还是合而为一？"
         ):
-            parser = pg.build()
+            parser = pg.产出()
 
         assert parser.parse(iter([
             词("MINUS", "-"),
@@ -151,11 +151,11 @@ class TestParser(BaseTests):
     def test_parse_error(self):
         pg = 语法分析器母机(["VALUE"])
 
-        @pg.production("main : VALUE")
+        @pg.语法规则("main : VALUE")
         def main(p):
             return p[0]
 
-        parser = pg.build()
+        parser = pg.产出()
 
         with py.test.raises(语法分析报错) as exc_info:
             parser.parse(iter([
@@ -169,7 +169,7 @@ class TestParser(BaseTests):
     def test_parse_error_handler(self):
         pg = 语法分析器母机(["VALUE"])
 
-        @pg.production("main : VALUE")
+        @pg.语法规则("main : VALUE")
         def main(p):
             return p[0]
 
@@ -177,7 +177,7 @@ class TestParser(BaseTests):
         def error_handler(token):
             raise ValueError(token)
 
-        parser = pg.build()
+        parser = pg.产出()
 
         token = 词("VALUE", "world")
 
@@ -194,22 +194,22 @@ class TestParser(BaseTests):
             ("left", ["PLUS"]),
         ])
 
-        @pg.production("main : expression")
+        @pg.语法规则("main : expression")
         def main(state, p):
             state.count += 1
             return p[0]
 
-        @pg.production("expression : expression PLUS expression")
+        @pg.语法规则("expression : expression PLUS expression")
         def expression_plus(state, p):
             state.count += 1
             return BoxInt(p[0].getint() + p[2].getint())
 
-        @pg.production("expression : NUMBER")
+        @pg.语法规则("expression : NUMBER")
         def expression_number(state, p):
             state.count += 1
             return BoxInt(int(p[0].getstr()))
 
-        parser = pg.build()
+        parser = pg.产出()
 
         state = ParserState()
         assert parser.parse(iter([
@@ -224,7 +224,7 @@ class TestParser(BaseTests):
     def test_error_handler_state(self):
         pg = 语法分析器母机([])
 
-        @pg.production("main :")
+        @pg.语法规则("main :")
         def main(state, p):
             pass
 
@@ -232,7 +232,7 @@ class TestParser(BaseTests):
         def error(state, token):
             raise ValueError(state, token)
 
-        parser = pg.build()
+        parser = pg.产出()
 
         state = ParserState()
         token = 词("VALUE", "")
@@ -251,22 +251,22 @@ class TestParser(BaseTests):
         )
         record = []
 
-        @pg.production("main : expr")
+        @pg.语法规则("main : expr")
         def main(p):
             record.append("main")
             return p[0]
 
-        @pg.production("expr : expr COMPARE expr")
+        @pg.语法规则("expr : expr COMPARE expr")
         def expr_compare(p):
             record.append("expr:compare")
             return BoxInt(p[0].getint() - p[2].getint())
 
-        @pg.production("expr : INTEGER_START INTEGER_VALUE")
+        @pg.语法规则("expr : INTEGER_START INTEGER_VALUE")
         def expr_int(p):
             record.append("expr:int")
             return BoxInt(int(p[1].getstr()))
 
-        parser = pg.build()
+        parser = pg.产出()
 
         assert parser.parse(RecordingLexer(record, [
             词("INTEGER_START", ""),

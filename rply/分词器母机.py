@@ -32,21 +32,21 @@ class 分词器母机(object):
 
     >>> from rply import 分词器母机
     >>> lg = 分词器母机()
-    >>> lg.add('NUMBER', r'\d+')
-    >>> lg.add('ADD', r'\+')
-    >>> lg.ignore(r'\s+')
+    >>> lg.添了('NUMBER', r'\d+')
+    >>> lg.添了('ADD', r'\+')
+    >>> lg.略过(r'\s+')
 
     The rules are passed to :func:`re.compile`. If you need additional flags,
     e.g. :const:`re.DOTALL`, you can pass them to :meth:`add` and
     :meth:`ignore` as an additional optional parameter:
 
     >>> import re
-    >>> lg.add('ALL', r'.*', flags=re.DOTALL)
+    >>> lg.添了('ALL', r'.*', flags=re.DOTALL)
 
     You can then build a lexer with which you can lex a string to produce an
     iterator yielding tokens:
 
-    >>> lexer = lg.build()
+    >>> lexer = lg.产出()
     >>> iterator = lexer.lex('1 + 1')
     >>> iterator.next()
     Token('NUMBER', '1')
@@ -64,21 +64,21 @@ class 分词器母机(object):
         self.rules = []
         self.ignore_rules = []
 
-    def add(self, name, pattern, flags=0):
+    def 添了(self, name, pattern, flags=0):
         """
         Adds a rule with the given `name` and `pattern`. In case of ambiguity,
         the first rule added wins.
         """
         self.rules.append(Rule(name, pattern, flags=flags))
 
-    def ignore(self, pattern, flags=0):
+    def 略过(self, pattern, flags=0):
         """
         Adds a rule whose matched value will be ignored. Ignored rules will be
         matched before regular ones.
         """
         self.ignore_rules.append(Rule("", pattern, flags=flags))
 
-    def build(self):
+    def 产出(self):
         """
         Returns a lexer instance, which provides a `lex` method that must be
         called with a string and returns an iterator yielding
