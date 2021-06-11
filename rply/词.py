@@ -10,7 +10,7 @@ class BaseBox(object):
     _attrs_ = []
 
 
-class Token(BaseBox):
+class 词(BaseBox):
     """
     Represents a syntactically relevant piece of text.
 
@@ -29,7 +29,7 @@ class Token(BaseBox):
         return "Token(%r, %r)" % (self.name, self.value)
 
     def __eq__(self, other):
-        if not isinstance(other, Token):
+        if not isinstance(other, 词):
             return NotImplemented
         return self.name == other.name and self.value == other.value
 
@@ -53,9 +53,9 @@ class Token(BaseBox):
         return self.value
 
 
-class SourcePosition(object):
+class 字符位置(object):
     """
-    Represents the position of a character in some source string.
+    字符所在源码的位置。
 
     :param idx: The index of the character in the source.
     :param lineno: The number of the line in which the character occurs.

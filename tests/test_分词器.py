@@ -2,7 +2,7 @@ import re
 
 from pytest import raises
 
-from rply import 分词器母机, LexingError
+from rply import 分词器母机, 分词报错
 
 
 class TestLexer(object):
@@ -146,7 +146,7 @@ class TestLexer(object):
         l = lg.build()
 
         stream = l.lex('fail')
-        with raises(LexingError) as excinfo:
+        with raises(分词报错) as excinfo:
             stream.next()
 
         assert 'SourcePosition(' in repr(excinfo.value)
@@ -158,7 +158,7 @@ class TestLexer(object):
 
         stream = l.lex("\nfail")
         stream.next()
-        with raises(LexingError) as excinfo:
+        with raises(分词报错) as excinfo:
             stream.next()
 
         assert excinfo.value.source_pos.lineno == 2
@@ -173,7 +173,7 @@ class TestLexer(object):
         stream.next()
         stream.next()
         stream.next()
-        with raises(LexingError) as excinfo:
+        with raises(分词报错) as excinfo:
             stream.next()
 
         assert excinfo.value.source_pos.colno == 4

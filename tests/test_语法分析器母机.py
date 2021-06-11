@@ -2,7 +2,7 @@ import uuid
 
 import py
 
-from rply import 语法分析器母机, Token
+from rply import 语法分析器母机, 词
 from rply.报错 import ParserGeneratorError
 
 from .基本 import BaseTests
@@ -78,5 +78,5 @@ class TestParserCaching(object):
         parser = pg.build()
 
         assert parser.parse(iter([
-            Token("VALUE", "3")
-        ])) == Token("VALUE", "3")
+            词("VALUE", "3")
+        ])) == 词("VALUE", "3")

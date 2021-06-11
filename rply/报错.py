@@ -2,7 +2,7 @@ class ParserGeneratorError(Exception):
     pass
 
 
-class LexingError(Exception):
+class 分词报错(Exception):
     """
     Raised by a Lexer, if no rule matches.
     """
@@ -20,7 +20,7 @@ class LexingError(Exception):
         return 'LexingError(%r, %r)' % (self.message, self.source_pos)
 
 
-class ParsingError(Exception):
+class 语法分析报错(Exception):
     """
     Raised by a Parser, if no production rule can be applied.
     """

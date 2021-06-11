@@ -1,4 +1,4 @@
-from rply.报错 import ParsingError
+from rply.报错 import 语法分析报错
 
 
 class LRParser(object):
@@ -7,13 +7,13 @@ class LRParser(object):
         self.error_handler = error_handler
 
     def parse(self, tokenizer, state=None):
-        from rply.词 import Token
+        from rply.词 import 词
 
         lookahead = None
         lookaheadstack = []
 
         statestack = [0]
-        symstack = [Token("$end", "$end")]
+        symstack = [词("$end", "$end")]
 
         current_state = 0
         while True:
@@ -34,7 +34,7 @@ class LRParser(object):
                         lookahead = None
 
                 if lookahead is None:
-                    lookahead = Token("$end", "$end")
+                    lookahead = 词("$end", "$end")
 
             ltype = lookahead.gettokentype()
             if ltype in self.lr_table.lr_action[current_state]:
@@ -62,7 +62,7 @@ class LRParser(object):
                         self.error_handler(state, lookahead)
                     raise AssertionError("For now, error_handler must raise.")
                 else:
-                    raise ParsingError(None, lookahead.getsourcepos())
+                    raise 语法分析报错(None, lookahead.getsourcepos())
 
     def _reduce_production(self, t, symstack, statestack, state):
         # reduce a symbol on the stack and emit a production

@@ -2,9 +2,9 @@ import operator
 
 import py
 
-from rply import 语法分析器母机, ParsingError, Token
+from rply import 语法分析器母机, 语法分析报错, 词
 from rply.报错 import ParserGeneratorWarning
-from rply.词 import SourcePosition
+from rply.词 import 字符位置
 
 from .基本 import BaseTests
 from .功用 import BoxInt, ParserState, RecordingLexer
@@ -20,8 +20,8 @@ class TestParser(BaseTests):
 
         parser = pg.build()
 
-        token = parser.parse(iter([Token("VALUE", "abc")]))
-        assert token == Token("VALUE", "abc")
+        token = parser.parse(iter([词("VALUE", "abc")]))
+        assert token == 词("VALUE", "abc")
 
     def test_arithmetic(self):
         pg = 语法分析器母机(["NUMBER", "PLUS"])
@@ -44,9 +44,9 @@ class TestParser(BaseTests):
             parser = pg.build()
 
         assert parser.parse(iter([
-            Token("NUMBER", "1"),
-            Token("PLUS", "+"),
-            Token("NUMBER", "4")
+            词("NUMBER", "1"),
+            词("PLUS", "+"),
+            词("NUMBER", "4")
         ])) == BoxInt(5)
 
     def test_null_production(self):
@@ -74,11 +74,11 @@ class TestParser(BaseTests):
 
         parser = pg.build()
         assert parser.parse(iter([
-            Token("VALUE", "abc"),
-            Token("SPACE", " "),
-            Token("VALUE", "def"),
-            Token("SPACE", " "),
-            Token("VALUE", "ghi"),
+            词("VALUE", "abc"),
+            词("SPACE", " "),
+            词("VALUE", "def"),
+            词("SPACE", " "),
+            词("VALUE", "ghi"),
         ])) == ["abc", "def", "ghi"]
 
         assert parser.parse(iter([])) == []
@@ -108,11 +108,11 @@ class TestParser(BaseTests):
         parser = pg.build()
 
         assert parser.parse(iter([
-            Token("NUMBER", "3"),
-            Token("TIMES", "*"),
-            Token("NUMBER", "4"),
-            Token("PLUS", "+"),
-            Token("NUMBER", "5")
+            词("NUMBER", "3"),
+            词("TIMES", "*"),
+            词("NUMBER", "4"),
+            词("PLUS", "+"),
+            词("NUMBER", "5")
         ])) == BoxInt(17)
 
     def test_per_rule_precedence(self):
@@ -142,10 +142,10 @@ class TestParser(BaseTests):
             parser = pg.build()
 
         assert parser.parse(iter([
-            Token("MINUS", "-"),
-            Token("NUMBER", "4"),
-            Token("MINUS", "-"),
-            Token("NUMBER", "5"),
+            词("MINUS", "-"),
+            词("NUMBER", "4"),
+            词("MINUS", "-"),
+            词("NUMBER", "5"),
         ])) == BoxInt(-9)
 
     def test_parse_error(self):
@@ -157,10 +157,10 @@ class TestParser(BaseTests):
 
         parser = pg.build()
 
-        with py.test.raises(ParsingError) as exc_info:
+        with py.test.raises(语法分析报错) as exc_info:
             parser.parse(iter([
-                Token("VALUE", "hello"),
-                Token("VALUE", "world", SourcePosition(5, 10, 2)),
+                词("VALUE", "hello"),
+                词("VALUE", "world", 字符位置(5, 10, 2)),
             ]))
 
         assert exc_info.value.getsourcepos().lineno == 10
@@ -179,11 +179,11 @@ class TestParser(BaseTests):
 
         parser = pg.build()
 
-        token = Token("VALUE", "world")
+        token = 词("VALUE", "world")
 
         with py.test.raises(ValueError) as exc_info:
             parser.parse(iter([
-                Token("VALUE", "hello"),
+                词("VALUE", "hello"),
                 token
             ]))
 
@@ -213,11 +213,11 @@ class TestParser(BaseTests):
 
         state = ParserState()
         assert parser.parse(iter([
-            Token("NUMBER", "10"),
-            Token("PLUS", "+"),
-            Token("NUMBER", "12"),
-            Token("PLUS", "+"),
-            Token("NUMBER", "-2"),
+            词("NUMBER", "10"),
+            词("PLUS", "+"),
+            词("NUMBER", "12"),
+            词("PLUS", "+"),
+            词("NUMBER", "-2"),
         ]), state=state) == BoxInt(20)
         assert state.count == 6
 
@@ -235,7 +235,7 @@ class TestParser(BaseTests):
         parser = pg.build()
 
         state = ParserState()
-        token = Token("VALUE", "")
+        token = 词("VALUE", "")
         with py.test.raises(ValueError) as exc_info:
             parser.parse(iter([token]), state=state)
 
@@ -269,11 +269,11 @@ class TestParser(BaseTests):
         parser = pg.build()
 
         assert parser.parse(RecordingLexer(record, [
-            Token("INTEGER_START", ""),
-            Token("INTEGER_VALUE", "10"),
-            Token("COMPARE", "-"),
-            Token("INTEGER_START", ""),
-            Token("INTEGER_VALUE", "5")
+            词("INTEGER_START", ""),
+            词("INTEGER_VALUE", "10"),
+            词("COMPARE", "-"),
+            词("INTEGER_START", ""),
+            词("INTEGER_VALUE", "5")
         ])) == BoxInt(5)
 
         assert record == [
