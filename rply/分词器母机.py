@@ -1,16 +1,5 @@
 import re
 
-try:
-    import rpython
-    from rpython.rlib.objectmodel import we_are_translated
-    from rpython.rlib.rsre import rsre_core
-    from rpython.rlib.rsre.rpy import get_code
-except ImportError:
-    rpython = None
-
-    def we_are_translated():
-        return False
-
 from rply.分词器 import 分词器
 
 
@@ -20,25 +9,10 @@ class Rule(object):
     def __init__(self, name, pattern, flags=0):
         self.name = name
         self.re = re.compile(pattern, flags=flags)
-        if rpython:
-            self._pattern = get_code(pattern, flags)
-
-    def _freeze_(self):
-        return True
 
     def matches(self, s, pos):
-        if not we_are_translated():
-            m = self.re.match(s, pos)
-            return Match(*m.span(0)) if m is not None else None
-        else:
-            assert pos >= 0
-            ctx = rsre_core.StrMatchContext(s, pos, len(s))
-
-            matched = rsre_core.match_context(ctx, self._pattern)
-            if matched:
-                return Match(ctx.match_start, ctx.match_end)
-            else:
-                return None
+        m = self.re.match(s, pos)
+        return Match(*m.span(0)) if m is not None else None
 
 
 class Match(object):

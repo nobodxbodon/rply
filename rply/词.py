@@ -4,6 +4,8 @@ class BaseBox(object):
     this as a base class for anything you return in a production function of a
     parser. This is necessary because RPython unlike Python expects functions
     to always return objects of the same type.
+
+    既然现在不支持 RPython，此数据结构应不需要。待清理。
     """
     _attrs_ = []
 
