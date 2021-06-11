@@ -157,13 +157,13 @@ class ParserGenerator(object):
 
         for unused_term in g.unused_terminals():
             warnings.warn(
-                "Token %r is unused" % unused_term,
+                "词 %r 无用" % unused_term,
                 ParserGeneratorWarning,
                 stacklevel=2
             )
         for unused_prod in g.无用规则():
             warnings.warn(
-                "Production %r is not reachable" % unused_prod,
+                "规则 %r 无用" % unused_prod,
                 ParserGeneratorWarning,
                 stacklevel=2
             )
@@ -197,9 +197,8 @@ class ParserGenerator(object):
             歧义 = table.sr_conflicts
             细节 = '\n\n'.join(['词' + str(i[1]) + '有歧义，默认进行 ' + i[2] + '\n歧义序列：\n' + 输出序列(i[3]) for i in 歧义])
             warnings.warn(
-                "%d shift/reduce conflict%s:\n%s" % (
+                "如下 %d 种情形取下个词还是合而为一？\n%s" % (
                     len(歧义),
-                    "s" if len(歧义) > 1 else "",
                     细节,
                 ),
                 ParserGeneratorWarning,
@@ -207,9 +206,8 @@ class ParserGenerator(object):
             )
         if table.rr_conflicts:
             warnings.warn(
-                "%d reduce/reduce conflict%s" % (
-                    len(table.rr_conflicts),
-                    "s" if len(table.rr_conflicts) > 1 else ""
+                "%d 种情形不确定如何合而为一" % (
+                    len(table.rr_conflicts)
                 ),
                 ParserGeneratorWarning,
                 stacklevel=2,

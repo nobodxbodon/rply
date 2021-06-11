@@ -43,7 +43,7 @@ class TestWarnings(BaseTests):
             pass
 
         with self.assert_warns(
-            ParserGeneratorWarning, "20 shift/reduce conflicts:"
+            ParserGeneratorWarning, "如下 20 种情形取下个词还是合而为一？"
         ):
             pg.build()
 
@@ -64,7 +64,7 @@ class TestWarnings(BaseTests):
             pass
 
         with self.assert_warns(
-            ParserGeneratorWarning, "1 reduce/reduce conflict"
+            ParserGeneratorWarning, "1 种情形不确定如何合而为一"
         ):
             pg.build()
 
@@ -76,7 +76,7 @@ class TestWarnings(BaseTests):
             return p[0]
 
         with self.assert_warns(
-            ParserGeneratorWarning, "Token 'OTHER' is unused"
+            ParserGeneratorWarning, "词 'OTHER' 无用"
         ):
             pg.build()
 
@@ -92,7 +92,7 @@ class TestWarnings(BaseTests):
             pass
 
         with self.assert_warns(
-            ParserGeneratorWarning, "Production 'unused' is not reachable"
+            ParserGeneratorWarning, "规则 'unused' 无用"
         ):
             pg.build()
 
@@ -108,7 +108,7 @@ class TestWarnings(BaseTests):
             pass
 
         with self.assert_warns(
-            ParserGeneratorWarning, "Production '无用' is not reachable"
+            ParserGeneratorWarning, "规则 '无用' 无用"
         ):
             pg.build()
 '''
