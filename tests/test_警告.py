@@ -1,4 +1,4 @@
-from rply import ParserGenerator
+from rply import 语法分析器母机
 from rply.报错 import ParserGeneratorWarning
 
 from .基本 import BaseTests
@@ -6,7 +6,7 @@ from .基本 import BaseTests
 
 class TestWarnings(BaseTests):
     def test_shift_reduce(self):
-        pg = ParserGenerator([
+        pg = 语法分析器母机([
             "NAME", "NUMBER", "EQUALS", "PLUS", "MINUS", "TIMES", "DIVIDE",
             "LPAREN", "RPAREN"
         ])
@@ -48,7 +48,7 @@ class TestWarnings(BaseTests):
             pg.build()
 
     def test_reduce_reduce(self):
-        pg = ParserGenerator(["NAME", "EQUALS", "NUMBER"])
+        pg = 语法分析器母机(["NAME", "EQUALS", "NUMBER"])
 
         @pg.production("main : assign")
         def main(p):
@@ -69,7 +69,7 @@ class TestWarnings(BaseTests):
             pg.build()
 
     def test_unused_tokens(self):
-        pg = ParserGenerator(["VALUE", "OTHER"])
+        pg = 语法分析器母机(["VALUE", "OTHER"])
 
         @pg.production("main : VALUE")
         def main(p):
@@ -81,7 +81,7 @@ class TestWarnings(BaseTests):
             pg.build()
 
     def test_unused_production(self):
-        pg = ParserGenerator(["VALUE", "OTHER"])
+        pg = 语法分析器母机(["VALUE", "OTHER"])
 
         @pg.production("main : VALUE")
         def main(p):
@@ -97,7 +97,7 @@ class TestWarnings(BaseTests):
             pg.build()
 
     def test_报警(self):
-        pg = ParserGenerator(["VALUE"])
+        pg = 语法分析器母机(["VALUE"])
 
         @pg.production("main : VALUE")
         def main(p):

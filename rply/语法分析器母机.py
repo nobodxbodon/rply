@@ -17,7 +17,7 @@ from rply.功用 import Counter, IdentityDict, iteritems, itervalues
 LARGE_VALUE = sys.maxsize
 
 
-class ParserGenerator(object):
+class 语法分析器母机(object):
     """
     A ParserGenerator represents a set of production rules, that define a
     sequence of terminals and non-terminals to be replaced with a non-terminal,

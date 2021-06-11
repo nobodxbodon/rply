@@ -1,18 +1,18 @@
 import operator
 
-from rply import LexerGenerator, ParserGenerator
+from rply import 分词器母机, 语法分析器母机
 
 from .功用 import BoxInt
 
 
 class TestBoth(object):
     def test_arithmetic(self):
-        lg = LexerGenerator()
+        lg = 分词器母机()
         lg.add("NUMBER", r"\d+")
         lg.add("PLUS", r"\+")
         lg.add("TIMES", r"\*")
 
-        pg = ParserGenerator(["NUMBER", "PLUS", "TIMES"], precedence=[
+        pg = 语法分析器母机(["NUMBER", "PLUS", "TIMES"], precedence=[
             ("left", ["PLUS"]),
             ("left", ["TIMES"]),
         ])

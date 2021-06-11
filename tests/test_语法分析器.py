@@ -2,7 +2,7 @@ import operator
 
 import py
 
-from rply import ParserGenerator, ParsingError, Token
+from rply import 语法分析器母机, ParsingError, Token
 from rply.报错 import ParserGeneratorWarning
 from rply.词 import SourcePosition
 
@@ -12,7 +12,7 @@ from .功用 import BoxInt, ParserState, RecordingLexer
 
 class TestParser(BaseTests):
     def test_simple(self):
-        pg = ParserGenerator(["VALUE"])
+        pg = 语法分析器母机(["VALUE"])
 
         @pg.production("main : VALUE")
         def main(p):
@@ -24,7 +24,7 @@ class TestParser(BaseTests):
         assert token == Token("VALUE", "abc")
 
     def test_arithmetic(self):
-        pg = ParserGenerator(["NUMBER", "PLUS"])
+        pg = 语法分析器母机(["NUMBER", "PLUS"])
 
         @pg.production("main : expr")
         def main(p):
@@ -50,7 +50,7 @@ class TestParser(BaseTests):
         ])) == BoxInt(5)
 
     def test_null_production(self):
-        pg = ParserGenerator(["VALUE", "SPACE"])
+        pg = 语法分析器母机(["VALUE", "SPACE"])
 
         @pg.production("main : values")
         def main(p):
@@ -84,7 +84,7 @@ class TestParser(BaseTests):
         assert parser.parse(iter([])) == []
 
     def test_precedence(self):
-        pg = ParserGenerator(["NUMBER", "PLUS", "TIMES"], precedence=[
+        pg = 语法分析器母机(["NUMBER", "PLUS", "TIMES"], precedence=[
             ("left", ["PLUS"]),
             ("left", ["TIMES"]),
         ])
@@ -116,7 +116,7 @@ class TestParser(BaseTests):
         ])) == BoxInt(17)
 
     def test_per_rule_precedence(self):
-        pg = ParserGenerator(["NUMBER", "MINUS"], precedence=[
+        pg = 语法分析器母机(["NUMBER", "MINUS"], precedence=[
             ("right", ["UMINUS"]),
         ])
 
@@ -149,7 +149,7 @@ class TestParser(BaseTests):
         ])) == BoxInt(-9)
 
     def test_parse_error(self):
-        pg = ParserGenerator(["VALUE"])
+        pg = 语法分析器母机(["VALUE"])
 
         @pg.production("main : VALUE")
         def main(p):
@@ -167,7 +167,7 @@ class TestParser(BaseTests):
         assert 'SourcePosition' in repr(exc_info.value)
 
     def test_parse_error_handler(self):
-        pg = ParserGenerator(["VALUE"])
+        pg = 语法分析器母机(["VALUE"])
 
         @pg.production("main : VALUE")
         def main(p):
@@ -190,7 +190,7 @@ class TestParser(BaseTests):
         assert exc_info.value.args[0] is token
 
     def test_state(self):
-        pg = ParserGenerator(["NUMBER", "PLUS"], precedence=[
+        pg = 语法分析器母机(["NUMBER", "PLUS"], precedence=[
             ("left", ["PLUS"]),
         ])
 
@@ -222,7 +222,7 @@ class TestParser(BaseTests):
         assert state.count == 6
 
     def test_error_handler_state(self):
-        pg = ParserGenerator([])
+        pg = 语法分析器母机([])
 
         @pg.production("main :")
         def main(state, p):
@@ -243,7 +243,7 @@ class TestParser(BaseTests):
         assert exc_info.value.args[1] is token
 
     def test_default_reductions(self):
-        pg = ParserGenerator(
+        pg = 语法分析器母机(
             ["INTEGER_START", "INTEGER_VALUE", "COMPARE"],
             precedence=[
                 ("nonassoc", ["COMPARE"])

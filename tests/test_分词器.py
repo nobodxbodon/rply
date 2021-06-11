@@ -2,12 +2,12 @@ import re
 
 from pytest import raises
 
-from rply import LexerGenerator, LexingError
+from rply import 分词器母机, LexingError
 
 
 class TestLexer(object):
     def test_simple(self):
-        lg = LexerGenerator()
+        lg = 分词器母机()
         lg.add("NUMBER", r"\d+")
         lg.add("PLUS", r"\+")
 
@@ -29,7 +29,7 @@ class TestLexer(object):
             stream.next()
 
     def test_ignore(self):
-        lg = LexerGenerator()
+        lg = 分词器母机()
         lg.add("NUMBER", r"\d+")
         lg.add("PLUS", r"\+")
         lg.ignore(r"\s+")
@@ -52,7 +52,7 @@ class TestLexer(object):
             stream.next()
 
     def test_position(self):
-        lg = LexerGenerator()
+        lg = 分词器母机()
         lg.add("NUMBER", r"\d+")
         lg.add("PLUS", r"\+")
         lg.ignore(r"\s+")
@@ -86,7 +86,7 @@ class TestLexer(object):
             stream.next()
 
     def test_newline_position(self):
-        lg = LexerGenerator()
+        lg = 分词器母机()
         lg.add("NEWLINE", r"\n")
         lg.add("SPACE", r" ")
 
@@ -104,7 +104,7 @@ class TestLexer(object):
         assert t.source_pos.colno == 1
 
     def test_regex_flags(self):
-        lg = LexerGenerator()
+        lg = 分词器母机()
         lg.add("ALL", r".*", re.DOTALL)
 
         l = lg.build()
@@ -119,7 +119,7 @@ class TestLexer(object):
             stream.next()
 
     def test_regex_flags_ignore(self):
-        lg = LexerGenerator()
+        lg = 分词器母机()
         lg.add("ALL", r".*", re.DOTALL)
         lg.ignore(r".*", re.DOTALL)
 
@@ -131,7 +131,7 @@ class TestLexer(object):
             stream.next()
 
     def test_ignore_recursion(self):
-        lg = LexerGenerator()
+        lg = 分词器母机()
         lg.ignore(r"\s")
 
         l = lg.build()
@@ -139,7 +139,7 @@ class TestLexer(object):
         assert list(l.lex(" " * 2000)) == []
 
     def test_error(self):
-        lg = LexerGenerator()
+        lg = 分词器母机()
         lg.add("NUMBER", r"\d+")
         lg.add("PLUS", r"\+")
 
@@ -152,7 +152,7 @@ class TestLexer(object):
         assert 'SourcePosition(' in repr(excinfo.value)
 
     def test_error_line_number(self):
-        lg = LexerGenerator()
+        lg = 分词器母机()
         lg.add("NEW_LINE", r"\n")
         l = lg.build()
 
@@ -164,7 +164,7 @@ class TestLexer(object):
         assert excinfo.value.source_pos.lineno == 2
 
     def test_error_column_number(self):
-        lg = LexerGenerator()
+        lg = 分词器母机()
         lg.add("NUMBER", r"\d+")
         lg.add("PLUS", r"\+")
         l = lg.build()

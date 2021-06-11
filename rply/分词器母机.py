@@ -23,15 +23,15 @@ class Match(object):
         self.end = end
 
 
-class LexerGenerator(object):
+class 分词器母机(object):
     r"""
     A LexerGenerator represents a set of rules that match pieces of text that
     should either be turned into tokens or ignored by the lexer.
 
     Rules are added using the :meth:`add` and :meth:`ignore` methods:
 
-    >>> from rply import LexerGenerator
-    >>> lg = LexerGenerator()
+    >>> from rply import 分词器母机
+    >>> lg = 分词器母机()
     >>> lg.add('NUMBER', r'\d+')
     >>> lg.add('ADD', r'\+')
     >>> lg.ignore(r'\s+')
