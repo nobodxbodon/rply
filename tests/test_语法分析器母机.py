@@ -77,6 +77,6 @@ class TestParserCaching(object):
         pg.产出()
         parser = pg.产出()
 
-        assert parser.parse(iter([
+        assert parser.分析(iter([
             词("VALUE", "3")
         ])) == 词("VALUE", "3")

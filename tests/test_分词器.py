@@ -13,7 +13,7 @@ class TestLexer(object):
 
         l = lg.产出()
 
-        stream = l.lex("2+3")
+        stream = l.分词("2+3")
         t = stream.next()
         assert t.name == "NUMBER"
         assert t.value == "2"
@@ -36,7 +36,7 @@ class TestLexer(object):
 
         l = lg.产出()
 
-        stream = l.lex("2 + 3")
+        stream = l.分词("2 + 3")
         t = stream.next()
         assert t.name == "NUMBER"
         assert t.value == "2"
@@ -59,7 +59,7 @@ class TestLexer(object):
 
         l = lg.产出()
 
-        stream = l.lex("2 + 3")
+        stream = l.分词("2 + 3")
         t = stream.next()
         assert t.source_pos.lineno == 1
         assert t.source_pos.colno == 1
@@ -72,7 +72,7 @@ class TestLexer(object):
         with raises(StopIteration):
             stream.next()
 
-        stream = l.lex("2 +\n    37")
+        stream = l.分词("2 +\n    37")
         t = stream.next()
         assert t.source_pos.lineno == 1
         assert t.source_pos.colno == 1
@@ -92,7 +92,7 @@ class TestLexer(object):
 
         l = lg.产出()
 
-        stream = l.lex(" \n ")
+        stream = l.分词(" \n ")
         t = stream.next()
         assert t.source_pos.lineno == 1
         assert t.source_pos.colno == 1
@@ -109,7 +109,7 @@ class TestLexer(object):
 
         l = lg.产出()
 
-        stream = l.lex("test\ndotall")
+        stream = l.分词("test\ndotall")
         t = stream.next()
         assert t.source_pos.lineno == 1
         assert t.source_pos.colno == 1
@@ -125,7 +125,7 @@ class TestLexer(object):
 
         l = lg.产出()
 
-        stream = l.lex("test\ndotall")
+        stream = l.分词("test\ndotall")
 
         with raises(StopIteration):
             stream.next()
@@ -136,7 +136,7 @@ class TestLexer(object):
 
         l = lg.产出()
 
-        assert list(l.lex(" " * 2000)) == []
+        assert list(l.分词(" " * 2000)) == []
 
     def test_error(self):
         lg = 分词器母机()
@@ -145,7 +145,7 @@ class TestLexer(object):
 
         l = lg.产出()
 
-        stream = l.lex('fail')
+        stream = l.分词('fail')
         with raises(分词报错) as excinfo:
             stream.next()
 
@@ -156,7 +156,7 @@ class TestLexer(object):
         lg.添了("NEW_LINE", r"\n")
         l = lg.产出()
 
-        stream = l.lex("\nfail")
+        stream = l.分词("\nfail")
         stream.next()
         with raises(分词报错) as excinfo:
             stream.next()
@@ -168,7 +168,7 @@ class TestLexer(object):
         lg.添了("NUMBER", r"\d+")
         lg.添了("PLUS", r"\+")
         l = lg.产出()
-        stream = l.lex("1+2+fail")
+        stream = l.分词("1+2+fail")
         stream.next()
         stream.next()
         stream.next()

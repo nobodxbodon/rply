@@ -20,7 +20,7 @@ class TestParser(BaseTests):
 
         parser = pg.产出()
 
-        token = parser.parse(iter([词("VALUE", "abc")]))
+        token = parser.分析(iter([词("VALUE", "abc")]))
         assert token == 词("VALUE", "abc")
 
     def test_arithmetic(self):
@@ -43,7 +43,7 @@ class TestParser(BaseTests):
         ):
             parser = pg.产出()
 
-        assert parser.parse(iter([
+        assert parser.分析(iter([
             词("NUMBER", "1"),
             词("PLUS", "+"),
             词("NUMBER", "4")
@@ -73,7 +73,7 @@ class TestParser(BaseTests):
             return None
 
         parser = pg.产出()
-        assert parser.parse(iter([
+        assert parser.分析(iter([
             词("VALUE", "abc"),
             词("SPACE", " "),
             词("VALUE", "def"),
@@ -81,7 +81,7 @@ class TestParser(BaseTests):
             词("VALUE", "ghi"),
         ])) == ["abc", "def", "ghi"]
 
-        assert parser.parse(iter([])) == []
+        assert parser.分析(iter([])) == []
 
     def test_precedence(self):
         pg = 语法分析器母机(["NUMBER", "PLUS", "TIMES"], precedence=[
@@ -107,7 +107,7 @@ class TestParser(BaseTests):
 
         parser = pg.产出()
 
-        assert parser.parse(iter([
+        assert parser.分析(iter([
             词("NUMBER", "3"),
             词("TIMES", "*"),
             词("NUMBER", "4"),
@@ -141,7 +141,7 @@ class TestParser(BaseTests):
         ):
             parser = pg.产出()
 
-        assert parser.parse(iter([
+        assert parser.分析(iter([
             词("MINUS", "-"),
             词("NUMBER", "4"),
             词("MINUS", "-"),
@@ -158,7 +158,7 @@ class TestParser(BaseTests):
         parser = pg.产出()
 
         with py.test.raises(语法分析报错) as exc_info:
-            parser.parse(iter([
+            parser.分析(iter([
                 词("VALUE", "hello"),
                 词("VALUE", "world", 字符位置(5, 10, 2)),
             ]))
@@ -182,7 +182,7 @@ class TestParser(BaseTests):
         token = 词("VALUE", "world")
 
         with py.test.raises(ValueError) as exc_info:
-            parser.parse(iter([
+            parser.分析(iter([
                 词("VALUE", "hello"),
                 token
             ]))
@@ -212,7 +212,7 @@ class TestParser(BaseTests):
         parser = pg.产出()
 
         state = ParserState()
-        assert parser.parse(iter([
+        assert parser.分析(iter([
             词("NUMBER", "10"),
             词("PLUS", "+"),
             词("NUMBER", "12"),
@@ -237,7 +237,7 @@ class TestParser(BaseTests):
         state = ParserState()
         token = 词("VALUE", "")
         with py.test.raises(ValueError) as exc_info:
-            parser.parse(iter([token]), state=state)
+            parser.分析(iter([token]), state=state)
 
         assert exc_info.value.args[0] is state
         assert exc_info.value.args[1] is token
@@ -268,7 +268,7 @@ class TestParser(BaseTests):
 
         parser = pg.产出()
 
-        assert parser.parse(RecordingLexer(record, [
+        assert parser.分析(RecordingLexer(record, [
             词("INTEGER_START", ""),
             词("INTEGER_VALUE", "10"),
             词("COMPARE", "-"),

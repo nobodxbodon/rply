@@ -36,4 +36,4 @@ class TestBoth(object):
         lexer = lg.产出()
         parser = pg.产出()
 
-        assert parser.parse(lexer.lex("3*4+5"))
+        assert parser.分析(lexer.分词("3*4+5"))

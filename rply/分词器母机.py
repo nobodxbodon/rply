@@ -47,7 +47,7 @@ class 分词器母机(object):
     iterator yielding tokens:
 
     >>> lexer = lg.产出()
-    >>> iterator = lexer.lex('1 + 1')
+    >>> iterator = lexer.分词('1 + 1')
     >>> iterator.next()
     Token('NUMBER', '1')
     >>> iterator.next()

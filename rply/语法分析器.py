@@ -6,7 +6,7 @@ class LRParser(object):
         self.lr_table = lr_table
         self.error_handler = error_handler
 
-    def parse(self, tokenizer, state=None):
+    def 分析(self, tokenizer, state=None):
         from rply.词 import 词
 
         lookahead = None
