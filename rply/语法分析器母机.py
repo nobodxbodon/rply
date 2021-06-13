@@ -82,7 +82,7 @@ class 语法分析器母机(object):
             return func
         return inner
 
-    def error(self, func):
+    def 报错(self, func):
         """
         Sets the error handler that is called with the state (if passed to the
         parser) and the token the parser errored on.

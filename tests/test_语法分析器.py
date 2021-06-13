@@ -173,7 +173,7 @@ class TestParser(BaseTests):
         def main(p):
             return p[0]
 
-        @pg.error
+        @pg.报错
         def error_handler(token):
             raise ValueError(token)
 
@@ -198,7 +198,7 @@ class TestParser(BaseTests):
             记录.append("一行")
             return p[0]
 
-        @pg.error
+        @pg.报错
         def error_handler(词):
             if 词.getstr() == '\n':
                 return
@@ -253,7 +253,7 @@ class TestParser(BaseTests):
         def main(state, p):
             pass
 
-        @pg.error
+        @pg.报错
         def error(state, token):
             raise ValueError(state, token)
 
