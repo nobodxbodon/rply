@@ -189,6 +189,28 @@ class TestParser(BaseTests):
 
         assert exc_info.value.args[0] is token
 
+    def test_空行(self):
+        pg = 语法分析器母机(["空行"])
+
+        @pg.语法规则("main : 空行")
+        def main(p):
+            return p[0]
+
+        @pg.error
+        def error_handler(词):
+            if 词.getstr() == '\n':
+                return
+
+        parser = pg.产出()
+
+        with py.test.raises(AssertionError) as exc_info:
+            parser.分析(iter([
+                词("空行", "\n"),
+                词("空行", "\n")
+            ]))
+
+        assert "AssertionError('For now, error_handler must raise.')" == repr(exc_info.value)
+
     def test_state(self):
         pg = 语法分析器母机(["NUMBER", "PLUS"], precedence=[
             ("left", ["PLUS"]),
