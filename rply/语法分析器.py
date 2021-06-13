@@ -60,7 +60,8 @@ class LRParser(object):
                         self.error_handler(lookahead)
                     else:
                         self.error_handler(state, lookahead)
-                    raise AssertionError("For now, error_handler must raise.")
+                    lookahead = None
+                    continue
                 else:
                     raise 语法分析报错(None, lookahead.getsourcepos())
 

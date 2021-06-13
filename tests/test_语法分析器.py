@@ -191,9 +191,11 @@ class TestParser(BaseTests):
 
     def test_空行(self):
         pg = 语法分析器母机(["空行"])
+        记录 = []
 
         @pg.语法规则("main : 空行")
         def main(p):
+            记录.append("一行")
             return p[0]
 
         @pg.error
@@ -203,13 +205,14 @@ class TestParser(BaseTests):
 
         parser = pg.产出()
 
-        with py.test.raises(AssertionError) as exc_info:
-            parser.分析(iter([
-                词("空行", "\n"),
-                词("空行", "\n")
-            ]))
+        parser.分析(iter([
+            词("空行", "\n"),
+            词("空行", "\n")
+        ]))
 
-        assert "AssertionError('For now, error_handler must raise.')" == repr(exc_info.value)
+        assert 记录 == [
+            "一行",
+        ]
 
     def test_state(self):
         pg = 语法分析器母机(["NUMBER", "PLUS"], precedence=[
