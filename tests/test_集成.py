@@ -12,7 +12,7 @@ class TestBoth(object):
         lg.添了("PLUS", r"\+")
         lg.添了("TIMES", r"\*")
 
-        pg = 语法分析器母机(["NUMBER", "PLUS", "TIMES"], precedence=[
+        pg = 语法分析器母机(["NUMBER", "PLUS", "TIMES"], 优先级=[
             ("left", ["PLUS"]),
             ("left", ["TIMES"]),
         ])

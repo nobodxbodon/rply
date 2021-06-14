@@ -23,8 +23,8 @@ class 语法分析器母机(object):
     sequence of terminals and non-terminals to be replaced with a non-terminal,
     which can be turned into a parser.
 
-    :param tokens: A list of token (non-terminal) names.
-    :param precedence: A list of tuples defining the order of operation for
+    :param 词表: A list of token (non-terminal) names.
+    :param 优先级: A list of tuples defining the order of operation for
                        avoiding ambiguity, consisting of a string defining
                        associativity (left, right or nonassoc) and a list of
                        token names with the same associativity and level of
@@ -33,14 +33,14 @@ class 语法分析器母机(object):
     """
     VERSION = 1
 
-    def __init__(self, tokens, precedence=[], cache_id=None):
-        self.tokens = tokens
+    def __init__(self, 词表, 优先级=[], cache_id=None):
+        self.词表 = 词表
         self.productions = []
-        self.precedence = precedence
+        self.优先级 = 优先级
         self.cache_id = cache_id
-        self.error_handler = None
+        self.错误处理 = None
 
-    def 语法规则(self, rule, precedence=None):
+    def 语法规则(self, 描述, 优先级=None):
         """
         A decorator that defines a production rule and registers the decorated
         function to be called with the terminals and non-terminals matched by
@@ -71,14 +71,14 @@ class 语法分析器母机(object):
         If a state was passed to the parser, the decorated function is
         additionally called with that state as first argument.
         """
-        parts = rule.split()
-        production_name = parts[0]
-        if parts[1] != ":":
+        部分 = 描述.split()
+        名称 = 部分[0]
+        if 部分[1] != ":":
             raise ParserGeneratorError("Expecting :")
-        syms = parts[2:]
+        组成 = 部分[2:]
 
         def inner(func):
-            self.productions.append((production_name, syms, func, precedence))
+            self.productions.append((名称, 组成, func, 优先级))
             return func
         return inner
 
@@ -90,7 +90,7 @@ class 语法分析器母机(object):
         Currently error handlers must raise an exception. If an error handler
         is not defined, a :exc:`rply.ParsingError` will be raised.
         """
-        self.error_handler = func
+        self.错误处理 = func
         return func
 
     def compute_grammar_hash(self, g):
@@ -144,9 +144,9 @@ class 语法分析器母机(object):
         return True
 
     def 产出(self):
-        g = 语法(self.tokens)
+        g = 语法(self.词表)
 
-        for level, (assoc, terms) in enumerate(self.precedence, 1):
+        for level, (assoc, terms) in enumerate(self.优先级, 1):
             for term in terms:
                 g.set_precedence(term, assoc, level)
 
@@ -212,7 +212,7 @@ class 语法分析器母机(object):
                 ParserGeneratorWarning,
                 stacklevel=2,
             )
-        return LRParser(table, self.error_handler)
+        return LRParser(table, self.错误处理)
 
     def _write_cache(self, cache_dir, cache_file, table):
         if not os.path.exists(cache_dir):

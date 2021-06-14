@@ -84,7 +84,7 @@ class TestParser(BaseTests):
         assert parser.分析(iter([])) == []
 
     def test_precedence(self):
-        pg = 语法分析器母机(["NUMBER", "PLUS", "TIMES"], precedence=[
+        pg = 语法分析器母机(["NUMBER", "PLUS", "TIMES"], 优先级=[
             ("left", ["PLUS"]),
             ("left", ["TIMES"]),
         ])
@@ -116,7 +116,7 @@ class TestParser(BaseTests):
         ])) == BoxInt(17)
 
     def test_per_rule_precedence(self):
-        pg = 语法分析器母机(["NUMBER", "MINUS"], precedence=[
+        pg = 语法分析器母机(["NUMBER", "MINUS"], 优先级=[
             ("right", ["UMINUS"]),
         ])
 
@@ -128,7 +128,7 @@ class TestParser(BaseTests):
         def expr_minus(p):
             return BoxInt(p[0].getint() - p[2].getint())
 
-        @pg.语法规则("expr : MINUS expr", precedence="UMINUS")
+        @pg.语法规则("expr : MINUS expr", 优先级="UMINUS")
         def expr_uminus(p):
             return BoxInt(-p[1].getint())
 
@@ -215,7 +215,7 @@ class TestParser(BaseTests):
         ]
 
     def test_state(self):
-        pg = 语法分析器母机(["NUMBER", "PLUS"], precedence=[
+        pg = 语法分析器母机(["NUMBER", "PLUS"], 优先级=[
             ("left", ["PLUS"]),
         ])
 
@@ -270,7 +270,7 @@ class TestParser(BaseTests):
     def test_default_reductions(self):
         pg = 语法分析器母机(
             ["INTEGER_START", "INTEGER_VALUE", "COMPARE"],
-            precedence=[
+            优先级=[
                 ("nonassoc", ["COMPARE"])
             ]
         )

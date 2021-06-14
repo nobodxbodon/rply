@@ -25,7 +25,7 @@ class TestParserGenerator(BaseTests):
             pg.产出()
 
     def test_duplicate_precedence(self):
-        pg = 语法分析器母机([], precedence=[
+        pg = 语法分析器母机([], 优先级=[
             ("left", ["term", "term"])
         ])
 
@@ -33,7 +33,7 @@ class TestParserGenerator(BaseTests):
             pg.产出()
 
     def test_invalid_associativity(self):
-        pg = 语法分析器母机([], precedence=[
+        pg = 语法分析器母机([], 优先级=[
             ("to-the-left", ["term"]),
         ])
 
@@ -43,7 +43,7 @@ class TestParserGenerator(BaseTests):
     def test_nonexistent_precedence(self):
         pg = 语法分析器母机(["VALUE"])
 
-        @pg.语法规则("main : VALUE", precedence="abc")
+        @pg.语法规则("main : VALUE", 优先级="abc")
         def main(p):
             pass
 
