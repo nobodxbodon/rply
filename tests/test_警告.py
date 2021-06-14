@@ -107,25 +107,22 @@ class TestWarnings(BaseTests):
         def unused(p):
             pass
 
+        # 待修：下例仅将规则顺序倒换，就不报警
         with self.assert_warns(
             ParserGeneratorWarning, "规则 '无用' 无用"
         ):
             pg.产出()
-'''
-    上例仅将规则顺序倒换，就不报警
-    def test_不报警(self):
-        pg = ParserGenerator(["VALUE"])
 
-        @pg.production("有用 : main")
+    def test_不报警(self):
+        pg = 语法分析器母机(["VALUE"])
+
+        @pg.语法规则("有用 : main")
         def unused(p):
             pass
 
-        @pg.production("main : VALUE")
+        @pg.语法规则("main : VALUE")
         def main(p):
             return p[0]
 
-        with self.assert_warns(
-            ParserGeneratorWarning, "Production 'main' is not reachable"
-        ):
-            pg.build()
-'''
+        with self.应无报错():
+            pg.产出()
