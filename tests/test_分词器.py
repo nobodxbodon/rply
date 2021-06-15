@@ -1,5 +1,6 @@
 import re
 
+import pytest
 from pytest import raises
 
 from rply import 分词器母机, 分词报错
@@ -177,3 +178,18 @@ class TestLexer(object):
             stream.next()
 
         assert excinfo.value.source_pos.colno == 4
+
+    @pytest.mark.skip(reason="列号应为 1")
+    def test_error_换行列号(self):
+        lg = 分词器母机()
+        lg.添了("换行", r"\n")
+        lg.添了("数", r"\d+")
+        l = lg.产出()
+        stream = l.分词("12\nfail")
+        stream.next()
+        stream.next()
+        with raises(分词报错) as excinfo:
+            stream.next()
+
+        assert excinfo.value.source_pos.lineno == 2
+        assert excinfo.value.source_pos.colno == 3
