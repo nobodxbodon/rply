@@ -153,7 +153,7 @@ class 语法分析器母机(object):
         for prod_name, syms, func, precedence in self.productions:
             g.add_production(prod_name, syms, func, precedence)
 
-        g.set_start()
+        g.牵头()
 
         for unused_term in g.unused_terminals():
             warnings.warn(

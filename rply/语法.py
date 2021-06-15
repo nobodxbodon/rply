@@ -23,9 +23,9 @@ class 语法(object):
         self.优先级 = {}
         self.start = None
 
-    def add_production(self, prod_name, syms, func, precedence):
-        if prod_name in self.各词所在语法表:
-            raise ParserGeneratorError("Illegal rule name %r" % prod_name)
+    def add_production(self, 名称, syms, func, precedence):
+        if 名称 in self.各词所在语法表:
+            raise ParserGeneratorError("Illegal rule name %r" % 名称)
 
         if precedence is None:
             precname = rightmost_terminal(syms, self.各词所在语法表)
@@ -38,19 +38,19 @@ class 语法(object):
                     "Precedence %r doesn't exist" % precedence
                 )
 
-        pnumber = len(self.各规则)
-        self.各短语对应语法号.setdefault(prod_name, [])
+        序号 = len(self.各规则)
+        self.各短语对应语法号.setdefault(名称, [])
 
         for t in syms:
             if t in self.各词所在语法表:
-                self.各词所在语法表[t].append(pnumber)
+                self.各词所在语法表[t].append(序号)
             else:
-                self.各短语对应语法号.setdefault(t, []).append(pnumber)
+                self.各短语对应语法号.setdefault(t, []).append(序号)
 
-        p = Production(pnumber, prod_name, syms, prod_prec, func)
+        p = 规则(序号, 名称, syms, prod_prec, func)
         self.各规则.append(p)
 
-        self.各短语语法表.setdefault(prod_name, []).append(p)
+        self.各短语语法表.setdefault(名称, []).append(p)
 
     def set_precedence(self, term, assoc, level):
         if term in self.优先级:
@@ -65,11 +65,12 @@ class 语法(object):
             )
         self.优先级[term] = (assoc, level)
 
-    def set_start(self):
-        start = self.各规则[1].name
-        self.各规则[0] = Production(0, "S'", [start], ("right", 0), None)
-        self.各短语对应语法号[start].append(0)
-        self.start = start
+    '''注意：将首个语法规则作为"根"，因此添加语法规则的顺序影响结果'''
+    def 牵头(self):
+        规则名 = self.各规则[1].name
+        self.各规则[0] = 规则(0, "S'", [规则名], ("right", 0), None)
+        self.各短语对应语法号[规则名].append(0)
+        self.start = 规则名
 
     def unused_terminals(self):
         return [
@@ -176,7 +177,7 @@ class 语法(object):
                                     added = True
 
 
-class Production(object):
+class 规则(object):
     def __init__(self, num, name, prod, precedence, func):
         self.name = name
         self.prod = prod
@@ -195,7 +196,7 @@ class Production(object):
         self.reduced = 0
 
     def __repr__(self):
-        return "Production(%s -> %s)" % (self.name, " ".join(self.prod))
+        return "[%s] Production(%s -> %s)" % (self.number, self.name, " ".join(self.prod))
 
     def getlength(self):
         return len(self.prod)
