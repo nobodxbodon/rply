@@ -7,6 +7,9 @@ class 分词器(object):
         self.rules = rules
         self.ignore_rules = ignore_rules
 
+    def lex(self, s):
+        return self.分词(s)
+
     def 分词(self, s):
         return LexerStream(self, s)
 

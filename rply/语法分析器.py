@@ -6,6 +6,9 @@ class LRParser(object):
         self.lr_table = lr_table
         self.error_handler = error_handler
 
+    def parse(self, tokenizer, state=None):
+        return self.分析(tokenizer, state)
+
     def 分析(self, tokenizer, state=None):
         from rply.词 import 词
 
