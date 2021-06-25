@@ -151,6 +151,7 @@ class TestLexer(object):
             stream.next()
 
         assert 'SourcePosition(' in repr(excinfo.value)
+        assert excinfo.value.source_pos.colno == 1
 
     def test_error_line_number(self):
         lg = 分词器母机()
@@ -177,6 +178,7 @@ class TestLexer(object):
         with raises(分词报错) as excinfo:
             stream.next()
 
+        # 待研究：为何不是 fail 的开头，列号 5？
         assert excinfo.value.source_pos.colno == 4
 
     @pytest.mark.skip(reason="列号应为 1")
