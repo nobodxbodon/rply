@@ -11,3 +11,6 @@ class ParserGenerator(语法分析器母机):
 
     def build(self):
         return super().产出()
+
+    def error(self, func):
+        return super().报错(func)

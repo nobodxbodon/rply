@@ -12,6 +12,7 @@ def rightmost_terminal(symbols, terminals):
 class 语法(object):
     def __init__(self, 各词):
         self.各规则 = [None]
+        self.productions = self.各规则
         self.各短语语法表 = {}
         self.各词所在语法表 = dict((t, []) for t in 各词)
         self.各词所在语法表["error"] = []

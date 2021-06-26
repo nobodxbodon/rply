@@ -3,6 +3,7 @@ from rply.分词器母机 import 分词器母机
 from rply.语法分析器母机 import 语法分析器母机
 from rply.词 import 词
 
+from rply.errors import LexingError, ParsingError
 from rply.lexergenerator import LexerGenerator
 from rply.parsergenerator import ParserGenerator
 from rply.token import Token
