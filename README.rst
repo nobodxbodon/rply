@@ -1,7 +1,7 @@
 RPLY 木兰定制版
 ===============
 
-.. image:: https://secure.travis-ci.com/nobodxbodon/rply.png
+.. image:: https://api.travis-ci.com/nobodxbodon/rply.svg
     :target: https://travis-ci.com/nobodxbodon/rply
 
 在 rply 0.7.8 的基础上，作了如下修改：

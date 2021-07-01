@@ -164,6 +164,7 @@ class TestLexer(object):
             stream.next()
 
         assert excinfo.value.source_pos.lineno == 2
+        assert excinfo.value.source_pos.colno == 1
 
     def test_error_column_number(self):
         lg = 分词器母机()
@@ -194,4 +195,4 @@ class TestLexer(object):
             stream.next()
 
         assert excinfo.value.source_pos.lineno == 2
-        assert excinfo.value.source_pos.colno == 3
+        assert excinfo.value.source_pos.colno == 1
