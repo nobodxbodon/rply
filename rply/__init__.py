@@ -8,7 +8,7 @@ from rply.lexergenerator import LexerGenerator
 from rply.parsergenerator import ParserGenerator
 from rply.token import Token
 
-__version__ = '0.7.17'
+__version__ = '0.7.18'
 
 __all__ = [
     "分词器母机", "分词报错", "语法分析器母机", "语法分析报错",
