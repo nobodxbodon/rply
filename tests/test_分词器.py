@@ -179,10 +179,8 @@ class TestLexer(object):
         with raises(分词报错) as excinfo:
             stream.next()
 
-        # 待研究：为何不是 fail 的开头，列号 5？
-        assert excinfo.value.source_pos.colno == 4
+        assert excinfo.value.source_pos.colno == 5
 
-    @pytest.mark.skip(reason="列号应为 1")
     def test_error_换行列号(self):
         lg = 分词器母机()
         lg.添了("换行", r"\n")

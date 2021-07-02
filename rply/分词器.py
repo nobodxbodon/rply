@@ -35,6 +35,14 @@ class LexerStream(object):
         else:
             return match.start - 最近换行
 
+    def _按字符更新位置(self, 字符位置):
+        self._行号 += 1 if self.s[字符位置] == "\n" else 0
+        最近换行 = self.s.rfind("\n", 0, 字符位置)
+        if 最近换行 < 0:
+            return 字符位置 + 1
+        else:
+            return 1
+
     def next(self):
         while True:
             if self.idx >= len(self.s):
@@ -51,7 +59,6 @@ class LexerStream(object):
             match = rule.matches(self.s, self.idx)
             if match:
                 lineno = self._行号
-                print(rule.name + ": " + str(match.start) + "~" + str(match.end))
                 self._列号 = self._更新位置(match)
                 源码位置 = 字符位置(match.start, lineno, self._列号)
                 token = 词(
@@ -59,6 +66,8 @@ class LexerStream(object):
                 )
                 return token
         else:
+            # 如果无匹配，定位在上个匹配的下一字符
+            self._列号 = self._按字符更新位置(self.idx)
             raise 分词报错(None, 字符位置(
                 self.idx, self._行号, self._列号))
 

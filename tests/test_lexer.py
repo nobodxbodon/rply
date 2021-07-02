@@ -176,4 +176,4 @@ class TestLexer(object):
         with raises(LexingError) as excinfo:
             stream.next()
 
-        assert excinfo.value.source_pos.colno == 4
+        assert excinfo.value.source_pos.colno == 5
