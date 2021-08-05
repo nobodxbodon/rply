@@ -24,7 +24,6 @@ class TestParser(BaseTests):
         token = parser.parse(iter([Token("VALUE", "abc")]))
         assert token == Token("VALUE", "abc")
 
-    @pytest.mark.skip(reason="报警信息现为中文")
     def test_arithmetic(self):
         pg = ParserGenerator(["NUMBER", "PLUS"])
 
@@ -41,7 +40,7 @@ class TestParser(BaseTests):
             return BoxInt(int(p[0].getstr()))
 
         with self.assert_warns(
-            ParserGeneratorWarning, "1 shift/reduce conflict"
+            ParserGeneratorWarning, "如下 1 种情形取下个词还是合而为一？"
         ):
             parser = pg.build()
 
@@ -117,7 +116,6 @@ class TestParser(BaseTests):
             Token("NUMBER", "5")
         ])) == BoxInt(17)
 
-    @pytest.mark.skip(reason="报警信息现为中文")
     def test_per_rule_precedence(self):
         pg = ParserGenerator(["NUMBER", "MINUS"], precedence=[
             ("right", ["UMINUS"]),
@@ -140,7 +138,7 @@ class TestParser(BaseTests):
             return BoxInt(int(p[0].getstr()))
 
         with self.assert_warns(
-            ParserGeneratorWarning, "1 shift/reduce conflict"
+            ParserGeneratorWarning, "如下 1 种情形取下个词还是合而为一？"
         ):
             parser = pg.build()
 
