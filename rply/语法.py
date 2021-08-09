@@ -30,10 +30,10 @@ class 语法(object):
 
         if precedence is None:
             precname = rightmost_terminal(syms, self.各词所在语法表)
-            prod_prec = self.优先级.get(precname, ("right", 0))
+            规则优先级 = self.优先级.get(precname, ("right", 0))
         else:
             try:
-                prod_prec = self.优先级[precedence]
+                规则优先级 = self.优先级[precedence]
             except KeyError:
                 raise ParserGeneratorError(
                     "Precedence %r doesn't exist" % precedence
@@ -48,7 +48,7 @@ class 语法(object):
             else:
                 self.各短语对应语法号.setdefault(t, []).append(序号)
 
-        p = 规则(序号, 名称, syms, prod_prec, func)
+        p = 规则(序号, 名称, syms, 规则优先级, func)
         self.各规则.append(p)
 
         self.各短语语法表.setdefault(名称, []).append(p)
@@ -91,7 +91,7 @@ class 语法(object):
         items.
         """
         for p in self.各规则:
-            print(repr(p) + ("优先级: " + repr(p.prec)) if p.prec else "")
+            print(repr(p))
             lastlri = p
             i = 0
             lr_items = []
@@ -180,12 +180,12 @@ class 语法(object):
 
 
 class 规则(object):
-    def __init__(self, num, name, prod, precedence, func):
+    def __init__(self, num, name, prod, 优先级, func):
         self.name = name
         self.prod = prod
         self.number = num
         self.func = func
-        self.prec = precedence
+        self.优先级 = 优先级
 
         self.unique_syms = []
         for s in self.prod:
@@ -198,7 +198,7 @@ class 规则(object):
         self.reduced = 0
 
     def __repr__(self):
-        return "[%s] Production(%s -> %s)" % (self.number, self.name, " ".join(self.prod))
+        return "[%s] 规则(%s -> %s)，优先级：%s" % (self.number, self.name, " ".join(self.prod), self.优先级)
 
     def getlength(self):
         return len(self.prod)

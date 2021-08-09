@@ -103,7 +103,7 @@ class 语法分析器母机(object):
             hasher.update(bytes(level))
         for p in g.各规则:
             hasher.update(p.name.encode())
-            hasher.update(json.dumps(p.prec).encode())
+            hasher.update(json.dumps(p.优先级).encode())
             hasher.update(json.dumps(p.prod).encode())
         return hasher.hexdigest()
 
@@ -118,7 +118,7 @@ class 语法分析器母机(object):
             "terminals": sorted(table.grammar.各词所在语法表),
             "precedence": table.grammar.优先级,
             "productions": [
-                (p.name, p.prod, p.prec) for p in table.grammar.各规则
+                (p.name, p.prod, p.优先级) for p in table.grammar.各规则
             ],
         }
 
@@ -139,7 +139,7 @@ class 语法分析器母机(object):
                 return False
             if p.prod != prod:
                 return False
-            if p.prec != (assoc, level):
+            if p.优先级 != (assoc, level):
                 return False
         return True
 
@@ -328,16 +328,16 @@ class LRTable(object):
                             if a in st_action:
                                 r = st_action[a]
                                 if r > 0:
-                                    sprec, slevel = grammar.各规则[st_actionp[a].number].prec
-                                    rprec, rlevel = grammar.优先级.get(a, ("right", 0))
-                                    if (slevel < rlevel) or (slevel == rlevel and rprec == "left"):
+                                    sprec, 取词层级 = grammar.各规则[st_actionp[a].number].优先级
+                                    rprec, 合词层级 = grammar.优先级.get(a, ("right", 0))
+                                    if (取词层级 < 合词层级) or (取词层级 == 合词层级 and rprec == "left"):
                                         st_action[a] = -p.number
                                         st_actionp[a] = p
-                                        if not slevel and not rlevel:
+                                        if not 取词层级 and not 合词层级:
                                             sr_conflicts.append((st, repr(a), "reduce1"))
                                         grammar.各规则[p.number].reduced += 1
-                                    elif not (slevel == rlevel and rprec == "nonassoc"):
-                                        if not rlevel:
+                                    elif not (取词层级 == 合词层级 and rprec == "nonassoc"):
+                                        if not 合词层级:
                                             sr_conflicts.append((st, repr(a), "shift1"))
                                 elif r < 0:
                                     oldp = grammar.各规则[-r]
@@ -370,16 +370,16 @@ class LRTable(object):
                                     if r != j:
                                         raise ParserGeneratorError("Shift/shift conflict in state %d" % st)
                                 elif r < 0:
-                                    rprec, rlevel = grammar.各规则[st_actionp[a].number].prec
-                                    sprec, slevel = grammar.优先级.get(a, ("right", 0))
-                                    if (slevel > rlevel) or (slevel == rlevel and rprec == "right"):
+                                    rprec, 合词层级 = grammar.各规则[st_actionp[a].number].优先级
+                                    sprec, 取词层级 = grammar.优先级.get(a, ("right", 0))
+                                    if (取词层级 > 合词层级) or (取词层级 == 合词层级 and rprec == "right"):
                                         grammar.各规则[st_actionp[a].number].reduced -= 1
                                         st_action[a] = j
                                         st_actionp[a] = p
-                                        if not rlevel:
+                                        if not 合词层级:
                                             sr_conflicts.append((st, repr(a), "shift2", I))
-                                    elif not (slevel == rlevel and rprec == "nonassoc"):
-                                        if not slevel and not rlevel:
+                                    elif not (取词层级 == 合词层级 and rprec == "nonassoc"):
+                                        if not 取词层级 and not 合词层级:
                                             sr_conflicts.append((st, repr(a), "reduce2"))
                                 else:
                                     raise ParserGeneratorError("Unknown conflict in state %d" % st)
