@@ -91,6 +91,7 @@ class 语法(object):
         items.
         """
         for p in self.各规则:
+            print(repr(p) + ("优先级: " + repr(p.prec)) if p.prec else "")
             lastlri = p
             i = 0
             lr_items = []

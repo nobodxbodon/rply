@@ -311,6 +311,7 @@ class LRTable(object):
         sr_conflicts = []
         rr_conflicts = []
         for st, I in enumerate(C):
+            # 显示所有语法要素序列
             # print(str(st) + '\n' + 输出序列(I) + '')
             st_action = {}
             st_actionp = {}

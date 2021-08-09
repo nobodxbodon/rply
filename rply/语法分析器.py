@@ -63,6 +63,8 @@ class LRParser(object):
                         self.error_handler(lookahead)
                     else:
                         self.error_handler(state, lookahead)
+
+                    # 此处原为 raise AssertionError，改为下面两行以支持空行，但代价是无视了某些语法错误？
                     lookahead = None
                     continue
                 else:
