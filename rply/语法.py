@@ -211,7 +211,7 @@ class LRItem(object):
         self.prod.insert(n, ".")
         self.number = p.number
         self.lr_index = n
-        self.lookaheads = {}
+        self.预读 = {}
         self.unique_syms = p.unique_syms
         self.lr_before = before
         self.lr_after = after

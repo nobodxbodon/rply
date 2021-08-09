@@ -186,9 +186,9 @@ class 语法分析器母机(object):
                 with open(cache_file) as f:
                     data = json.load(f)
                 if self.data_is_valid(g, data):
-                    table = LRTable.from_cache(g, data)
+                    table = LRTable.from缓存(g, data)
         if table is None:
-            table = LRTable.from_grammar(g)
+            table = LRTable.from语法(g)
 
             if self.cache_id is not None:
                 self._write_cache(cache_dir, cache_file, table)
@@ -269,9 +269,9 @@ def traverse(x, N, stack, F, X, R, FP):
 
 
 class LRTable(object):
-    def __init__(self, grammar, lr_action, lr_goto, default_reductions,
+    def __init__(self, 语法, lr_action, lr_goto, default_reductions,
                  sr_conflicts, rr_conflicts):
-        self.grammar = grammar
+        self.grammar = 语法
         self.lr_action = lr_action
         self.lr_goto = lr_goto
         self.default_reductions = default_reductions
@@ -279,7 +279,7 @@ class LRTable(object):
         self.rr_conflicts = rr_conflicts
 
     @classmethod
-    def from_cache(cls, grammar, data):
+    def from缓存(cls, grammar, data):
         lr_action = [
             dict([(str(k), v) for k, v in iteritems(action)])
             for action in data["lr_action"]
@@ -298,13 +298,13 @@ class LRTable(object):
         )
 
     @classmethod
-    def from_grammar(cls, grammar):
+    def from语法(cls, 语法):
         cidhash = IdentityDict()
         goto_cache = {}
         add_count = Counter()
-        C = cls.lr0_items(grammar, add_count, cidhash, goto_cache)
+        C = cls.lr0_items(语法, add_count, cidhash, goto_cache)
 
-        cls.add_lalr_lookaheads(grammar, C, add_count, cidhash, goto_cache)
+        cls.添加lalr预读(语法, C, add_count, cidhash, goto_cache)
 
         lr_action = [None] * len(C)
         lr_goto = [None] * len(C)
@@ -323,31 +323,31 @@ class LRTable(object):
                         st_action["$end"] = 0
                         st_actionp["$end"] = p
                     else:
-                        laheads = p.lookaheads[st]
+                        laheads = p.预读[st]
                         for a in laheads:
                             if a in st_action:
                                 r = st_action[a]
                                 if r > 0:
-                                    sprec, 取词层级 = grammar.各规则[st_actionp[a].number].优先级
-                                    rprec, 合词层级 = grammar.优先级.get(a, ("right", 0))
-                                    if (取词层级 < 合词层级) or (取词层级 == 合词层级 and rprec == "left"):
+                                    sprec, 取词层级 = 语法.各规则[st_actionp[a].number].优先级
+                                    合词优先方向, 合词层级 = 语法.优先级.get(a, ("right", 0))
+                                    if (取词层级 < 合词层级) or (取词层级 == 合词层级 and 合词优先方向 == "left"):
                                         st_action[a] = -p.number
                                         st_actionp[a] = p
                                         if not 取词层级 and not 合词层级:
                                             sr_conflicts.append((st, repr(a), "reduce1"))
-                                        grammar.各规则[p.number].reduced += 1
-                                    elif not (取词层级 == 合词层级 and rprec == "nonassoc"):
+                                        语法.各规则[p.number].reduced += 1
+                                    elif not (取词层级 == 合词层级 and 合词优先方向 == "nonassoc"):
                                         if not 合词层级:
                                             sr_conflicts.append((st, repr(a), "shift1"))
                                 elif r < 0:
-                                    oldp = grammar.各规则[-r]
-                                    pp = grammar.各规则[p.number]
+                                    oldp = 语法.各规则[-r]
+                                    pp = 语法.各规则[p.number]
                                     if oldp.number > pp.number:
                                         st_action[a] = -p.number
                                         st_actionp[a] = p
                                         chosenp, rejectp = pp, oldp
-                                        grammar.各规则[p.number].reduced += 1
-                                        grammar.各规则[oldp.number].reduced -= 1
+                                        语法.各规则[p.number].reduced += 1
+                                        语法.各规则[oldp.number].reduced -= 1
                                     else:
                                         chosenp, rejectp = oldp, pp
                                     rr_conflicts.append((st, repr(chosenp), repr(rejectp)))
@@ -356,11 +356,11 @@ class LRTable(object):
                             else:
                                 st_action[a] = -p.number
                                 st_actionp[a] = p
-                                grammar.各规则[p.number].reduced += 1
+                                语法.各规则[p.number].reduced += 1
                 else:
                     i = p.lr_index
                     a = p.prod[i + 1]
-                    if a in grammar.各词所在语法表:
+                    if a in 语法.各词所在语法表:
                         g = cls.lr0_goto(I, a, add_count, goto_cache)
                         j = cidhash.get(g, -1)
                         if j >= 0:
@@ -370,15 +370,15 @@ class LRTable(object):
                                     if r != j:
                                         raise ParserGeneratorError("Shift/shift conflict in state %d" % st)
                                 elif r < 0:
-                                    rprec, 合词层级 = grammar.各规则[st_actionp[a].number].优先级
-                                    sprec, 取词层级 = grammar.优先级.get(a, ("right", 0))
-                                    if (取词层级 > 合词层级) or (取词层级 == 合词层级 and rprec == "right"):
-                                        grammar.各规则[st_actionp[a].number].reduced -= 1
+                                    合词优先方向, 合词层级 = 语法.各规则[st_actionp[a].number].优先级
+                                    sprec, 取词层级 = 语法.优先级.get(a, ("right", 0))
+                                    if (取词层级 > 合词层级) or (取词层级 == 合词层级 and 合词优先方向 == "right"):
+                                        语法.各规则[st_actionp[a].number].reduced -= 1
                                         st_action[a] = j
                                         st_actionp[a] = p
                                         if not 合词层级:
                                             sr_conflicts.append((st, repr(a), "shift2", I))
-                                    elif not (取词层级 == 合词层级 and rprec == "nonassoc"):
+                                    elif not (取词层级 == 合词层级 and 合词优先方向 == "nonassoc"):
                                         if not 取词层级 and not 合词层级:
                                             sr_conflicts.append((st, repr(a), "reduce2"))
                                 else:
@@ -389,7 +389,7 @@ class LRTable(object):
             nkeys = set()
             for ii in I:
                 for s in ii.unique_syms:
-                    if s in grammar.各短语对应语法号:
+                    if s in 语法.各短语对应语法号:
                         nkeys.add(s)
             for n in nkeys:
                 g = cls.lr0_goto(I, n, add_count, goto_cache)
@@ -405,7 +405,7 @@ class LRTable(object):
             actions = set(itervalues(actions))
             if len(actions) == 1 and next(iter(actions)) < 0:
                 default_reductions[state] = next(iter(actions))
-        return LRTable(grammar, lr_action, lr_goto, default_reductions, sr_conflicts, rr_conflicts)
+        return LRTable(语法, lr_action, lr_goto, default_reductions, sr_conflicts, rr_conflicts)
 
     @classmethod
     def lr0_items(cls, grammar, add_count, cidhash, goto_cache):
@@ -472,13 +472,13 @@ class LRTable(object):
         return g
 
     @classmethod
-    def add_lalr_lookaheads(cls, grammar, C, add_count, cidhash, goto_cache):
-        nullable = cls.compute_nullable_nonterminals(grammar)
-        trans = cls.find_nonterminal_transitions(grammar, C)
-        readsets = cls.compute_read_sets(grammar, C, trans, nullable, add_count, cidhash, goto_cache)
-        lookd, included = cls.compute_lookback_includes(grammar, C, trans, nullable, add_count, cidhash, goto_cache)
+    def 添加lalr预读(cls, 语法, C, add_count, cidhash, goto_cache):
+        nullable = cls.compute_nullable_nonterminals(语法)
+        trans = cls.find_nonterminal_transitions(语法, C)
+        readsets = cls.compute_read_sets(语法, C, trans, nullable, add_count, cidhash, goto_cache)
+        lookd, included = cls.compute_lookback_includes(语法, C, trans, nullable, add_count, cidhash, goto_cache)
         followsets = cls.compute_follow_sets(trans, readsets, included)
-        cls.add_lookaheads(lookd, followsets)
+        cls.添加预读(lookd, followsets)
 
     @classmethod
     def compute_nullable_nonterminals(cls, grammar):
@@ -608,11 +608,11 @@ class LRTable(object):
         return lookdict, includedict
 
     @classmethod
-    def add_lookaheads(cls, lookbacks, followset):
+    def 添加预读(cls, lookbacks, followset):
         for trans, lb in iteritems(lookbacks):
             for state, p in lb:
                 f = followset.get(trans, [])
-                laheads = p.lookaheads.setdefault(state, [])
+                laheads = p.预读.setdefault(state, [])
                 for a in f:
                     if a not in laheads:
                         laheads.append(a)
