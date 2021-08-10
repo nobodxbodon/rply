@@ -279,7 +279,7 @@ class LRTable(object):
         self.rr_conflicts = rr_conflicts
 
     @classmethod
-    def from缓存(cls, grammar, data):
+    def from缓存(cls, 语法, data):
         lr_action = [
             dict([(str(k), v) for k, v in iteritems(action)])
             for action in data["lr_action"]
@@ -289,7 +289,7 @@ class LRTable(object):
             for goto in data["lr_goto"]
         ]
         return LRTable(
-            grammar,
+            语法,
             lr_action,
             lr_goto,
             data["default_reductions"],
@@ -408,8 +408,8 @@ class LRTable(object):
         return LRTable(语法, lr_action, lr_goto, default_reductions, sr_conflicts, rr_conflicts)
 
     @classmethod
-    def lr0_items(cls, grammar, add_count, cidhash, goto_cache):
-        C = [cls.lr0_closure([grammar.各规则[0].lr_next], add_count)]
+    def lr0_items(cls, 语法, add_count, cidhash, goto_cache):
+        C = [cls.lr0_closure([语法.各规则[0].lr_next], add_count)]
         for i, I in enumerate(C):
             cidhash[I] = i
 
@@ -481,11 +481,11 @@ class LRTable(object):
         cls.添加预读(lookd, followsets)
 
     @classmethod
-    def compute_nullable_nonterminals(cls, grammar):
+    def compute_nullable_nonterminals(cls, 语法):
         nullable = set()
         num_nullable = 0
         while True:
-            for p in grammar.各规则[1:]:
+            for p in 语法.各规则[1:]:
                 if p.getlength() == 0:
                     nullable.add(p.name)
                     continue
@@ -500,22 +500,22 @@ class LRTable(object):
         return nullable
 
     @classmethod
-    def find_nonterminal_transitions(cls, grammar, C):
+    def find_nonterminal_transitions(cls, 语法, C):
         trans = []
         for idx, state in enumerate(C):
             for p in state:
                 if p.lr_index < p.getlength() - 1:
                     t = (idx, p.prod[p.lr_index + 1])
-                    if t[1] in grammar.各短语对应语法号 and t not in trans:
+                    if t[1] in 语法.各短语对应语法号 and t not in trans:
                         trans.append(t)
         return trans
 
     @classmethod
-    def compute_read_sets(cls, grammar, C, ntrans, nullable, add_count, cidhash, goto_cache):
+    def compute_read_sets(cls, 语法, C, ntrans, nullable, add_count, cidhash, goto_cache):
         return digraph(
             ntrans,
             R=lambda x: cls.reads_relation(C, x, nullable, add_count, cidhash, goto_cache),
-            FP=lambda x: cls.dr_relation(grammar, C, x, nullable, add_count, goto_cache)
+            FP=lambda x: cls.dr_relation(语法, C, x, nullable, add_count, goto_cache)
         )
 
     @classmethod
@@ -527,7 +527,7 @@ class LRTable(object):
         )
 
     @classmethod
-    def dr_relation(cls, grammar, C, trans, nullable, add_count, goto_cache):
+    def dr_relation(cls, 语法, C, trans, nullable, add_count, goto_cache):
         state, N = trans
         terms = []
 
@@ -535,9 +535,9 @@ class LRTable(object):
         for p in g:
             if p.lr_index < p.getlength() - 1:
                 a = p.prod[p.lr_index + 1]
-                if a in grammar.各词所在语法表 and a not in terms:
+                if a in 语法.各词所在语法表 and a not in terms:
                     terms.append(a)
-        if state == 0 and N == grammar.各规则[0].prod[0]:
+        if state == 0 and N == 语法.各规则[0].prod[0]:
             terms.append("$end")
         return terms
 
@@ -556,7 +556,7 @@ class LRTable(object):
         return rel
 
     @classmethod
-    def compute_lookback_includes(cls, grammar, C, trans, nullable, add_count, cidhash, goto_cache):
+    def compute_lookback_includes(cls, 语法, C, trans, nullable, add_count, cidhash, goto_cache):
         lookdict = {}
         includedict = {}
 
@@ -578,7 +578,7 @@ class LRTable(object):
                     if (j, t) in dtrans:
                         li = lr_index + 1
                         while li < p.getlength():
-                            if p.prod[li] in grammar.各词所在语法表:
+                            if p.prod[li] in 语法.各词所在语法表:
                                 break
                             if p.prod[li] not in nullable:
                                 break

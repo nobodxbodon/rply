@@ -12,45 +12,45 @@ class LRParser(object):
     def 分析(self, tokenizer, state=None):
         from rply.词 import 词
 
-        lookahead = None
-        lookaheadstack = []
+        预读 = None
+        预读栈 = []
 
-        statestack = [0]
+        状态栈 = [0]
         symstack = [词("$end", "$end")]
 
-        current_state = 0
+        当前状态 = 0
         while True:
-            if self.lr_table.default_reductions[current_state]:
-                t = self.lr_table.default_reductions[current_state]
-                current_state = self._reduce_production(
-                    t, symstack, statestack, state
+            if self.lr_table.default_reductions[当前状态]:
+                t = self.lr_table.default_reductions[当前状态]
+                当前状态 = self._reduce_production(
+                    t, symstack, 状态栈, state
                 )
                 continue
 
-            if lookahead is None:
-                if lookaheadstack:
-                    lookahead = lookaheadstack.pop()
+            if 预读 is None:
+                if 预读栈:
+                    预读 = 预读栈.pop()
                 else:
                     try:
-                        lookahead = next(tokenizer)
+                        预读 = next(tokenizer)
                     except StopIteration:
-                        lookahead = None
+                        预读 = None
 
-                if lookahead is None:
-                    lookahead = 词("$end", "$end")
+                if 预读 is None:
+                    预读 = 词("$end", "$end")
 
-            ltype = lookahead.gettokentype()
-            if ltype in self.lr_table.lr_action[current_state]:
-                t = self.lr_table.lr_action[current_state][ltype]
+            ltype = 预读.gettokentype()
+            if ltype in self.lr_table.lr_action[当前状态]:
+                t = self.lr_table.lr_action[当前状态][ltype]
                 if t > 0:
-                    statestack.append(t)
-                    current_state = t
-                    symstack.append(lookahead)
-                    lookahead = None
+                    状态栈.append(t)
+                    当前状态 = t
+                    symstack.append(预读)
+                    预读 = None
                     continue
                 elif t < 0:
-                    current_state = self._reduce_production(
-                        t, symstack, statestack, state
+                    当前状态 = self._reduce_production(
+                        t, symstack, 状态栈, state
                     )
                     continue
                 else:
@@ -60,17 +60,17 @@ class LRParser(object):
                 # TODO: actual error handling here
                 if self.error_handler is not None:
                     if state is None:
-                        self.error_handler(lookahead)
+                        self.error_handler(预读)
                     else:
-                        self.error_handler(state, lookahead)
+                        self.error_handler(state, 预读)
 
                     # 此处原为 raise AssertionError，改为下面两行以支持空行，但代价是无视了某些语法错误？
-                    lookahead = None
+                    预读 = None
                     continue
                 else:
-                    raise 语法分析报错(None, lookahead.getsourcepos())
+                    raise 语法分析报错(None, 预读.getsourcepos())
 
-    def _reduce_production(self, t, symstack, statestack, state):
+    def _reduce_production(self, t, symstack, 状态栈, state):
         # reduce a symbol on the stack and emit a production
         p = self.lr_table.grammar.各规则[-t]
         pname = p.name
@@ -81,12 +81,12 @@ class LRParser(object):
         start = len(symstack) + (-plen)
         assert start >= 0
         del symstack[start:]
-        del statestack[start:]
+        del 状态栈[start:]
         if state is None:
             value = p.func(targ)
         else:
             value = p.func(state, targ)
         symstack.append(value)
-        current_state = self.lr_table.lr_goto[statestack[-1]][pname]
-        statestack.append(current_state)
-        return current_state
+        当前状态 = self.lr_table.lr_goto[状态栈[-1]][pname]
+        状态栈.append(当前状态)
+        return 当前状态
