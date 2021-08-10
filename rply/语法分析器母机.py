@@ -111,14 +111,14 @@ class 语法分析器母机(object):
         return {
             "lr_action": 表.lr_action,
             "lr_goto": 表.lr_goto,
-            "sr_conflicts": 表.取合不定,
-            "rr_conflicts": 表.rr_conflicts,
+            "取合不定": 表.取合不定,
+            "不知咋合": 表.不知咋合,
             "default_reductions": 表.default_reductions,
-            "start": 表.grammar.start,
-            "terminals": sorted(表.grammar.各词所在语法表),
-            "precedence": 表.grammar.优先级,
+            "start": 表.语法.start,
+            "terminals": sorted(表.语法.各词所在语法表),
+            "precedence": 表.语法.优先级,
             "productions": [
-                (p.name, p.prod, p.优先级) for p in 表.grammar.各规则
+                (p.name, p.prod, p.优先级) for p in 表.语法.各规则
             ],
         }
 
@@ -204,10 +204,10 @@ class 语法分析器母机(object):
                 ParserGeneratorWarning,
                 stacklevel=2,
             )
-        if 表.rr_conflicts:
+        if 表.不知咋合:
             warnings.warn(
                 "%d 种情形不确定如何合而为一" % (
-                    len(表.rr_conflicts)
+                    len(表.不知咋合)
                 ),
                 ParserGeneratorWarning,
                 stacklevel=2,
@@ -270,13 +270,13 @@ def traverse(x, N, stack, F, X, R, FP):
 
 class LRTable(object):
     def __init__(self, 语法, lr_action, lr_goto, default_reductions,
-                 取合不定, rr_conflicts):
-        self.grammar = 语法
+                 取合不定, 不知咋合):
+        self.语法 = 语法
         self.lr_action = lr_action
         self.lr_goto = lr_goto
         self.default_reductions = default_reductions
         self.取合不定 = 取合不定
-        self.rr_conflicts = rr_conflicts
+        self.不知咋合 = 不知咋合
 
     @classmethod
     def from缓存(cls, 语法, data):
@@ -293,8 +293,8 @@ class LRTable(object):
             lr_action,
             lr_goto,
             data["default_reductions"],
-            data["sr_conflicts"],
-            data["rr_conflicts"]
+            data["取合不定"],
+            data["不知咋合"]
         )
 
     @classmethod
@@ -309,7 +309,7 @@ class LRTable(object):
         lr_action = [None] * len(C)
         lr_goto = [None] * len(C)
         取合不定 = []
-        rr_conflicts = []
+        不知咋合 = []
         for st, I in enumerate(C):
             # 显示所有语法要素序列
             # print(str(st) + '\n' + 输出序列(I) + '')
@@ -350,7 +350,7 @@ class LRTable(object):
                                         语法.各规则[oldp.number].reduced -= 1
                                     else:
                                         chosenp, rejectp = oldp, pp
-                                    rr_conflicts.append((st, repr(chosenp), repr(rejectp)))
+                                    不知咋合.append((st, repr(chosenp), repr(rejectp)))
                                 else:
                                     raise ParserGeneratorError("Unknown conflict in state %d" % st)
                             else:
@@ -405,7 +405,7 @@ class LRTable(object):
             actions = set(itervalues(actions))
             if len(actions) == 1 and next(iter(actions)) < 0:
                 default_reductions[state] = next(iter(actions))
-        return LRTable(语法, lr_action, lr_goto, default_reductions, 取合不定, rr_conflicts)
+        return LRTable(语法, lr_action, lr_goto, default_reductions, 取合不定, 不知咋合)
 
     @classmethod
     def lr0_items(cls, 语法, add_count, cidhash, goto_cache):

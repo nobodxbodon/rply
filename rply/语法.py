@@ -12,7 +12,6 @@ def rightmost_terminal(symbols, terminals):
 class 语法(object):
     def __init__(self, 各词):
         self.各规则 = [None]
-        self.productions = self.各规则
         self.各短语语法表 = {}
         self.各词所在语法表 = dict((t, []) for t in 各词)
         self.各词所在语法表["error"] = []
@@ -24,19 +23,19 @@ class 语法(object):
         self.优先级 = {}
         self.start = None
 
-    def add_production(self, 名称, syms, func, precedence):
+    def add_production(self, 名称, syms, func, 优先级):
         if 名称 in self.各词所在语法表:
             raise ParserGeneratorError("Illegal rule name %r" % 名称)
 
-        if precedence is None:
+        if 优先级 is None:
             precname = rightmost_terminal(syms, self.各词所在语法表)
             规则优先级 = self.优先级.get(precname, ("right", 0))
         else:
             try:
-                规则优先级 = self.优先级[precedence]
+                规则优先级 = self.优先级[优先级]
             except KeyError:
                 raise ParserGeneratorError(
-                    "Precedence %r doesn't exist" % precedence
+                    "优先级 %r 不存在" % 优先级
                 )
 
         序号 = len(self.各规则)
@@ -56,13 +55,11 @@ class 语法(object):
     def set_precedence(self, term, assoc, level):
         if term in self.优先级:
             raise ParserGeneratorError(
-                "Precedence already specified for %s" % term
+                "%s 的优先级已指定" % term
             )
         if assoc not in ["left", "right", "nonassoc"]:
             raise ParserGeneratorError(
-                "Precedence must be one of left, right, nonassoc; not %s" % (
-                    assoc
-                )
+                "优先级只能是左、右或非链（left, right, nonassoc），现为 %s" % (assoc)
             )
         self.优先级[term] = (assoc, level)
 
