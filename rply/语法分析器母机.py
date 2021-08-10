@@ -107,18 +107,18 @@ class 语法分析器母机(object):
             hasher.update(json.dumps(p.prod).encode())
         return hasher.hexdigest()
 
-    def serialize_table(self, table):
+    def serialize_table(self, 表):
         return {
-            "lr_action": table.lr_action,
-            "lr_goto": table.lr_goto,
-            "sr_conflicts": table.sr_conflicts,
-            "rr_conflicts": table.rr_conflicts,
-            "default_reductions": table.default_reductions,
-            "start": table.grammar.start,
-            "terminals": sorted(table.grammar.各词所在语法表),
-            "precedence": table.grammar.优先级,
+            "lr_action": 表.lr_action,
+            "lr_goto": 表.lr_goto,
+            "sr_conflicts": 表.取合不定,
+            "rr_conflicts": 表.rr_conflicts,
+            "default_reductions": 表.default_reductions,
+            "start": 表.grammar.start,
+            "terminals": sorted(表.grammar.各词所在语法表),
+            "precedence": 表.grammar.优先级,
             "productions": [
-                (p.name, p.prod, p.优先级) for p in table.grammar.各规则
+                (p.name, p.prod, p.优先级) for p in 表.grammar.各规则
             ],
         }
 
@@ -172,7 +172,7 @@ class 语法分析器母机(object):
         g.compute_first()
         g.compute_follow()
 
-        table = None
+        表 = None
         if self.cache_id is not None:
             cache_dir = AppDirs("rply").user_cache_dir
             cache_file = os.path.join(
@@ -186,15 +186,15 @@ class 语法分析器母机(object):
                 with open(cache_file) as f:
                     data = json.load(f)
                 if self.data_is_valid(g, data):
-                    table = LRTable.from缓存(g, data)
-        if table is None:
-            table = LRTable.from语法(g)
+                    表 = LRTable.from缓存(g, data)
+        if 表 is None:
+            表 = LRTable.from语法(g)
 
             if self.cache_id is not None:
-                self._write_cache(cache_dir, cache_file, table)
+                self._write_cache(cache_dir, cache_file, 表)
 
-        if table.sr_conflicts:
-            歧义 = table.sr_conflicts
+        if 表.取合不定:
+            歧义 = 表.取合不定
             细节 = '\n\n'.join(['词' + str(i[1]) + '有歧义，默认进行 ' + i[2] + '\n歧义序列：\n' + 输出序列(i[3]) for i in 歧义])
             warnings.warn(
                 "如下 %d 种情形取下个词还是合而为一？\n%s" % (
@@ -204,17 +204,17 @@ class 语法分析器母机(object):
                 ParserGeneratorWarning,
                 stacklevel=2,
             )
-        if table.rr_conflicts:
+        if 表.rr_conflicts:
             warnings.warn(
                 "%d 种情形不确定如何合而为一" % (
-                    len(table.rr_conflicts)
+                    len(表.rr_conflicts)
                 ),
                 ParserGeneratorWarning,
                 stacklevel=2,
             )
-        return LRParser(table, self.错误处理)
+        return LRParser(表, self.错误处理)
 
-    def _write_cache(self, cache_dir, cache_file, table):
+    def _write_cache(self, cache_dir, cache_file, 表):
         if not os.path.exists(cache_dir):
             try:
                 os.makedirs(cache_dir, mode=0o0700)
@@ -224,7 +224,7 @@ class 语法分析器母机(object):
                 raise
 
         with tempfile.NamedTemporaryFile(dir=cache_dir, delete=False, mode="w") as f:
-            json.dump(self.serialize_table(table), f)
+            json.dump(self.serialize_table(表), f)
         os.rename(f.name, cache_file)
 
 
@@ -270,12 +270,12 @@ def traverse(x, N, stack, F, X, R, FP):
 
 class LRTable(object):
     def __init__(self, 语法, lr_action, lr_goto, default_reductions,
-                 sr_conflicts, rr_conflicts):
+                 取合不定, rr_conflicts):
         self.grammar = 语法
         self.lr_action = lr_action
         self.lr_goto = lr_goto
         self.default_reductions = default_reductions
-        self.sr_conflicts = sr_conflicts
+        self.取合不定 = 取合不定
         self.rr_conflicts = rr_conflicts
 
     @classmethod
@@ -308,7 +308,7 @@ class LRTable(object):
 
         lr_action = [None] * len(C)
         lr_goto = [None] * len(C)
-        sr_conflicts = []
+        取合不定 = []
         rr_conflicts = []
         for st, I in enumerate(C):
             # 显示所有语法要素序列
@@ -334,11 +334,11 @@ class LRTable(object):
                                         st_action[a] = -p.number
                                         st_actionp[a] = p
                                         if not 取词层级 and not 合词层级:
-                                            sr_conflicts.append((st, repr(a), "reduce1"))
+                                            取合不定.append((st, repr(a), "reduce1"))
                                         语法.各规则[p.number].reduced += 1
                                     elif not (取词层级 == 合词层级 and 合词优先方向 == "nonassoc"):
                                         if not 合词层级:
-                                            sr_conflicts.append((st, repr(a), "shift1"))
+                                            取合不定.append((st, repr(a), "shift1"))
                                 elif r < 0:
                                     oldp = 语法.各规则[-r]
                                     pp = 语法.各规则[p.number]
@@ -377,10 +377,10 @@ class LRTable(object):
                                         st_action[a] = j
                                         st_actionp[a] = p
                                         if not 合词层级:
-                                            sr_conflicts.append((st, repr(a), "shift2", I))
+                                            取合不定.append((st, repr(a), "shift2", I))
                                     elif not (取词层级 == 合词层级 and 合词优先方向 == "nonassoc"):
                                         if not 取词层级 and not 合词层级:
-                                            sr_conflicts.append((st, repr(a), "reduce2"))
+                                            取合不定.append((st, repr(a), "reduce2"))
                                 else:
                                     raise ParserGeneratorError("Unknown conflict in state %d" % st)
                             else:
@@ -405,7 +405,7 @@ class LRTable(object):
             actions = set(itervalues(actions))
             if len(actions) == 1 and next(iter(actions)) < 0:
                 default_reductions[state] = next(iter(actions))
-        return LRTable(语法, lr_action, lr_goto, default_reductions, sr_conflicts, rr_conflicts)
+        return LRTable(语法, lr_action, lr_goto, default_reductions, 取合不定, rr_conflicts)
 
     @classmethod
     def lr0_items(cls, 语法, add_count, cidhash, goto_cache):
