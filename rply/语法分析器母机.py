@@ -104,7 +104,7 @@ class 语法分析器母机(object):
         for p in g.各规则:
             hasher.update(p.name.encode())
             hasher.update(json.dumps(p.优先级).encode())
-            hasher.update(json.dumps(p.prod).encode())
+            hasher.update(json.dumps(p.模式).encode())
         return hasher.hexdigest()
 
     def serialize_table(self, 表):
@@ -118,7 +118,7 @@ class 语法分析器母机(object):
             "terminals": sorted(表.语法.各词所在语法表),
             "precedence": 表.语法.优先级,
             "productions": [
-                (p.name, p.prod, p.优先级) for p in 表.语法.各规则
+                (p.name, p.模式, p.优先级) for p in 表.语法.各规则
             ],
         }
 
@@ -134,10 +134,10 @@ class 语法分析器母机(object):
                 return False
         if len(g.各规则) != len(data["productions"]):
             return False
-        for p, (name, prod, (assoc, level)) in zip(g.各规则, data["productions"]):
+        for p, (name, 模式, (assoc, level)) in zip(g.各规则, data["productions"]):
             if p.name != name:
                 return False
-            if p.prod != prod:
+            if p.模式 != 模式:
                 return False
             if p.优先级 != (assoc, level):
                 return False
@@ -489,7 +489,7 @@ class LRTable(object):
                 if p.getlength() == 0:
                     nullable.add(p.name)
                     continue
-                for t in p.prod:
+                for t in p.模式:
                     if t not in nullable:
                         break
                 else:
@@ -537,7 +537,7 @@ class LRTable(object):
                 a = p.prod[p.lr_index + 1]
                 if a in 语法.各词所在语法表 and a not in terms:
                     terms.append(a)
-        if state == 0 and N == 语法.各规则[0].prod[0]:
+        if state == 0 and N == 语法.各规则[0].模式[0]:
             terms.append("$end")
         return terms
 

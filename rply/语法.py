@@ -97,11 +97,11 @@ class 语法(object):
                     lri = None
                 else:
                     try:
-                        before = p.prod[i - 1]
+                        before = p.模式[i - 1]
                     except IndexError:
                         before = None
                     try:
-                        after = self.各短语语法表[p.prod[i]]
+                        after = self.各短语语法表[p.模式[i]]
                     except (IndexError, KeyError):
                         after = []
                     lri = LRItem(p, i, before, after)
@@ -143,7 +143,7 @@ class 语法(object):
             changed = False
             for n in self.各短语对应语法号:
                 for p in self.各短语语法表[n]:
-                    for f in self._first(p.prod):
+                    for f in self._first(p.模式):
                         if f not in self.first[n]:
                             self.first[n].append(f)
                             changed = True
@@ -159,9 +159,9 @@ class 语法(object):
         while added:
             added = False
             for p in self.各规则[1:]:
-                for i, B in enumerate(p.prod):
+                for i, B in enumerate(p.模式):
                     if B in self.各短语对应语法号:
-                        fst = self._first(p.prod[i + 1:])
+                        fst = self._first(p.模式[i + 1:])
                         has_empty = False
                         for f in fst:
                             if f != "<empty>" and f not in self.follow[B]:
@@ -169,7 +169,7 @@ class 语法(object):
                                 added = True
                             if f == "<empty>":
                                 has_empty = True
-                        if has_empty or i == (len(p.prod) - 1):
+                        if has_empty or i == (len(p.模式) - 1):
                             for f in self.follow[p.name]:
                                 if f not in self.follow[B]:
                                     self.follow[B].append(f)
@@ -177,15 +177,15 @@ class 语法(object):
 
 
 class 规则(object):
-    def __init__(self, num, name, prod, 优先级, func):
+    def __init__(self, num, name, 模式, 优先级, func):
         self.name = name
-        self.prod = prod
+        self.模式 = 模式
         self.number = num
         self.func = func
         self.优先级 = 优先级
 
         self.unique_syms = []
-        for s in self.prod:
+        for s in self.模式:
             if s not in self.unique_syms:
                 self.unique_syms.append(s)
 
@@ -195,16 +195,16 @@ class 规则(object):
         self.reduced = 0
 
     def __repr__(self):
-        return "[%s] 规则(%s -> %s)，优先级：%s" % (self.number, self.name, " ".join(self.prod), self.优先级)
+        return "[%s] 规则(%s -> %s)，优先级：%s" % (self.number, self.name, " ".join(self.模式), self.优先级)
 
     def getlength(self):
-        return len(self.prod)
+        return len(self.模式)
 
 
 class LRItem(object):
     def __init__(self, p, n, before, after):
         self.name = p.name
-        self.prod = p.prod[:]
+        self.prod = p.模式[:]
         self.prod.insert(n, ".")
         self.number = p.number
         self.lr_index = n
