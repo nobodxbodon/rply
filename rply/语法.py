@@ -203,10 +203,10 @@ class 规则(object):
 
 class LRItem(object):
     def __init__(self, 规则, n, before, after):
-        self.name = 规则.名称
+        self.规则名称 = 规则.名称
         self.所在模式位置 = 规则.模式[:]
         self.所在模式位置.insert(n, ".")
-        self.number = 规则.序号
+        self.规则序号 = 规则.序号
         self.lr_index = n
         self.预读 = {}
         self.unique_syms = 规则.unique_syms
@@ -214,7 +214,7 @@ class LRItem(object):
         self.lr_after = after
 
     def __repr__(self):
-        return "LRItem(%s -> %s)" % (self.name, " ".join(self.所在模式位置))
+        return "LRItem(%s -> %s)" % (self.规则名称, " ".join(self.所在模式位置))
 
     def getlength(self):
         return len(self.所在模式位置)

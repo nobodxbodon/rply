@@ -231,7 +231,7 @@ class 语法分析器母机(object):
 def 输出序列(lr表):
     信息 = ""
     for 项 in lr表:
-        信息 += '\t' + 项.name + ": " + " ".join(项.所在模式位置) + '\n'
+        信息 += '\t' + 项.规则名称 + ": " + " ".join(项.所在模式位置) + '\n'
     return 信息
 
 def digraph(X, R, FP):
@@ -318,7 +318,7 @@ class LRTable(object):
             st_goto = {}
             for p in I:
                 if p.getlength() == p.lr_index + 1:
-                    if p.name == "S'":
+                    if p.规则名称 == "S'":
                         # Start symbol. Accept!
                         st_action["$end"] = 0
                         st_actionp["$end"] = p
@@ -328,35 +328,35 @@ class LRTable(object):
                             if a in st_action:
                                 r = st_action[a]
                                 if r > 0:
-                                    sprec, 取词层级 = 语法.各规则[st_actionp[a].number].优先级
+                                    sprec, 取词层级 = 语法.各规则[st_actionp[a].规则序号].优先级
                                     合词优先方向, 合词层级 = 语法.优先级.get(a, ("right", 0))
                                     if (取词层级 < 合词层级) or (取词层级 == 合词层级 and 合词优先方向 == "left"):
-                                        st_action[a] = -p.number
+                                        st_action[a] = -p.规则序号
                                         st_actionp[a] = p
                                         if not 取词层级 and not 合词层级:
                                             取合不定.append((st, repr(a), "reduce1"))
-                                        语法.各规则[p.number].reduced += 1
+                                        语法.各规则[p.规则序号].reduced += 1
                                     elif not (取词层级 == 合词层级 and 合词优先方向 == "nonassoc"):
                                         if not 合词层级:
                                             取合不定.append((st, repr(a), "shift1"))
                                 elif r < 0:
                                     oldp = 语法.各规则[-r]
-                                    pp = 语法.各规则[p.number]
+                                    pp = 语法.各规则[p.规则序号]
                                     if oldp.序号 > pp.序号:
-                                        st_action[a] = -p.number
+                                        st_action[a] = -p.规则序号
                                         st_actionp[a] = p
                                         chosenp, rejectp = pp, oldp
-                                        语法.各规则[p.number].reduced += 1
-                                        语法.各规则[oldp.number].reduced -= 1
+                                        语法.各规则[p.规则序号].reduced += 1
+                                        语法.各规则[oldp.规则序号].reduced -= 1
                                     else:
                                         chosenp, rejectp = oldp, pp
                                     不知咋合.append((st, repr(chosenp), repr(rejectp)))
                                 else:
                                     raise ParserGeneratorError("Unknown conflict in state %d" % st)
                             else:
-                                st_action[a] = -p.number
+                                st_action[a] = -p.规则序号
                                 st_actionp[a] = p
-                                语法.各规则[p.number].reduced += 1
+                                语法.各规则[p.规则序号].reduced += 1
                 else:
                     i = p.lr_index
                     a = p.所在模式位置[i + 1]
@@ -370,10 +370,10 @@ class LRTable(object):
                                     if r != j:
                                         raise ParserGeneratorError("Shift/shift conflict in state %d" % st)
                                 elif r < 0:
-                                    合词优先方向, 合词层级 = 语法.各规则[st_actionp[a].number].优先级
+                                    合词优先方向, 合词层级 = 语法.各规则[st_actionp[a].规则序号].优先级
                                     sprec, 取词层级 = 语法.优先级.get(a, ("right", 0))
                                     if (取词层级 > 合词层级) or (取词层级 == 合词层级 and 合词优先方向 == "right"):
-                                        语法.各规则[st_actionp[a].number].reduced -= 1
+                                        语法.各规则[st_actionp[a].规则序号].reduced -= 1
                                         st_action[a] = j
                                         st_actionp[a] = p
                                         if not 合词层级:
@@ -566,7 +566,7 @@ class LRTable(object):
             lookb = []
             includes = []
             for p in C[state]:
-                if p.name != N:
+                if p.规则名称 != N:
                     continue
 
                 lr_index = p.lr_index
@@ -590,7 +590,7 @@ class LRTable(object):
                     j = cidhash.get(g, -1)
 
                 for r in C[j]:
-                    if r.name != p.name:
+                    if r.规则名称 != p.规则名称:
                         continue
                     if r.getlength() != p.getlength():
                         continue
