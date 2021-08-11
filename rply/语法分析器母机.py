@@ -231,7 +231,7 @@ class 语法分析器母机(object):
 def 输出序列(lr表):
     信息 = ""
     for 项 in lr表:
-        信息 += '\t' + 项.name + ": " + " ".join(项.prod) + '\n'
+        信息 += '\t' + 项.name + ": " + " ".join(项.所在模式位置) + '\n'
     return 信息
 
 def digraph(X, R, FP):
@@ -342,7 +342,7 @@ class LRTable(object):
                                 elif r < 0:
                                     oldp = 语法.各规则[-r]
                                     pp = 语法.各规则[p.number]
-                                    if oldp.number > pp.number:
+                                    if oldp.序号 > pp.序号:
                                         st_action[a] = -p.number
                                         st_actionp[a] = p
                                         chosenp, rejectp = pp, oldp
@@ -359,7 +359,7 @@ class LRTable(object):
                                 语法.各规则[p.number].reduced += 1
                 else:
                     i = p.lr_index
-                    a = p.prod[i + 1]
+                    a = p.所在模式位置[i + 1]
                     if a in 语法.各词所在语法表:
                         g = cls.lr0_goto(I, a, add_count, goto_cache)
                         j = cidhash.get(g, -1)
@@ -505,7 +505,7 @@ class LRTable(object):
         for idx, state in enumerate(C):
             for p in state:
                 if p.lr_index < p.getlength() - 1:
-                    t = (idx, p.prod[p.lr_index + 1])
+                    t = (idx, p.所在模式位置[p.lr_index + 1])
                     if t[1] in 语法.各短语对应语法号 and t not in trans:
                         trans.append(t)
         return trans
@@ -534,7 +534,7 @@ class LRTable(object):
         g = cls.lr0_goto(C[state], N, add_count, goto_cache)
         for p in g:
             if p.lr_index < p.getlength() - 1:
-                a = p.prod[p.lr_index + 1]
+                a = p.所在模式位置[p.lr_index + 1]
                 if a in 语法.各词所在语法表 and a not in terms:
                     terms.append(a)
         if state == 0 and N == 语法.各规则[0].模式[0]:
@@ -550,7 +550,7 @@ class LRTable(object):
         j = cidhash.get(g, -1)
         for p in g:
             if p.lr_index < p.getlength() - 1:
-                a = p.prod[p.lr_index + 1]
+                a = p.所在模式位置[p.lr_index + 1]
                 if a in empty:
                     rel.append((j, a))
         return rel
@@ -573,14 +573,14 @@ class LRTable(object):
                 j = state
                 while lr_index < p.getlength() - 1:
                     lr_index += 1
-                    t = p.prod[lr_index]
+                    t = p.所在模式位置[lr_index]
 
                     if (j, t) in dtrans:
                         li = lr_index + 1
                         while li < p.getlength():
-                            if p.prod[li] in 语法.各词所在语法表:
+                            if p.所在模式位置[li] in 语法.各词所在语法表:
                                 break
-                            if p.prod[li] not in nullable:
+                            if p.所在模式位置[li] not in nullable:
                                 break
                             li += 1
                         else:
@@ -596,7 +596,7 @@ class LRTable(object):
                         continue
                     i = 0
                     while i < r.lr_index:
-                        if r.prod[i] != p.prod[i + 1]:
+                        if r.所在模式位置[i] != p.所在模式位置[i + 1]:
                             break
                         i += 1
                     else:

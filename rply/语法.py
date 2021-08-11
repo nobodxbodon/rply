@@ -177,10 +177,10 @@ class 语法(object):
 
 
 class 规则(object):
-    def __init__(self, num, name, 模式, 优先级, func):
+    def __init__(self, 序号, name, 模式, 优先级, func):
         self.name = name
         self.模式 = 模式
-        self.number = num
+        self.序号 = 序号
         self.func = func
         self.优先级 = 优先级
 
@@ -195,7 +195,7 @@ class 规则(object):
         self.reduced = 0
 
     def __repr__(self):
-        return "[%s] 规则(%s -> %s)，优先级：%s" % (self.number, self.name, " ".join(self.模式), self.优先级)
+        return "[%s] 规则(%s -> %s)，优先级：%s" % (self.序号, self.name, " ".join(self.模式), self.优先级)
 
     def getlength(self):
         return len(self.模式)
@@ -204,9 +204,9 @@ class 规则(object):
 class LRItem(object):
     def __init__(self, p, n, before, after):
         self.name = p.name
-        self.prod = p.模式[:]
-        self.prod.insert(n, ".")
-        self.number = p.number
+        self.所在模式位置 = p.模式[:]
+        self.所在模式位置.insert(n, ".")
+        self.number = p.序号
         self.lr_index = n
         self.预读 = {}
         self.unique_syms = p.unique_syms
@@ -214,7 +214,7 @@ class LRItem(object):
         self.lr_after = after
 
     def __repr__(self):
-        return "LRItem(%s -> %s)" % (self.name, " ".join(self.prod))
+        return "LRItem(%s -> %s)" % (self.name, " ".join(self.所在模式位置))
 
     def getlength(self):
-        return len(self.prod)
+        return len(self.所在模式位置)
