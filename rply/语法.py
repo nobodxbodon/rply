@@ -47,10 +47,10 @@ class 语法(object):
             else:
                 self.各短语对应语法号.setdefault(t, []).append(序号)
 
-        p = 规则(序号, 名称, syms, 规则优先级, func)
-        self.各规则.append(p)
+        某规则 = 规则(序号, 名称, syms, 规则优先级, func)
+        self.各规则.append(某规则)
 
-        self.各短语语法表.setdefault(名称, []).append(p)
+        self.各短语语法表.setdefault(名称, []).append(某规则)
 
     def set_precedence(self, term, assoc, level):
         if term in self.优先级:
@@ -87,31 +87,31 @@ class 语法(object):
         Walks the list of productions and builds a complete set of the LR
         items.
         """
-        for p in self.各规则:
-            print(repr(p))
-            lastlri = p
+        for 规则 in self.各规则:
+            print(repr(规则))
+            lastlri = 规则
             i = 0
             lr_items = []
             while True:
-                if i > p.getlength():
+                if i > 规则.getlength():
                     lri = None
                 else:
                     try:
-                        before = p.模式[i - 1]
+                        before = 规则.模式[i - 1]
                     except IndexError:
                         before = None
                     try:
-                        after = self.各短语语法表[p.模式[i]]
+                        after = self.各短语语法表[规则.模式[i]]
                     except (IndexError, KeyError):
                         after = []
-                    lri = LRItem(p, i, before, after)
+                    lri = LRItem(规则, i, before, after)
                 lastlri.lr_next = lri
                 if lri is None:
                     break
                 lr_items.append(lri)
                 lastlri = lri
                 i += 1
-            p.lr_items = lr_items
+            规则.lr_items = lr_items
 
     def _first(self, beta):
         result = []
@@ -142,8 +142,8 @@ class 语法(object):
         while changed:
             changed = False
             for n in self.各短语对应语法号:
-                for p in self.各短语语法表[n]:
-                    for f in self._first(p.模式):
+                for 规则 in self.各短语语法表[n]:
+                    for f in self._first(规则.模式):
                         if f not in self.first[n]:
                             self.first[n].append(f)
                             changed = True
@@ -158,10 +158,10 @@ class 语法(object):
         added = True
         while added:
             added = False
-            for p in self.各规则[1:]:
-                for i, B in enumerate(p.模式):
+            for 规则 in self.各规则[1:]:
+                for i, B in enumerate(规则.模式):
                     if B in self.各短语对应语法号:
-                        fst = self._first(p.模式[i + 1:])
+                        fst = self._first(规则.模式[i + 1:])
                         has_empty = False
                         for f in fst:
                             if f != "<empty>" and f not in self.follow[B]:
@@ -169,8 +169,8 @@ class 语法(object):
                                 added = True
                             if f == "<empty>":
                                 has_empty = True
-                        if has_empty or i == (len(p.模式) - 1):
-                            for f in self.follow[p.名称]:
+                        if has_empty or i == (len(规则.模式) - 1):
+                            for f in self.follow[规则.名称]:
                                 if f not in self.follow[B]:
                                     self.follow[B].append(f)
                                     added = True
@@ -202,14 +202,14 @@ class 规则(object):
 
 
 class LRItem(object):
-    def __init__(self, p, n, before, after):
-        self.name = p.名称
-        self.所在模式位置 = p.模式[:]
+    def __init__(self, 规则, n, before, after):
+        self.name = 规则.名称
+        self.所在模式位置 = 规则.模式[:]
         self.所在模式位置.insert(n, ".")
-        self.number = p.序号
+        self.number = 规则.序号
         self.lr_index = n
         self.预读 = {}
-        self.unique_syms = p.unique_syms
+        self.unique_syms = 规则.unique_syms
         self.lr_before = before
         self.lr_after = after
 

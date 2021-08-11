@@ -485,15 +485,15 @@ class LRTable(object):
         nullable = set()
         num_nullable = 0
         while True:
-            for p in 语法.各规则[1:]:
-                if p.getlength() == 0:
-                    nullable.add(p.名称)
+            for 规则 in 语法.各规则[1:]:
+                if 规则.getlength() == 0:
+                    nullable.add(规则.名称)
                     continue
-                for t in p.模式:
+                for t in 规则.模式:
                     if t not in nullable:
                         break
                 else:
-                    nullable.add(p.名称)
+                    nullable.add(规则.名称)
             if len(nullable) == num_nullable:
                 break
             num_nullable = len(nullable)
