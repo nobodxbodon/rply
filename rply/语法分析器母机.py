@@ -102,7 +102,7 @@ class 语法分析器母机(object):
             hasher.update(assoc.encode())
             hasher.update(bytes(level))
         for p in g.各规则:
-            hasher.update(p.name.encode())
+            hasher.update(p.名称.encode())
             hasher.update(json.dumps(p.优先级).encode())
             hasher.update(json.dumps(p.模式).encode())
         return hasher.hexdigest()
@@ -118,7 +118,7 @@ class 语法分析器母机(object):
             "terminals": sorted(表.语法.各词所在语法表),
             "precedence": 表.语法.优先级,
             "productions": [
-                (p.name, p.模式, p.优先级) for p in 表.语法.各规则
+                (p.名称, p.模式, p.优先级) for p in 表.语法.各规则
             ],
         }
 
@@ -135,7 +135,7 @@ class 语法分析器母机(object):
         if len(g.各规则) != len(data["productions"]):
             return False
         for p, (name, 模式, (assoc, level)) in zip(g.各规则, data["productions"]):
-            if p.name != name:
+            if p.名称 != name:
                 return False
             if p.模式 != 模式:
                 return False
@@ -487,13 +487,13 @@ class LRTable(object):
         while True:
             for p in 语法.各规则[1:]:
                 if p.getlength() == 0:
-                    nullable.add(p.name)
+                    nullable.add(p.名称)
                     continue
                 for t in p.模式:
                     if t not in nullable:
                         break
                 else:
-                    nullable.add(p.name)
+                    nullable.add(p.名称)
             if len(nullable) == num_nullable:
                 break
             num_nullable = len(nullable)

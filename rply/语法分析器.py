@@ -72,9 +72,9 @@ class LRParser(object):
 
     def _reduce_production(self, t, symstack, 状态栈, state):
         # reduce a symbol on the stack and emit a production
-        p = self.lr_table.语法.各规则[-t]
-        pname = p.name
-        plen = p.getlength()
+        规则 = self.lr_table.语法.各规则[-t]
+        pname = 规则.名称
+        plen = 规则.getlength()
         start = len(symstack) + (-plen - 1)
         assert start >= 0
         targ = symstack[start + 1:]
@@ -83,9 +83,9 @@ class LRParser(object):
         del symstack[start:]
         del 状态栈[start:]
         if state is None:
-            value = p.func(targ)
+            value = 规则.func(targ)
         else:
-            value = p.func(state, targ)
+            value = 规则.func(state, targ)
         symstack.append(value)
         当前状态 = self.lr_table.lr_goto[状态栈[-1]][pname]
         状态栈.append(当前状态)

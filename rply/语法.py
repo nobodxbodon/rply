@@ -65,7 +65,7 @@ class 语法(object):
 
     '''注意：将首个语法规则作为"根"，因此添加语法规则的顺序影响结果'''
     def 牵头(self):
-        规则名 = self.各规则[1].name
+        规则名 = self.各规则[1].名称
         self.各规则[0] = 规则(0, "S'", [规则名], ("right", 0), None)
         self.各短语对应语法号[规则名].append(0)
         self.start = 规则名
@@ -170,15 +170,15 @@ class 语法(object):
                             if f == "<empty>":
                                 has_empty = True
                         if has_empty or i == (len(p.模式) - 1):
-                            for f in self.follow[p.name]:
+                            for f in self.follow[p.名称]:
                                 if f not in self.follow[B]:
                                     self.follow[B].append(f)
                                     added = True
 
 
 class 规则(object):
-    def __init__(self, 序号, name, 模式, 优先级, func):
-        self.name = name
+    def __init__(self, 序号, 名称, 模式, 优先级, func):
+        self.名称 = 名称
         self.模式 = 模式
         self.序号 = 序号
         self.func = func
@@ -195,7 +195,7 @@ class 规则(object):
         self.reduced = 0
 
     def __repr__(self):
-        return "[%s] 规则(%s -> %s)，优先级：%s" % (self.序号, self.name, " ".join(self.模式), self.优先级)
+        return "[%s] 规则(%s -> %s)，优先级：%s" % (self.序号, self.名称, " ".join(self.模式), self.优先级)
 
     def getlength(self):
         return len(self.模式)
@@ -203,7 +203,7 @@ class 规则(object):
 
 class LRItem(object):
     def __init__(self, p, n, before, after):
-        self.name = p.name
+        self.name = p.名称
         self.所在模式位置 = p.模式[:]
         self.所在模式位置.insert(n, ".")
         self.number = p.序号
