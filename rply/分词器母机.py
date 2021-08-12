@@ -27,25 +27,19 @@ class 分词器母机(object):
     r"""
     A LexerGenerator represents a set of 规则 that match pieces of text that
     should either be turned into tokens or ignored by the lexer.
-
     规则 are added using the :meth:`add` and :meth:`ignore` methods:
-
     >>> from rply import 分词器母机
     >>> lg = 分词器母机()
     >>> lg.添了('NUMBER', r'\d+')
     >>> lg.添了('ADD', r'\+')
     >>> lg.略过(r'\s+')
-
     The 规则 are passed to :func:`re.compile`. If you need additional flags,
     e.g. :const:`re.DOTALL`, you can pass them to :meth:`add` and
     :meth:`ignore` as an additional optional parameter:
-
     >>> import re
     >>> lg.添了('ALL', r'.*', flags=re.DOTALL)
-
     You can then build a lexer with which you can lex a string to produce an
     iterator yielding tokens:
-
     >>> lexer = lg.产出()
     >>> iterator = lexer.分词('1 + 1')
     >>> iterator.next()

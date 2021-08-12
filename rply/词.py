@@ -4,7 +4,6 @@ class BaseBox(object):
     this as a base class for anything you return in a production function of a
     parser. This is necessary because RPython unlike Python expects functions
     to always return objects of the same type.
-
     既然现在不支持 RPython，此数据结构应不需要。待清理。
     """
     _attrs_ = []
@@ -13,10 +12,9 @@ class BaseBox(object):
 class 词(BaseBox):
     """
     Represents a syntactically relevant piece of text.
-
     :param name: A string describing the kind of text represented.
     :param value: The actual text represented.
-    :param 源码位置: A :class:`SourcePosition` object representing the
+    :param source_pos: A :class:`SourcePosition` object representing the
                        position of the first character in the source from which
                        this token was generated.
     """
@@ -56,11 +54,9 @@ class 词(BaseBox):
 class 字符位置(object):
     """
     字符所在源码的位置。
-
     :param idx: The index of the character in the source.
     :param lineno: The number of the line in which the character occurs.
     :param colno: The number of the column in which the character occurs.
-
     The values passed to this object can be retrieved using the identically
     named attributes.
     """

@@ -13,7 +13,7 @@ class 语法(object):
     def __init__(自身, 各词):
         自身.各规则 = [None]
         自身.各短语语法表 = {}
-        自身.各词所在语法表 = dict((t, []) for t in 各词)
+        自身.各词所在语法表 = dict((词, []) for 词 in 各词)
         自身.各词所在语法表["error"] = []
         # A dictionary mapping names of nonterminals to a list of rule numbers
         # where they are used
@@ -41,11 +41,11 @@ class 语法(object):
         序号 = len(自身.各规则)
         自身.各短语对应语法号.setdefault(名称, [])
 
-        for t in syms:
-            if t in 自身.各词所在语法表:
-                自身.各词所在语法表[t].append(序号)
+        for 词 in syms:
+            if 词 in 自身.各词所在语法表:
+                自身.各词所在语法表[词].append(序号)
             else:
-                自身.各短语对应语法号.setdefault(t, []).append(序号)
+                自身.各短语对应语法号.setdefault(词, []).append(序号)
 
         某规则 = 规则(序号, 名称, syms, 规则优先级, func)
         自身.各规则.append(某规则)
@@ -72,9 +72,9 @@ class 语法(object):
 
     def unused_terminals(自身):
         return [
-            t
-            for t, prods in iteritems(自身.各词所在语法表)
-            if not prods and t != "error"
+            词
+            for 词, prods in iteritems(自身.各词所在语法表)
+            if not prods and 词 != "error"
         ]
 
     def 无用规则(自身):
@@ -93,7 +93,7 @@ class 语法(object):
             i = 0
             lr_items = []
             while True:
-                if i > 规则.getlength():
+                if i > 规则.取长度():
                     lri = None
                 else:
                     try:
@@ -104,7 +104,7 @@ class 语法(object):
                         后 = 自身.各短语语法表[规则.模式[i]]
                     except (IndexError, KeyError):
                         后 = []
-                    lri = LRItem(规则, i, 前, 后)
+                    lri = LR项(规则, i, 前, 后)
                 lastlri.lr_next = lri
                 if lri is None:
                     break
@@ -130,8 +130,8 @@ class 语法(object):
         return result
 
     def compute_first(自身):
-        for t in 自身.各词所在语法表:
-            自身.first[t] = [t]
+        for 词 in 自身.各词所在语法表:
+            自身.first[词] = [词]
 
         自身.first["$end"] = ["$end"]
 
@@ -197,11 +197,11 @@ class 规则(object):
     def __repr__(自身):
         return "[%s] 规则(%s -> %s)，优先级：%s" % (自身.序号, 自身.名称, " ".join(自身.模式), 自身.优先级)
 
-    def getlength(自身):
+    def 取长度(自身):
         return len(自身.模式)
 
 
-class LRItem(object):
+class LR项(object):
     def __init__(自身, 规则, n, 前, 后):
         自身.规则名称 = 规则.名称
         自身.所在模式位置 = 规则.模式[:]
@@ -214,7 +214,7 @@ class LRItem(object):
         自身.lr_after = 后
 
     def __repr__(自身):
-        return "LRItem(%s -> %s)" % (自身.规则名称, " ".join(自身.所在模式位置))
+        return "LR项(%s -> %s)" % (自身.规则名称, " ".join(自身.所在模式位置))
 
-    def getlength(自身):
+    def 取长度(自身):
         return len(自身.所在模式位置)

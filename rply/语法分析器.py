@@ -74,7 +74,7 @@ class LRParser(object):
         # reduce a symbol on the stack and emit a production
         规则 = 自身.lr_table.语法.各规则[-t]
         pname = 规则.名称
-        plen = 规则.getlength()
+        plen = 规则.取长度()
         start = len(symstack) + (-plen - 1)
         assert start >= 0
         targ = symstack[start + 1:]

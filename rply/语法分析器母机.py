@@ -19,7 +19,7 @@ LARGE_VALUE = sys.maxsize
 
 class 语法分析器母机(object):
     """
-    A ParserGenerator represents a set of production rules, that define a
+    A ParserGenerator represents a set of production 规则, that define a
     sequence of terminals and non-terminals to be replaced with a non-terminal,
     which can be turned into a parser.
 
@@ -316,14 +316,14 @@ class LRTable(object):
             st_action = {}
             st_actionp = {}
             st_goto = {}
-            for p in I:
-                if p.getlength() == p.索引 + 1:
-                    if p.规则名称 == "S'":
+            for lr项 in I:
+                if lr项.取长度() == lr项.索引 + 1:
+                    if lr项.规则名称 == "S'":
                         # Start symbol. Accept!
                         st_action["$end"] = 0
-                        st_actionp["$end"] = p
+                        st_actionp["$end"] = lr项
                     else:
-                        laheads = p.预读[st]
+                        laheads = lr项.预读[st]
                         for a in laheads:
                             if a in st_action:
                                 r = st_action[a]
@@ -331,22 +331,22 @@ class LRTable(object):
                                     sprec, 取词层级 = 语法.各规则[st_actionp[a].规则序号].优先级
                                     合词优先方向, 合词层级 = 语法.优先级.get(a, ("right", 0))
                                     if (取词层级 < 合词层级) or (取词层级 == 合词层级 and 合词优先方向 == "left"):
-                                        st_action[a] = -p.规则序号
-                                        st_actionp[a] = p
+                                        st_action[a] = -lr项.规则序号
+                                        st_actionp[a] = lr项
                                         if not 取词层级 and not 合词层级:
                                             取合不定.append((st, repr(a), "reduce1"))
-                                        语法.各规则[p.规则序号].reduced += 1
+                                        语法.各规则[lr项.规则序号].reduced += 1
                                     elif not (取词层级 == 合词层级 and 合词优先方向 == "nonassoc"):
                                         if not 合词层级:
                                             取合不定.append((st, repr(a), "shift1"))
                                 elif r < 0:
                                     oldp = 语法.各规则[-r]
-                                    pp = 语法.各规则[p.规则序号]
+                                    pp = 语法.各规则[lr项.规则序号]
                                     if oldp.序号 > pp.序号:
-                                        st_action[a] = -p.规则序号
-                                        st_actionp[a] = p
+                                        st_action[a] = -lr项.规则序号
+                                        st_actionp[a] = lr项
                                         chosenp, rejectp = pp, oldp
-                                        语法.各规则[p.规则序号].reduced += 1
+                                        语法.各规则[lr项.规则序号].reduced += 1
                                         语法.各规则[oldp.规则序号].reduced -= 1
                                     else:
                                         chosenp, rejectp = oldp, pp
@@ -354,12 +354,12 @@ class LRTable(object):
                                 else:
                                     raise ParserGeneratorError("Unknown conflict in state %d" % st)
                             else:
-                                st_action[a] = -p.规则序号
-                                st_actionp[a] = p
-                                语法.各规则[p.规则序号].reduced += 1
+                                st_action[a] = -lr项.规则序号
+                                st_actionp[a] = lr项
+                                语法.各规则[lr项.规则序号].reduced += 1
                 else:
-                    i = p.索引
-                    a = p.所在模式位置[i + 1]
+                    i = lr项.索引
+                    a = lr项.所在模式位置[i + 1]
                     if a in 语法.各词所在语法表:
                         g = 本类.lr0_goto(I, a, 计数, goto_cache)
                         j = cidhash.get(g, -1)
@@ -375,7 +375,7 @@ class LRTable(object):
                                     if (取词层级 > 合词层级) or (取词层级 == 合词层级 and 合词优先方向 == "right"):
                                         语法.各规则[st_actionp[a].规则序号].reduced -= 1
                                         st_action[a] = j
-                                        st_actionp[a] = p
+                                        st_actionp[a] = lr项
                                         if not 合词层级:
                                             取合不定.append((st, repr(a), "shift2", I))
                                     elif not (取词层级 == 合词层级 and 合词优先方向 == "nonassoc"):
@@ -385,7 +385,7 @@ class LRTable(object):
                                     raise ParserGeneratorError("Unknown conflict in state %d" % st)
                             else:
                                 st_action[a] = j
-                                st_actionp[a] = p
+                                st_actionp[a] = lr项
             nkeys = set()
             for ii in I:
                 for s in ii.规则所含符号集合:
@@ -486,11 +486,11 @@ class LRTable(object):
         num_nullable = 0
         while True:
             for 规则 in 语法.各规则[1:]:
-                if 规则.getlength() == 0:
+                if 规则.取长度() == 0:
                     nullable.add(规则.名称)
                     continue
-                for t in 规则.模式:
-                    if t not in nullable:
+                for 词 in 规则.模式:
+                    if 词 not in nullable:
                         break
                 else:
                     nullable.add(规则.名称)
@@ -503,9 +503,9 @@ class LRTable(object):
     def find_nonterminal_transitions(本类, 语法, C):
         trans = []
         for idx, state in enumerate(C):
-            for p in state:
-                if p.索引 < p.getlength() - 1:
-                    t = (idx, p.所在模式位置[p.索引 + 1])
+            for lr项 in state:
+                if lr项.索引 < lr项.取长度() - 1:
+                    t = (idx, lr项.所在模式位置[lr项.索引 + 1])
                     if t[1] in 语法.各短语对应语法号 and t not in trans:
                         trans.append(t)
         return trans
@@ -532,9 +532,9 @@ class LRTable(object):
         terms = []
 
         g = 本类.lr0_goto(C[state], N, 计数, goto_cache)
-        for p in g:
-            if p.索引 < p.getlength() - 1:
-                a = p.所在模式位置[p.索引 + 1]
+        for lr项 in g:
+            if lr项.索引 < lr项.取长度() - 1:
+                a = lr项.所在模式位置[lr项.索引 + 1]
                 if a in 语法.各词所在语法表 and a not in terms:
                     terms.append(a)
         if state == 0 and N == 语法.各规则[0].模式[0]:
@@ -548,9 +548,9 @@ class LRTable(object):
 
         g = 本类.lr0_goto(C[state], N, 计数, goto_cache)
         j = cidhash.get(g, -1)
-        for p in g:
-            if p.索引 < p.getlength() - 1:
-                a = p.所在模式位置[p.索引 + 1]
+        for lr项 in g:
+            if lr项.索引 < lr项.取长度() - 1:
+                a = lr项.所在模式位置[lr项.索引 + 1]
                 if a in empty:
                     rel.append((j, a))
         return rel
@@ -565,38 +565,38 @@ class LRTable(object):
         for state, N in trans:
             lookb = []
             includes = []
-            for p in C[state]:
-                if p.规则名称 != N:
+            for lr项 in C[state]:
+                if lr项.规则名称 != N:
                     continue
 
-                索引 = p.索引
+                索引 = lr项.索引
                 j = state
-                while 索引 < p.getlength() - 1:
+                while 索引 < lr项.取长度() - 1:
                     索引 += 1
-                    t = p.所在模式位置[索引]
+                    词 = lr项.所在模式位置[索引]
 
-                    if (j, t) in dtrans:
+                    if (j, 词) in dtrans:
                         li = 索引 + 1
-                        while li < p.getlength():
-                            if p.所在模式位置[li] in 语法.各词所在语法表:
+                        while li < lr项.取长度():
+                            if lr项.所在模式位置[li] in 语法.各词所在语法表:
                                 break
-                            if p.所在模式位置[li] not in nullable:
+                            if lr项.所在模式位置[li] not in nullable:
                                 break
                             li += 1
                         else:
-                            includes.append((j, t))
+                            includes.append((j, 词))
 
-                    g = 本类.lr0_goto(C[j], t, 计数, goto_cache)
+                    g = 本类.lr0_goto(C[j], 词, 计数, goto_cache)
                     j = cidhash.get(g, -1)
 
                 for r in C[j]:
-                    if r.规则名称 != p.规则名称:
+                    if r.规则名称 != lr项.规则名称:
                         continue
-                    if r.getlength() != p.getlength():
+                    if r.取长度() != lr项.取长度():
                         continue
                     i = 0
                     while i < r.索引:
-                        if r.所在模式位置[i] != p.所在模式位置[i + 1]:
+                        if r.所在模式位置[i] != lr项.所在模式位置[i + 1]:
                             break
                         i += 1
                     else:
