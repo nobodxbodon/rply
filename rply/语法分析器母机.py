@@ -33,14 +33,14 @@ class 语法分析器母机(object):
     """
     VERSION = 1
 
-    def __init__(self, 词表, 优先级=[], cache_id=None):
-        self.词表 = 词表
-        self.productions = []
-        self.优先级 = 优先级
-        self.cache_id = cache_id
-        self.错误处理 = None
+    def __init__(自身, 词表, 优先级=[], cache_id=None):
+        自身.词表 = 词表
+        自身.productions = []
+        自身.优先级 = 优先级
+        自身.cache_id = cache_id
+        自身.错误处理 = None
 
-    def 语法规则(self, 描述, 优先级=None):
+    def 语法规则(自身, 描述, 优先级=None):
         """
         A decorator that defines a production rule and registers the decorated
         function to be called with the terminals and non-terminals matched by
@@ -78,11 +78,11 @@ class 语法分析器母机(object):
         组成 = 部分[2:]
 
         def inner(func):
-            self.productions.append((名称, 组成, func, 优先级))
+            自身.productions.append((名称, 组成, func, 优先级))
             return func
         return inner
 
-    def 报错(self, func):
+    def 报错(自身, func):
         """
         Sets the error handler that is called with the state (if passed to the
         parser) and the token the parser errored on.
@@ -90,10 +90,10 @@ class 语法分析器母机(object):
         Currently error handlers must raise an exception. If an error handler
         is not defined, a :exc:`rply.ParsingError` will be raised.
         """
-        self.错误处理 = func
+        自身.错误处理 = func
         return func
 
-    def compute_grammar_hash(self, 语法):
+    def compute_grammar_hash(自身, 语法):
         hasher = hashlib.sha1()
         hasher.update(语法.开头.encode())
         hasher.update(json.dumps(sorted(语法.各词所在语法表)).encode())
@@ -107,7 +107,7 @@ class 语法分析器母机(object):
             hasher.update(json.dumps(规则.模式).encode())
         return hasher.hexdigest()
 
-    def serialize_table(self, 表):
+    def serialize_table(自身, 表):
         return {
             "lr_action": 表.lr_action,
             "lr_goto": 表.lr_goto,
@@ -122,7 +122,7 @@ class 语法分析器母机(object):
             ],
         }
 
-    def data_is_valid(self, 语法, data):
+    def data_is_valid(自身, 语法, data):
         if 语法.开头 != data["start"]:
             return False
         if sorted(语法.各词所在语法表) != data["terminals"]:
@@ -143,14 +143,14 @@ class 语法分析器母机(object):
                 return False
         return True
 
-    def 产出(self):
-        语法细节 = 语法(self.词表)
+    def 产出(自身):
+        语法细节 = 语法(自身.词表)
 
-        for 层级, (结合性, terms) in enumerate(self.优先级, 1):
+        for 层级, (结合性, terms) in enumerate(自身.优先级, 1):
             for term in terms:
                 语法细节.设置优先级(term, 结合性, 层级)
 
-        for prod_name, syms, func, 优先级 in self.productions:
+        for prod_name, syms, func, 优先级 in 自身.productions:
             语法细节.添加规则(prod_name, syms, func, 优先级)
 
         语法细节.牵头()
@@ -173,25 +173,25 @@ class 语法分析器母机(object):
         语法细节.compute_follow()
 
         表 = None
-        if self.cache_id is not None:
+        if 自身.cache_id is not None:
             cache_dir = AppDirs("rply").user_cache_dir
             cache_file = os.path.join(
                 cache_dir,
                 "%s-%s-%s.json" % (
-                    self.cache_id, self.VERSION, self.compute_grammar_hash(语法细节)
+                    自身.cache_id, 自身.VERSION, 自身.compute_grammar_hash(语法细节)
                 )
             )
 
             if os.path.exists(cache_file):
                 with open(cache_file) as f:
                     data = json.load(f)
-                if self.data_is_valid(语法细节, data):
+                if 自身.data_is_valid(语法细节, data):
                     表 = LRTable.from缓存(语法细节, data)
         if 表 is None:
             表 = LRTable.from语法(语法细节)
 
-            if self.cache_id is not None:
-                self._write_cache(cache_dir, cache_file, 表)
+            if 自身.cache_id is not None:
+                自身._write_cache(cache_dir, cache_file, 表)
 
         if 表.取合不定:
             歧义 = 表.取合不定
@@ -212,9 +212,9 @@ class 语法分析器母机(object):
                 ParserGeneratorWarning,
                 stacklevel=2,
             )
-        return LRParser(表, self.错误处理)
+        return LRParser(表, 自身.错误处理)
 
-    def _write_cache(self, cache_dir, cache_file, 表):
+    def _write_cache(自身, cache_dir, cache_file, 表):
         if not os.path.exists(cache_dir):
             try:
                 os.makedirs(cache_dir, mode=0o0700)
@@ -224,7 +224,7 @@ class 语法分析器母机(object):
                 raise
 
         with tempfile.NamedTemporaryFile(dir=cache_dir, delete=False, mode="w") as f:
-            json.dump(self.serialize_table(表), f)
+            json.dump(自身.serialize_table(表), f)
         os.rename(f.name, cache_file)
 
 
@@ -269,14 +269,14 @@ def traverse(x, N, stack, F, X, R, FP):
 
 
 class LRTable(object):
-    def __init__(self, 语法, lr_action, lr_goto, default_reductions,
+    def __init__(自身, 语法, lr_action, lr_goto, default_reductions,
                  取合不定, 不知咋合):
-        self.语法 = 语法
-        self.lr_action = lr_action
-        self.lr_goto = lr_goto
-        self.default_reductions = default_reductions
-        self.取合不定 = 取合不定
-        self.不知咋合 = 不知咋合
+        自身.语法 = 语法
+        自身.lr_action = lr_action
+        自身.lr_goto = lr_goto
+        自身.default_reductions = default_reductions
+        自身.取合不定 = 取合不定
+        自身.不知咋合 = 不知咋合
 
     @classmethod
     def from缓存(cls, 语法, data):

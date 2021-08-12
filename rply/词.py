@@ -20,37 +20,37 @@ class 词(BaseBox):
                        position of the first character in the source from which
                        this token was generated.
     """
-    def __init__(self, name, value, source_pos=None):
-        self.name = name
-        self.value = value
-        self.source_pos = source_pos
+    def __init__(自身, name, value, source_pos=None):
+        自身.name = name
+        自身.value = value
+        自身.source_pos = source_pos
 
-    def __repr__(self):
-        return "Token(%r, %r)" % (self.name, self.value)
+    def __repr__(自身):
+        return "Token(%r, %r)" % (自身.name, 自身.value)
 
-    def __eq__(self, other):
+    def __eq__(自身, other):
         if not isinstance(other, 词):
             return NotImplemented
-        return self.name == other.name and self.value == other.value
+        return 自身.name == other.name and 自身.value == other.value
 
-    def gettokentype(self):
+    def gettokentype(自身):
         """
         Returns the type or name of the token.
         """
-        return self.name
+        return 自身.name
 
-    def getsourcepos(self):
+    def getsourcepos(自身):
         """
         Returns a :class:`SourcePosition` instance, describing the position of
         this token's first character in the source.
         """
-        return self.source_pos
+        return 自身.source_pos
 
-    def getstr(self):
+    def getstr(自身):
         """
         Returns the string represented by this token.
         """
-        return self.value
+        return 自身.value
 
 
 class 字符位置(object):
@@ -64,12 +64,12 @@ class 字符位置(object):
     The values passed to this object can be retrieved using the identically
     named attributes.
     """
-    def __init__(self, idx, lineno, colno):
-        self.idx = idx
-        self.lineno = lineno
-        self.colno = colno
+    def __init__(自身, idx, lineno, colno):
+        自身.idx = idx
+        自身.lineno = lineno
+        自身.colno = colno
 
-    def __repr__(self):
+    def __repr__(自身):
         return "SourcePosition(idx={0}, lineno={1}, colno={2})".format(
-            self.idx, self.lineno, self.colno
+            自身.idx, 自身.lineno, 自身.colno
         )
