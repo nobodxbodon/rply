@@ -18,9 +18,9 @@ class Rule(object):
 class Match(object):
     _attrs_ = ["start", "end"]
 
-    def __init__(自身, start, end):
-        自身.start = start
-        自身.end = end
+    def __init__(自身, 起, 止):
+        自身.起 = 起
+        自身.止 = 止
 
 
 class 分词器母机(object):

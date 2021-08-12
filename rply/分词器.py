@@ -27,13 +27,13 @@ class LexerStream(object):
         return 自身
 
     def _更新位置(自身, 匹配):
-        自身.idx = 匹配.end
-        自身._行号 += 自身.源码.count("\n", 匹配.start, 匹配.end)
-        最近换行 = 自身.源码.rfind("\n", 0, 匹配.start)
+        自身.idx = 匹配.止
+        自身._行号 += 自身.源码.count("\n", 匹配.起, 匹配.止)
+        最近换行 = 自身.源码.rfind("\n", 0, 匹配.起)
         if 最近换行 < 0:
-            return 匹配.start + 1
+            return 匹配.起 + 1
         else:
-            return 匹配.start - 最近换行
+            return 匹配.起 - 最近换行
 
     def _按字符更新位置(自身, 字符位置):
         自身._行号 += 1 if 自身.源码[字符位置] == "\n" else 0
@@ -60,9 +60,9 @@ class LexerStream(object):
             if 匹配:
                 lineno = 自身._行号
                 自身._列号 = 自身._更新位置(匹配)
-                源码位置 = 字符位置(匹配.start, lineno, 自身._列号)
+                源码位置 = 字符位置(匹配.起, lineno, 自身._列号)
                 token = 词(
-                    rule.name, 自身.源码[匹配.start:匹配.end], 源码位置
+                    rule.name, 自身.源码[匹配.起:匹配.止], 源码位置
                 )
                 return token
         else:
