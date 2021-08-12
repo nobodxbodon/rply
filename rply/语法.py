@@ -19,9 +19,9 @@ class 语法(object):
         # where they are used
         self.各短语对应语法号 = {}
         self.first = {}
-        self.follow = {}
+        self.各规则后续 = {}
         self.优先级 = {}
-        self.start = None
+        self.开头 = None
 
     def add_production(self, 名称, syms, func, 优先级):
         if 名称 in self.各词所在语法表:
@@ -68,7 +68,7 @@ class 语法(object):
         规则名 = self.各规则[1].名称
         self.各规则[0] = 规则(0, "S'", [规则名], ("right", 0), None)
         self.各短语对应语法号[规则名].append(0)
-        self.start = 规则名
+        self.开头 = 规则名
 
     def unused_terminals(self):
         return [
@@ -97,14 +97,14 @@ class 语法(object):
                     lri = None
                 else:
                     try:
-                        before = 规则.模式[i - 1]
+                        前 = 规则.模式[i - 1]
                     except IndexError:
-                        before = None
+                        前 = None
                     try:
-                        after = self.各短语语法表[规则.模式[i]]
+                        后 = self.各短语语法表[规则.模式[i]]
                     except (IndexError, KeyError):
-                        after = []
-                    lri = LRItem(规则, i, before, after)
+                        后 = []
+                    lri = LRItem(规则, i, 前, 后)
                 lastlri.lr_next = lri
                 if lri is None:
                     break
@@ -150,10 +150,10 @@ class 语法(object):
 
     def compute_follow(self):
         for k in self.各短语对应语法号:
-            self.follow[k] = []
+            self.各规则后续[k] = []
 
-        start = self.start
-        self.follow[start] = ["$end"]
+        开头 = self.开头
+        self.各规则后续[开头] = ["$end"]
 
         added = True
         while added:
@@ -164,15 +164,15 @@ class 语法(object):
                         fst = self._first(规则.模式[i + 1:])
                         has_empty = False
                         for f in fst:
-                            if f != "<empty>" and f not in self.follow[B]:
-                                self.follow[B].append(f)
+                            if f != "<empty>" and f not in self.各规则后续[B]:
+                                self.各规则后续[B].append(f)
                                 added = True
                             if f == "<empty>":
                                 has_empty = True
                         if has_empty or i == (len(规则.模式) - 1):
-                            for f in self.follow[规则.名称]:
-                                if f not in self.follow[B]:
-                                    self.follow[B].append(f)
+                            for f in self.各规则后续[规则.名称]:
+                                if f not in self.各规则后续[B]:
+                                    self.各规则后续[B].append(f)
                                     added = True
 
 
@@ -184,10 +184,10 @@ class 规则(object):
         self.func = func
         self.优先级 = 优先级
 
-        self.unique_syms = []
+        self.符号集合 = []
         for s in self.模式:
-            if s not in self.unique_syms:
-                self.unique_syms.append(s)
+            if s not in self.符号集合:
+                self.符号集合.append(s)
 
         self.lr_items = []
         self.lr_next = None
@@ -202,16 +202,16 @@ class 规则(object):
 
 
 class LRItem(object):
-    def __init__(self, 规则, n, before, after):
+    def __init__(self, 规则, n, 前, 后):
         self.规则名称 = 规则.名称
         self.所在模式位置 = 规则.模式[:]
         self.所在模式位置.insert(n, ".")
         self.规则序号 = 规则.序号
-        self.lr_index = n
+        self.索引 = n
         self.预读 = {}
-        self.unique_syms = 规则.unique_syms
-        self.lr_before = before
-        self.lr_after = after
+        self.规则所含符号集合 = 规则.符号集合
+        self.lr_before = 前
+        self.lr_after = 后
 
     def __repr__(self):
         return "LRItem(%s -> %s)" % (self.规则名称, " ".join(self.所在模式位置))

@@ -95,16 +95,16 @@ class 语法分析器母机(object):
 
     def compute_grammar_hash(self, g):
         hasher = hashlib.sha1()
-        hasher.update(g.start.encode())
+        hasher.update(g.开头.encode())
         hasher.update(json.dumps(sorted(g.各词所在语法表)).encode())
         for term, (assoc, level) in sorted(iteritems(g.优先级)):
             hasher.update(term.encode())
             hasher.update(assoc.encode())
             hasher.update(bytes(level))
-        for p in g.各规则:
-            hasher.update(p.名称.encode())
-            hasher.update(json.dumps(p.优先级).encode())
-            hasher.update(json.dumps(p.模式).encode())
+        for 规则 in g.各规则:
+            hasher.update(规则.名称.encode())
+            hasher.update(json.dumps(规则.优先级).encode())
+            hasher.update(json.dumps(规则.模式).encode())
         return hasher.hexdigest()
 
     def serialize_table(self, 表):
@@ -114,16 +114,16 @@ class 语法分析器母机(object):
             "取合不定": 表.取合不定,
             "不知咋合": 表.不知咋合,
             "default_reductions": 表.default_reductions,
-            "start": 表.语法.start,
+            "start": 表.语法.开头,
             "terminals": sorted(表.语法.各词所在语法表),
             "precedence": 表.语法.优先级,
             "productions": [
-                (p.名称, p.模式, p.优先级) for p in 表.语法.各规则
+                (规则.名称, 规则.模式, 规则.优先级) for 规则 in 表.语法.各规则
             ],
         }
 
     def data_is_valid(self, g, data):
-        if g.start != data["start"]:
+        if g.开头 != data["start"]:
             return False
         if sorted(g.各词所在语法表) != data["terminals"]:
             return False
@@ -134,12 +134,12 @@ class 语法分析器母机(object):
                 return False
         if len(g.各规则) != len(data["productions"]):
             return False
-        for p, (name, 模式, (assoc, level)) in zip(g.各规则, data["productions"]):
-            if p.名称 != name:
+        for 规则, (name, 模式, (assoc, level)) in zip(g.各规则, data["productions"]):
+            if 规则.名称 != name:
                 return False
-            if p.模式 != 模式:
+            if 规则.模式 != 模式:
                 return False
-            if p.优先级 != (assoc, level):
+            if 规则.优先级 != (assoc, level):
                 return False
         return True
 
@@ -317,7 +317,7 @@ class LRTable(object):
             st_actionp = {}
             st_goto = {}
             for p in I:
-                if p.getlength() == p.lr_index + 1:
+                if p.getlength() == p.索引 + 1:
                     if p.规则名称 == "S'":
                         # Start symbol. Accept!
                         st_action["$end"] = 0
@@ -358,7 +358,7 @@ class LRTable(object):
                                 st_actionp[a] = p
                                 语法.各规则[p.规则序号].reduced += 1
                 else:
-                    i = p.lr_index
+                    i = p.索引
                     a = p.所在模式位置[i + 1]
                     if a in 语法.各词所在语法表:
                         g = cls.lr0_goto(I, a, add_count, goto_cache)
@@ -388,7 +388,7 @@ class LRTable(object):
                                 st_actionp[a] = p
             nkeys = set()
             for ii in I:
-                for s in ii.unique_syms:
+                for s in ii.规则所含符号集合:
                     if s in 语法.各短语对应语法号:
                         nkeys.add(s)
             for n in nkeys:
@@ -420,7 +420,7 @@ class LRTable(object):
 
             asyms = set()
             for ii in I:
-                asyms.update(ii.unique_syms)
+                asyms.update(ii.规则所含符号集合)
             for x in asyms:
                 g = cls.lr0_goto(I, x, add_count, goto_cache)
                 if not g:
@@ -453,8 +453,8 @@ class LRTable(object):
         s = goto_cache.setdefault(x, IdentityDict())
 
         gs = []
-        for p in I:
-            n = p.lr_next
+        for 规则 in I:
+            n = 规则.lr_next
             if n and n.lr_before == x:
                 s1 = s.get(n)
                 if not s1:
@@ -504,8 +504,8 @@ class LRTable(object):
         trans = []
         for idx, state in enumerate(C):
             for p in state:
-                if p.lr_index < p.getlength() - 1:
-                    t = (idx, p.所在模式位置[p.lr_index + 1])
+                if p.索引 < p.getlength() - 1:
+                    t = (idx, p.所在模式位置[p.索引 + 1])
                     if t[1] in 语法.各短语对应语法号 and t not in trans:
                         trans.append(t)
         return trans
@@ -533,8 +533,8 @@ class LRTable(object):
 
         g = cls.lr0_goto(C[state], N, add_count, goto_cache)
         for p in g:
-            if p.lr_index < p.getlength() - 1:
-                a = p.所在模式位置[p.lr_index + 1]
+            if p.索引 < p.getlength() - 1:
+                a = p.所在模式位置[p.索引 + 1]
                 if a in 语法.各词所在语法表 and a not in terms:
                     terms.append(a)
         if state == 0 and N == 语法.各规则[0].模式[0]:
@@ -549,8 +549,8 @@ class LRTable(object):
         g = cls.lr0_goto(C[state], N, add_count, goto_cache)
         j = cidhash.get(g, -1)
         for p in g:
-            if p.lr_index < p.getlength() - 1:
-                a = p.所在模式位置[p.lr_index + 1]
+            if p.索引 < p.getlength() - 1:
+                a = p.所在模式位置[p.索引 + 1]
                 if a in empty:
                     rel.append((j, a))
         return rel
@@ -569,14 +569,14 @@ class LRTable(object):
                 if p.规则名称 != N:
                     continue
 
-                lr_index = p.lr_index
+                索引 = p.索引
                 j = state
-                while lr_index < p.getlength() - 1:
-                    lr_index += 1
-                    t = p.所在模式位置[lr_index]
+                while 索引 < p.getlength() - 1:
+                    索引 += 1
+                    t = p.所在模式位置[索引]
 
                     if (j, t) in dtrans:
-                        li = lr_index + 1
+                        li = 索引 + 1
                         while li < p.getlength():
                             if p.所在模式位置[li] in 语法.各词所在语法表:
                                 break
@@ -595,7 +595,7 @@ class LRTable(object):
                     if r.getlength() != p.getlength():
                         continue
                     i = 0
-                    while i < r.lr_index:
+                    while i < r.索引:
                         if r.所在模式位置[i] != p.所在模式位置[i + 1]:
                             break
                         i += 1
@@ -610,9 +610,9 @@ class LRTable(object):
     @classmethod
     def 添加预读(cls, lookbacks, followset):
         for trans, lb in iteritems(lookbacks):
-            for state, p in lb:
+            for state, 规则 in lb:
                 f = followset.get(trans, [])
-                laheads = p.预读.setdefault(state, [])
+                laheads = 规则.预读.setdefault(state, [])
                 for a in f:
                     if a not in laheads:
                         laheads.append(a)
