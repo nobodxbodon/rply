@@ -23,7 +23,7 @@ class 语法(object):
         self.优先级 = {}
         self.开头 = None
 
-    def add_production(self, 名称, syms, func, 优先级):
+    def 添加规则(self, 名称, syms, func, 优先级):
         if 名称 in self.各词所在语法表:
             raise ParserGeneratorError("Illegal rule name %r" % 名称)
 
@@ -52,16 +52,16 @@ class 语法(object):
 
         self.各短语语法表.setdefault(名称, []).append(某规则)
 
-    def set_precedence(self, term, assoc, level):
+    def 设置优先级(self, term, 结合性, 层级):
         if term in self.优先级:
             raise ParserGeneratorError(
                 "%s 的优先级已指定" % term
             )
-        if assoc not in ["left", "right", "nonassoc"]:
+        if 结合性 not in ["left", "right", "nonassoc"]:
             raise ParserGeneratorError(
-                "优先级只能是左、右或非链（left, right, nonassoc），现为 %s" % (assoc)
+                "优先级只能是左、右或非链（left, right, nonassoc），现为 %s" % (结合性)
             )
-        self.优先级[term] = (assoc, level)
+        self.优先级[term] = (结合性, 层级)
 
     '''注意：将首个语法规则作为"根"，因此添加语法规则的顺序影响结果'''
     def 牵头(self):

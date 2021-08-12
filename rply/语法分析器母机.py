@@ -27,7 +27,7 @@ class 语法分析器母机(object):
     :param 优先级: A list of tuples defining the order of operation for
                        avoiding ambiguity, consisting of a string defining
                        associativity (left, right or nonassoc) and a list of
-                       token names with the same associativity and level of
+                       token names with the same associativity and 层级 of
                        precedence.
     :param cache_id: A string specifying an ID for caching.
     """
@@ -93,15 +93,15 @@ class 语法分析器母机(object):
         self.错误处理 = func
         return func
 
-    def compute_grammar_hash(self, g):
+    def compute_grammar_hash(self, 语法):
         hasher = hashlib.sha1()
-        hasher.update(g.开头.encode())
-        hasher.update(json.dumps(sorted(g.各词所在语法表)).encode())
-        for term, (assoc, level) in sorted(iteritems(g.优先级)):
+        hasher.update(语法.开头.encode())
+        hasher.update(json.dumps(sorted(语法.各词所在语法表)).encode())
+        for term, (结合性, 层级) in sorted(iteritems(语法.优先级)):
             hasher.update(term.encode())
-            hasher.update(assoc.encode())
-            hasher.update(bytes(level))
-        for 规则 in g.各规则:
+            hasher.update(结合性.encode())
+            hasher.update(bytes(层级))
+        for 规则 in 语法.各规则:
             hasher.update(规则.名称.encode())
             hasher.update(json.dumps(规则.优先级).encode())
             hasher.update(json.dumps(规则.模式).encode())
@@ -122,55 +122,55 @@ class 语法分析器母机(object):
             ],
         }
 
-    def data_is_valid(self, g, data):
-        if g.开头 != data["start"]:
+    def data_is_valid(self, 语法, data):
+        if 语法.开头 != data["start"]:
             return False
-        if sorted(g.各词所在语法表) != data["terminals"]:
+        if sorted(语法.各词所在语法表) != data["terminals"]:
             return False
-        if sorted(g.优先级) != sorted(data["precedence"]):
+        if sorted(语法.优先级) != sorted(data["precedence"]):
             return False
-        for key, (assoc, level) in iteritems(g.优先级):
-            if data["precedence"][key] != [assoc, level]:
+        for key, (结合性, 层级) in iteritems(语法.优先级):
+            if data["precedence"][key] != [结合性, 层级]:
                 return False
-        if len(g.各规则) != len(data["productions"]):
+        if len(语法.各规则) != len(data["productions"]):
             return False
-        for 规则, (name, 模式, (assoc, level)) in zip(g.各规则, data["productions"]):
+        for 规则, (name, 模式, (结合性, 层级)) in zip(语法.各规则, data["productions"]):
             if 规则.名称 != name:
                 return False
             if 规则.模式 != 模式:
                 return False
-            if 规则.优先级 != (assoc, level):
+            if 规则.优先级 != (结合性, 层级):
                 return False
         return True
 
     def 产出(self):
-        g = 语法(self.词表)
+        语法细节 = 语法(self.词表)
 
-        for level, (assoc, terms) in enumerate(self.优先级, 1):
+        for 层级, (结合性, terms) in enumerate(self.优先级, 1):
             for term in terms:
-                g.set_precedence(term, assoc, level)
+                语法细节.设置优先级(term, 结合性, 层级)
 
-        for prod_name, syms, func, precedence in self.productions:
-            g.add_production(prod_name, syms, func, precedence)
+        for prod_name, syms, func, 优先级 in self.productions:
+            语法细节.添加规则(prod_name, syms, func, 优先级)
 
-        g.牵头()
+        语法细节.牵头()
 
-        for unused_term in g.unused_terminals():
+        for unused_term in 语法细节.unused_terminals():
             warnings.warn(
                 "词 %r 无用" % unused_term,
                 ParserGeneratorWarning,
                 stacklevel=2
             )
-        for unused_prod in g.无用规则():
+        for unused_prod in 语法细节.无用规则():
             warnings.warn(
                 "规则 %r 无用" % unused_prod,
                 ParserGeneratorWarning,
                 stacklevel=2
             )
 
-        g.build_lritems()
-        g.compute_first()
-        g.compute_follow()
+        语法细节.build_lritems()
+        语法细节.compute_first()
+        语法细节.compute_follow()
 
         表 = None
         if self.cache_id is not None:
@@ -178,17 +178,17 @@ class 语法分析器母机(object):
             cache_file = os.path.join(
                 cache_dir,
                 "%s-%s-%s.json" % (
-                    self.cache_id, self.VERSION, self.compute_grammar_hash(g)
+                    self.cache_id, self.VERSION, self.compute_grammar_hash(语法细节)
                 )
             )
 
             if os.path.exists(cache_file):
                 with open(cache_file) as f:
                     data = json.load(f)
-                if self.data_is_valid(g, data):
-                    表 = LRTable.from缓存(g, data)
+                if self.data_is_valid(语法细节, data):
+                    表 = LRTable.from缓存(语法细节, data)
         if 表 is None:
-            表 = LRTable.from语法(g)
+            表 = LRTable.from语法(语法细节)
 
             if self.cache_id is not None:
                 self._write_cache(cache_dir, cache_file, 表)
