@@ -11,7 +11,7 @@ from appdirs import AppDirs
 from rply.报错 import ParserGeneratorError, ParserGeneratorWarning
 from rply.语法 import 语法
 from rply.语法分析器 import LRParser
-from rply.功用 import Counter, IdentityDict, iteritems, itervalues
+from rply.功用 import 计数器, IdentityDict, iteritems, itervalues
 
 
 LARGE_VALUE = sys.maxsize
@@ -33,14 +33,14 @@ class 语法分析器母机(object):
     """
     VERSION = 1
 
-    def __init__(self, 词表, 优先级=[], cache_id=None):
-        self.词表 = 词表
-        self.productions = []
-        self.优先级 = 优先级
-        self.cache_id = cache_id
-        self.错误处理 = None
+    def __init__(自身, 词表, 优先级=[], cache_id=None):
+        自身.词表 = 词表
+        自身.productions = []
+        自身.优先级 = 优先级
+        自身.cache_id = cache_id
+        自身.错误处理 = None
 
-    def 语法规则(self, 描述, 优先级=None):
+    def 语法规则(自身, 描述, 优先级=None):
         """
         A decorator that defines a production rule and registers the decorated
         function to be called with the terminals and non-terminals matched by
@@ -78,11 +78,11 @@ class 语法分析器母机(object):
         组成 = 部分[2:]
 
         def inner(func):
-            self.productions.append((名称, 组成, func, 优先级))
+            自身.productions.append((名称, 组成, func, 优先级))
             return func
         return inner
 
-    def 报错(self, func):
+    def 报错(自身, func):
         """
         Sets the error handler that is called with the state (if passed to the
         parser) and the token the parser errored on.
@@ -90,10 +90,10 @@ class 语法分析器母机(object):
         Currently error handlers must raise an exception. If an error handler
         is not defined, a :exc:`rply.ParsingError` will be raised.
         """
-        self.错误处理 = func
+        自身.错误处理 = func
         return func
 
-    def compute_grammar_hash(self, 语法):
+    def compute_grammar_hash(自身, 语法):
         hasher = hashlib.sha1()
         hasher.update(语法.开头.encode())
         hasher.update(json.dumps(sorted(语法.各词所在语法表)).encode())
@@ -107,7 +107,7 @@ class 语法分析器母机(object):
             hasher.update(json.dumps(规则.模式).encode())
         return hasher.hexdigest()
 
-    def serialize_table(self, 表):
+    def serialize_table(自身, 表):
         return {
             "lr_action": 表.lr_action,
             "lr_goto": 表.lr_goto,
@@ -122,7 +122,7 @@ class 语法分析器母机(object):
             ],
         }
 
-    def data_is_valid(self, 语法, data):
+    def data_is_valid(自身, 语法, data):
         if 语法.开头 != data["start"]:
             return False
         if sorted(语法.各词所在语法表) != data["terminals"]:
@@ -143,14 +143,14 @@ class 语法分析器母机(object):
                 return False
         return True
 
-    def 产出(self):
-        语法细节 = 语法(self.词表)
+    def 产出(自身):
+        语法细节 = 语法(自身.词表)
 
-        for 层级, (结合性, terms) in enumerate(self.优先级, 1):
+        for 层级, (结合性, terms) in enumerate(自身.优先级, 1):
             for term in terms:
                 语法细节.设置优先级(term, 结合性, 层级)
 
-        for prod_name, syms, func, 优先级 in self.productions:
+        for prod_name, syms, func, 优先级 in 自身.productions:
             语法细节.添加规则(prod_name, syms, func, 优先级)
 
         语法细节.牵头()
@@ -173,25 +173,25 @@ class 语法分析器母机(object):
         语法细节.compute_follow()
 
         表 = None
-        if self.cache_id is not None:
+        if 自身.cache_id is not None:
             cache_dir = AppDirs("rply").user_cache_dir
             cache_file = os.path.join(
                 cache_dir,
                 "%s-%s-%s.json" % (
-                    self.cache_id, self.VERSION, self.compute_grammar_hash(语法细节)
+                    自身.cache_id, 自身.VERSION, 自身.compute_grammar_hash(语法细节)
                 )
             )
 
             if os.path.exists(cache_file):
                 with open(cache_file) as f:
                     data = json.load(f)
-                if self.data_is_valid(语法细节, data):
+                if 自身.data_is_valid(语法细节, data):
                     表 = LRTable.from缓存(语法细节, data)
         if 表 is None:
             表 = LRTable.from语法(语法细节)
 
-            if self.cache_id is not None:
-                self._write_cache(cache_dir, cache_file, 表)
+            if 自身.cache_id is not None:
+                自身._write_cache(cache_dir, cache_file, 表)
 
         if 表.取合不定:
             歧义 = 表.取合不定
@@ -212,9 +212,9 @@ class 语法分析器母机(object):
                 ParserGeneratorWarning,
                 stacklevel=2,
             )
-        return LRParser(表, self.错误处理)
+        return LRParser(表, 自身.错误处理)
 
-    def _write_cache(self, cache_dir, cache_file, 表):
+    def _write_cache(自身, cache_dir, cache_file, 表):
         if not os.path.exists(cache_dir):
             try:
                 os.makedirs(cache_dir, mode=0o0700)
@@ -224,7 +224,7 @@ class 语法分析器母机(object):
                 raise
 
         with tempfile.NamedTemporaryFile(dir=cache_dir, delete=False, mode="w") as f:
-            json.dump(self.serialize_table(表), f)
+            json.dump(自身.serialize_table(表), f)
         os.rename(f.name, cache_file)
 
 
@@ -269,17 +269,17 @@ def traverse(x, N, stack, F, X, R, FP):
 
 
 class LRTable(object):
-    def __init__(self, 语法, lr_action, lr_goto, default_reductions,
+    def __init__(自身, 语法, lr_action, lr_goto, default_reductions,
                  取合不定, 不知咋合):
-        self.语法 = 语法
-        self.lr_action = lr_action
-        self.lr_goto = lr_goto
-        self.default_reductions = default_reductions
-        self.取合不定 = 取合不定
-        self.不知咋合 = 不知咋合
+        自身.语法 = 语法
+        自身.lr_action = lr_action
+        自身.lr_goto = lr_goto
+        自身.default_reductions = default_reductions
+        自身.取合不定 = 取合不定
+        自身.不知咋合 = 不知咋合
 
     @classmethod
-    def from缓存(cls, 语法, data):
+    def from缓存(本类, 语法, data):
         lr_action = [
             dict([(str(k), v) for k, v in iteritems(action)])
             for action in data["lr_action"]
@@ -298,13 +298,13 @@ class LRTable(object):
         )
 
     @classmethod
-    def from语法(cls, 语法):
+    def from语法(本类, 语法):
         cidhash = IdentityDict()
         goto_cache = {}
-        add_count = Counter()
-        C = cls.lr0_items(语法, add_count, cidhash, goto_cache)
+        计数 = 计数器()
+        C = 本类.lr0_items(语法, 计数, cidhash, goto_cache)
 
-        cls.添加lalr预读(语法, C, add_count, cidhash, goto_cache)
+        本类.添加lalr预读(语法, C, 计数, cidhash, goto_cache)
 
         lr_action = [None] * len(C)
         lr_goto = [None] * len(C)
@@ -361,7 +361,7 @@ class LRTable(object):
                     i = p.索引
                     a = p.所在模式位置[i + 1]
                     if a in 语法.各词所在语法表:
-                        g = cls.lr0_goto(I, a, add_count, goto_cache)
+                        g = 本类.lr0_goto(I, a, 计数, goto_cache)
                         j = cidhash.get(g, -1)
                         if j >= 0:
                             if a in st_action:
@@ -392,7 +392,7 @@ class LRTable(object):
                     if s in 语法.各短语对应语法号:
                         nkeys.add(s)
             for n in nkeys:
-                g = cls.lr0_goto(I, n, add_count, goto_cache)
+                g = 本类.lr0_goto(I, n, 计数, goto_cache)
                 j = cidhash.get(g, -1)
                 if j >= 0:
                     st_goto[n] = j
@@ -408,8 +408,8 @@ class LRTable(object):
         return LRTable(语法, lr_action, lr_goto, default_reductions, 取合不定, 不知咋合)
 
     @classmethod
-    def lr0_items(cls, 语法, add_count, cidhash, goto_cache):
-        C = [cls.lr0_closure([语法.各规则[0].lr_next], add_count)]
+    def lr0_items(本类, 语法, 计数, cidhash, goto_cache):
+        C = [本类.lr0_closure([语法.各规则[0].lr_next], 计数)]
         for i, I in enumerate(C):
             cidhash[I] = i
 
@@ -422,7 +422,7 @@ class LRTable(object):
             for ii in I:
                 asyms.update(ii.规则所含符号集合)
             for x in asyms:
-                g = cls.lr0_goto(I, x, add_count, goto_cache)
+                g = 本类.lr0_goto(I, x, 计数, goto_cache)
                 if not g:
                     continue
                 if g in cidhash:
@@ -432,8 +432,8 @@ class LRTable(object):
         return C
 
     @classmethod
-    def lr0_closure(cls, I, add_count):
-        add_count.incr()
+    def lr0_closure(本类, I, 计数):
+        计数.递增()
 
         J = I[:]
         added = True
@@ -441,15 +441,15 @@ class LRTable(object):
             added = False
             for j in J:
                 for x in j.lr_after:
-                    if x.lr0_added == add_count.value:
+                    if x.lr0_added == 计数.值:
                         continue
                     J.append(x.lr_next)
-                    x.lr0_added = add_count.value
+                    x.lr0_added = 计数.值
                     added = True
         return J
 
     @classmethod
-    def lr0_goto(cls, I, x, add_count, goto_cache):
+    def lr0_goto(本类, I, x, 计数, goto_cache):
         s = goto_cache.setdefault(x, IdentityDict())
 
         gs = []
@@ -465,23 +465,23 @@ class LRTable(object):
         g = s.get("$end")
         if not g:
             if gs:
-                g = cls.lr0_closure(gs, add_count)
+                g = 本类.lr0_closure(gs, 计数)
                 s["$end"] = g
             else:
                 s["$end"] = gs
         return g
 
     @classmethod
-    def 添加lalr预读(cls, 语法, C, add_count, cidhash, goto_cache):
-        nullable = cls.compute_nullable_nonterminals(语法)
-        trans = cls.find_nonterminal_transitions(语法, C)
-        readsets = cls.compute_read_sets(语法, C, trans, nullable, add_count, cidhash, goto_cache)
-        lookd, included = cls.compute_lookback_includes(语法, C, trans, nullable, add_count, cidhash, goto_cache)
-        followsets = cls.compute_follow_sets(trans, readsets, included)
-        cls.添加预读(lookd, followsets)
+    def 添加lalr预读(本类, 语法, C, 计数, cidhash, goto_cache):
+        nullable = 本类.compute_nullable_nonterminals(语法)
+        trans = 本类.find_nonterminal_transitions(语法, C)
+        readsets = 本类.compute_read_sets(语法, C, trans, nullable, 计数, cidhash, goto_cache)
+        lookd, included = 本类.compute_lookback_includes(语法, C, trans, nullable, 计数, cidhash, goto_cache)
+        followsets = 本类.compute_follow_sets(trans, readsets, included)
+        本类.添加预读(lookd, followsets)
 
     @classmethod
-    def compute_nullable_nonterminals(cls, 语法):
+    def compute_nullable_nonterminals(本类, 语法):
         nullable = set()
         num_nullable = 0
         while True:
@@ -500,7 +500,7 @@ class LRTable(object):
         return nullable
 
     @classmethod
-    def find_nonterminal_transitions(cls, 语法, C):
+    def find_nonterminal_transitions(本类, 语法, C):
         trans = []
         for idx, state in enumerate(C):
             for p in state:
@@ -511,15 +511,15 @@ class LRTable(object):
         return trans
 
     @classmethod
-    def compute_read_sets(cls, 语法, C, ntrans, nullable, add_count, cidhash, goto_cache):
+    def compute_read_sets(本类, 语法, C, ntrans, nullable, 计数, cidhash, goto_cache):
         return digraph(
             ntrans,
-            R=lambda x: cls.reads_relation(C, x, nullable, add_count, cidhash, goto_cache),
-            FP=lambda x: cls.dr_relation(语法, C, x, nullable, add_count, goto_cache)
+            R=lambda x: 本类.reads_relation(C, x, nullable, 计数, cidhash, goto_cache),
+            FP=lambda x: 本类.dr_relation(语法, C, x, nullable, 计数, goto_cache)
         )
 
     @classmethod
-    def compute_follow_sets(cls, ntrans, readsets, includesets):
+    def compute_follow_sets(本类, ntrans, readsets, includesets):
         return digraph(
             ntrans,
             R=lambda x: includesets.get(x, []),
@@ -527,11 +527,11 @@ class LRTable(object):
         )
 
     @classmethod
-    def dr_relation(cls, 语法, C, trans, nullable, add_count, goto_cache):
+    def dr_relation(本类, 语法, C, trans, nullable, 计数, goto_cache):
         state, N = trans
         terms = []
 
-        g = cls.lr0_goto(C[state], N, add_count, goto_cache)
+        g = 本类.lr0_goto(C[state], N, 计数, goto_cache)
         for p in g:
             if p.索引 < p.getlength() - 1:
                 a = p.所在模式位置[p.索引 + 1]
@@ -542,11 +542,11 @@ class LRTable(object):
         return terms
 
     @classmethod
-    def reads_relation(cls, C, trans, empty, add_count, cidhash, goto_cache):
+    def reads_relation(本类, C, trans, empty, 计数, cidhash, goto_cache):
         rel = []
         state, N = trans
 
-        g = cls.lr0_goto(C[state], N, add_count, goto_cache)
+        g = 本类.lr0_goto(C[state], N, 计数, goto_cache)
         j = cidhash.get(g, -1)
         for p in g:
             if p.索引 < p.getlength() - 1:
@@ -556,7 +556,7 @@ class LRTable(object):
         return rel
 
     @classmethod
-    def compute_lookback_includes(cls, 语法, C, trans, nullable, add_count, cidhash, goto_cache):
+    def compute_lookback_includes(本类, 语法, C, trans, nullable, 计数, cidhash, goto_cache):
         lookdict = {}
         includedict = {}
 
@@ -586,7 +586,7 @@ class LRTable(object):
                         else:
                             includes.append((j, t))
 
-                    g = cls.lr0_goto(C[j], t, add_count, goto_cache)
+                    g = 本类.lr0_goto(C[j], t, 计数, goto_cache)
                     j = cidhash.get(g, -1)
 
                 for r in C[j]:
@@ -608,7 +608,7 @@ class LRTable(object):
         return lookdict, includedict
 
     @classmethod
-    def 添加预读(cls, lookbacks, followset):
+    def 添加预读(本类, lookbacks, followset):
         for trans, lb in iteritems(lookbacks):
             for state, 规则 in lb:
                 f = followset.get(trans, [])
