@@ -310,9 +310,9 @@ class LRTable(object):
         lr_goto = [None] * len(C)
         取合不定 = []
         不知咋合 = []
-        for st, I in enumerate(C):
+        for 状态号, I in enumerate(C):
             # 显示所有语法要素序列
-            # print(str(st) + '\n' + 输出序列(I) + '')
+            # print(str(状态号) + '\n' + 输出序列(I) + '')
             st_action = {}
             st_actionp = {}
             st_goto = {}
@@ -323,7 +323,7 @@ class LRTable(object):
                         st_action["$end"] = 0
                         st_actionp["$end"] = lr项
                     else:
-                        laheads = lr项.预读[st]
+                        laheads = lr项.预读[状态号]
                         for a in laheads:
                             if a in st_action:
                                 r = st_action[a]
@@ -334,11 +334,11 @@ class LRTable(object):
                                         st_action[a] = -lr项.规则序号
                                         st_actionp[a] = lr项
                                         if not 取词层级 and not 合词层级:
-                                            取合不定.append((st, repr(a), "reduce1"))
+                                            取合不定.append((状态号, repr(a), "reduce1"))
                                         语法.各规则[lr项.规则序号].reduced += 1
                                     elif not (取词层级 == 合词层级 and 合词优先方向 == "nonassoc"):
                                         if not 合词层级:
-                                            取合不定.append((st, repr(a), "shift1"))
+                                            取合不定.append((状态号, repr(a), "shift1"))
                                 elif r < 0:
                                     oldp = 语法.各规则[-r]
                                     pp = 语法.各规则[lr项.规则序号]
@@ -350,9 +350,9 @@ class LRTable(object):
                                         语法.各规则[oldp.规则序号].reduced -= 1
                                     else:
                                         chosenp, rejectp = oldp, pp
-                                    不知咋合.append((st, repr(chosenp), repr(rejectp)))
+                                    不知咋合.append((状态号, repr(chosenp), repr(rejectp)))
                                 else:
-                                    raise ParserGeneratorError("Unknown conflict in state %d" % st)
+                                    raise ParserGeneratorError("Unknown conflict in state %d" % 状态号)
                             else:
                                 st_action[a] = -lr项.规则序号
                                 st_actionp[a] = lr项
@@ -368,7 +368,7 @@ class LRTable(object):
                                 r = st_action[a]
                                 if r > 0:
                                     if r != j:
-                                        raise ParserGeneratorError("Shift/shift conflict in state %d" % st)
+                                        raise ParserGeneratorError("Shift/shift conflict in state %d" % 状态号)
                                 elif r < 0:
                                     合词优先方向, 合词层级 = 语法.各规则[st_actionp[a].规则序号].优先级
                                     sprec, 取词层级 = 语法.优先级.get(a, ("right", 0))
@@ -377,12 +377,12 @@ class LRTable(object):
                                         st_action[a] = j
                                         st_actionp[a] = lr项
                                         if not 合词层级:
-                                            取合不定.append((st, repr(a), "shift2", I))
+                                            取合不定.append((状态号, repr(a), "shift2", I))
                                     elif not (取词层级 == 合词层级 and 合词优先方向 == "nonassoc"):
                                         if not 取词层级 and not 合词层级:
-                                            取合不定.append((st, repr(a), "reduce2"))
+                                            取合不定.append((状态号, repr(a), "reduce2"))
                                 else:
-                                    raise ParserGeneratorError("Unknown conflict in state %d" % st)
+                                    raise ParserGeneratorError("Unknown conflict in state %d" % 状态号)
                             else:
                                 st_action[a] = j
                                 st_actionp[a] = lr项
@@ -397,8 +397,8 @@ class LRTable(object):
                 if j >= 0:
                     st_goto[n] = j
 
-            lr_action[st] = st_action
-            lr_goto[st] = st_goto
+            lr_action[状态号] = st_action
+            lr_goto[状态号] = st_goto
 
         default_reductions = [0] * len(lr_action)
         for state, actions in enumerate(lr_action):
