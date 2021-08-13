@@ -150,20 +150,20 @@ class 语法分析器母机(object):
             for term in terms:
                 语法细节.设置优先级(term, 结合性, 层级)
 
-        for prod_name, syms, func, 优先级 in 自身.productions:
-            语法细节.添加规则(prod_name, syms, func, 优先级)
+        for 规则名, 各符号, func, 优先级 in 自身.productions:
+            语法细节.添加规则(规则名, 各符号, func, 优先级)
 
         语法细节.牵头()
 
-        for unused_term in 语法细节.unused_terminals():
+        for 词 in 语法细节.无用词():
             warnings.warn(
-                "词 %r 无用" % unused_term,
+                "词 %r 无用" % 词,
                 ParserGeneratorWarning,
                 stacklevel=2
             )
-        for unused_prod in 语法细节.无用规则():
+        for 规则 in 语法细节.无用规则():
             warnings.warn(
-                "规则 %r 无用" % unused_prod,
+                "规则 %r 无用" % 规则,
                 ParserGeneratorWarning,
                 stacklevel=2
             )
@@ -302,7 +302,7 @@ class LRTable(object):
         cidhash = IdentityDict()
         goto_cache = {}
         计数 = 计数器()
-        C = 本类.lr0_items(语法, 计数, cidhash, goto_cache)
+        C = 本类.lr0各项(语法, 计数, cidhash, goto_cache)
 
         本类.添加lalr预读(语法, C, 计数, cidhash, goto_cache)
 
@@ -401,14 +401,14 @@ class LRTable(object):
             lr_goto[状态号] = st_goto
 
         default_reductions = [0] * len(lr_action)
-        for state, actions in enumerate(lr_action):
+        for 状态号, actions in enumerate(lr_action):
             actions = set(itervalues(actions))
             if len(actions) == 1 and next(iter(actions)) < 0:
-                default_reductions[state] = next(iter(actions))
+                default_reductions[状态号] = next(iter(actions))
         return LRTable(语法, lr_action, lr_goto, default_reductions, 取合不定, 不知咋合)
 
     @classmethod
-    def lr0_items(本类, 语法, 计数, cidhash, goto_cache):
+    def lr0各项(本类, 语法, 计数, cidhash, goto_cache):
         C = [本类.lr0_closure([语法.各规则[0].lr_next], 计数)]
         for i, I in enumerate(C):
             cidhash[I] = i
@@ -502,8 +502,8 @@ class LRTable(object):
     @classmethod
     def find_nonterminal_transitions(本类, 语法, C):
         trans = []
-        for idx, state in enumerate(C):
-            for lr项 in state:
+        for idx, 状态 in enumerate(C):
+            for lr项 in 状态:
                 if lr项.索引 < lr项.取长度() - 1:
                     t = (idx, lr项.所在模式位置[lr项.索引 + 1])
                     if t[1] in 语法.各短语对应语法号 and t not in trans:
@@ -528,25 +528,25 @@ class LRTable(object):
 
     @classmethod
     def dr_relation(本类, 语法, C, trans, nullable, 计数, goto_cache):
-        state, N = trans
+        状态号, N = trans
         terms = []
 
-        g = 本类.lr0_goto(C[state], N, 计数, goto_cache)
+        g = 本类.lr0_goto(C[状态号], N, 计数, goto_cache)
         for lr项 in g:
             if lr项.索引 < lr项.取长度() - 1:
                 a = lr项.所在模式位置[lr项.索引 + 1]
                 if a in 语法.各词所在语法表 and a not in terms:
                     terms.append(a)
-        if state == 0 and N == 语法.各规则[0].模式[0]:
+        if 状态号 == 0 and N == 语法.各规则[0].模式[0]:
             terms.append("$end")
         return terms
 
     @classmethod
     def reads_relation(本类, C, trans, empty, 计数, cidhash, goto_cache):
         rel = []
-        state, N = trans
+        状态号, N = trans
 
-        g = 本类.lr0_goto(C[state], N, 计数, goto_cache)
+        g = 本类.lr0_goto(C[状态号], N, 计数, goto_cache)
         j = cidhash.get(g, -1)
         for lr项 in g:
             if lr项.索引 < lr项.取长度() - 1:
@@ -562,15 +562,15 @@ class LRTable(object):
 
         dtrans = dict.fromkeys(trans, 1)
 
-        for state, N in trans:
+        for 状态号, N in trans:
             lookb = []
             includes = []
-            for lr项 in C[state]:
+            for lr项 in C[状态号]:
                 if lr项.规则名称 != N:
                     continue
 
                 索引 = lr项.索引
-                j = state
+                j = 状态号
                 while 索引 < lr项.取长度() - 1:
                     索引 += 1
                     词 = lr项.所在模式位置[索引]
@@ -603,16 +603,16 @@ class LRTable(object):
                         lookb.append((j, r))
 
             for i in includes:
-                includedict.setdefault(i, []).append((state, N))
-            lookdict[state, N] = lookb
+                includedict.setdefault(i, []).append((状态号, N))
+            lookdict[状态号, N] = lookb
         return lookdict, includedict
 
     @classmethod
     def 添加预读(本类, lookbacks, followset):
         for trans, lb in iteritems(lookbacks):
-            for state, 规则 in lb:
+            for 状态号, 规则 in lb:
                 f = followset.get(trans, [])
-                laheads = 规则.预读.setdefault(state, [])
+                laheads = 规则.预读.setdefault(状态号, [])
                 for a in f:
                     if a not in laheads:
                         laheads.append(a)

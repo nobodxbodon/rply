@@ -2,10 +2,10 @@ from rply.报错 import ParserGeneratorError
 from rply.功用 import iteritems
 
 
-def rightmost_terminal(symbols, terminals):
-    for sym in reversed(symbols):
-        if sym in terminals:
-            return sym
+def 最右侧词(各符号, 各词):
+    for 符号 in reversed(各符号):
+        if 符号 in 各词:
+            return 符号
     return None
 
 
@@ -23,12 +23,12 @@ class 语法(object):
         自身.优先级 = {}
         自身.开头 = None
 
-    def 添加规则(自身, 名称, syms, func, 优先级):
+    def 添加规则(自身, 名称, 各符号, func, 优先级):
         if 名称 in 自身.各词所在语法表:
             raise ParserGeneratorError("Illegal rule name %r" % 名称)
 
         if 优先级 is None:
-            precname = rightmost_terminal(syms, 自身.各词所在语法表)
+            precname = 最右侧词(各符号, 自身.各词所在语法表)
             规则优先级 = 自身.优先级.get(precname, ("right", 0))
         else:
             try:
@@ -41,13 +41,13 @@ class 语法(object):
         序号 = len(自身.各规则)
         自身.各短语对应语法号.setdefault(名称, [])
 
-        for 词 in syms:
+        for 词 in 各符号:
             if 词 in 自身.各词所在语法表:
                 自身.各词所在语法表[词].append(序号)
             else:
                 自身.各短语对应语法号.setdefault(词, []).append(序号)
 
-        某规则 = 规则(序号, 名称, syms, 规则优先级, func)
+        某规则 = 规则(序号, 名称, 各符号, 规则优先级, func)
         自身.各规则.append(某规则)
 
         自身.各短语语法表.setdefault(名称, []).append(某规则)
@@ -70,7 +70,7 @@ class 语法(object):
         自身.各短语对应语法号[规则名].append(0)
         自身.开头 = 规则名
 
-    def unused_terminals(自身):
+    def 无用词(自身):
         return [
             词
             for 词, prods in iteritems(自身.各词所在语法表)
