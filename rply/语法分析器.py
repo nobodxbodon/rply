@@ -16,14 +16,14 @@ class LRParser(object):
         预读栈 = []
 
         状态栈 = [0]
-        symstack = [词("$end", "$end")]
+        符号栈 = [词("$end", "$end")]
 
         当前状态 = 0
         while True:
             if 自身.lr_table.default_reductions[当前状态]:
                 t = 自身.lr_table.default_reductions[当前状态]
                 当前状态 = 自身._reduce_production(
-                    t, symstack, 状态栈, state
+                    t, 符号栈, 状态栈, state
                 )
                 continue
 
@@ -45,16 +45,16 @@ class LRParser(object):
                 if t > 0:
                     状态栈.append(t)
                     当前状态 = t
-                    symstack.append(预读)
+                    符号栈.append(预读)
                     预读 = None
                     continue
                 elif t < 0:
                     当前状态 = 自身._reduce_production(
-                        t, symstack, 状态栈, state
+                        t, 符号栈, 状态栈, state
                     )
                     continue
                 else:
-                    n = symstack[-1]
+                    n = 符号栈[-1]
                     return n
             else:
                 # TODO: actual error handling here
@@ -70,23 +70,23 @@ class LRParser(object):
                 else:
                     raise 语法分析报错(None, 预读.getsourcepos())
 
-    def _reduce_production(自身, t, symstack, 状态栈, state):
+    def _reduce_production(自身, t, 符号栈, 状态栈, 状态):
         # reduce a symbol on the stack and emit a production
         规则 = 自身.lr_table.语法.各规则[-t]
-        pname = 规则.名称
-        plen = 规则.取长度()
-        start = len(symstack) + (-plen - 1)
-        assert start >= 0
-        targ = symstack[start + 1:]
-        start = len(symstack) + (-plen)
-        assert start >= 0
-        del symstack[start:]
-        del 状态栈[start:]
-        if state is None:
+        规则名 = 规则.名称
+        规则长度 = 规则.取长度()
+        起始位置 = len(符号栈) + (-规则长度 - 1)
+        assert 起始位置 >= 0
+        targ = 符号栈[起始位置 + 1:]
+        起始位置 = len(符号栈) + (-规则长度)
+        assert 起始位置 >= 0
+        del 符号栈[起始位置:]
+        del 状态栈[起始位置:]
+        if 状态 is None:
             value = 规则.func(targ)
         else:
-            value = 规则.func(state, targ)
-        symstack.append(value)
-        当前状态 = 自身.lr_table.lr_goto[状态栈[-1]][pname]
+            value = 规则.func(状态, targ)
+        符号栈.append(value)
+        当前状态 = 自身.lr_table.lr_goto[状态栈[-1]][规则名]
         状态栈.append(当前状态)
         return 当前状态

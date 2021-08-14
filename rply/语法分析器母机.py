@@ -134,8 +134,8 @@ class 语法分析器母机(object):
                 return False
         if len(语法.各规则) != len(数据["productions"]):
             return False
-        for 规则, (name, 模式, (结合性, 层级)) in zip(语法.各规则, 数据["productions"]):
-            if 规则.名称 != name:
+        for 规则, (规则名, 模式, (结合性, 层级)) in zip(语法.各规则, 数据["productions"]):
+            if 规则.名称 != 规则名:
                 return False
             if 规则.模式 != 模式:
                 return False
