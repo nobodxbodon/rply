@@ -7,11 +7,11 @@ class LexerGenerator(分词器母机):
     def __init__(自身):
         super().__init__()
 
-    def add(自身, name, pattern, flags=0):
-        super().添了(name, pattern, flags=flags)
+    def add(自身, 词名, 模式, flags=0):
+        super().添了(词名, 模式, 匹配参数=flags)
 
-    def ignore(自身, pattern, flags=0):
-        super().略过(pattern, flags=flags)
+    def ignore(自身, 模式, flags=0):
+        super().略过(模式, 匹配参数=flags)
 
     def build(自身):
         return super().产出()

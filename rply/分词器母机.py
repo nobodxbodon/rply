@@ -4,19 +4,19 @@ from rply.分词器 import 分词器
 
 
 class 词模式(object):
-    _attrs_ = ['词名', 'flags', '_模式']
+    _attrs_ = ['词名', '匹配参数', '_模式']
 
-    def __init__(自身, 词名, 模式, flags=0):
+    def __init__(自身, 词名, 模式, 匹配参数=0):
         自身.词名 = 词名
-        自身.re = re.compile(模式, flags=flags)
+        自身.正则 = re.compile(模式, flags=匹配参数)
 
-    def matches(自身, s, pos):
-        m = 自身.re.match(s, pos)
-        return Match(*m.span(0)) if m is not None else None
+    def 匹配(自身, 源码, 位置):
+        m = 自身.正则.match(源码, 位置)
+        return 范围(*m.span(0)) if m is not None else None
 
 
-class Match(object):
-    _attrs_ = ["start", "end"]
+class 范围(object):
+    _attrs_ = ["起", "止"]
 
     def __init__(自身, 起, 止):
         自身.起 = 起
@@ -58,19 +58,19 @@ class 分词器母机(object):
         自身.规则 = []
         自身.略过规则 = []
 
-    def 添了(自身, 词名, 模式, flags=0):
+    def 添了(自身, 词名, 模式, 匹配参数=0):
         """
         Adds a rule with the given `词名` and `模式`. In case of ambiguity,
         the first rule added wins.
         """
-        自身.规则.append(词模式(词名, 模式, flags=flags))
+        自身.规则.append(词模式(词名, 模式, 匹配参数=匹配参数))
 
-    def 略过(自身, 模式, flags=0):
+    def 略过(自身, 模式, 匹配参数=0):
         """
         Adds a rule whose matched value will be ignored. Ignored 规则 will be
         matched before regular ones.
         """
-        自身.略过规则.append(词模式("", 模式, flags=flags))
+        自身.略过规则.append(词模式("", 模式, 匹配参数=匹配参数))
 
     def 产出(自身):
         """
