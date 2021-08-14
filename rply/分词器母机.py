@@ -3,12 +3,12 @@ import re
 from rply.分词器 import 分词器
 
 
-class Rule(object):
-    _attrs_ = ['name', 'flags', '_pattern']
+class 词模式(object):
+    _attrs_ = ['词名', 'flags', '_模式']
 
-    def __init__(自身, name, pattern, flags=0):
-        自身.name = name
-        自身.re = re.compile(pattern, flags=flags)
+    def __init__(自身, 词名, 模式, flags=0):
+        自身.词名 = 词名
+        自身.re = re.compile(模式, flags=flags)
 
     def matches(自身, s, pos):
         m = 自身.re.match(s, pos)
@@ -58,19 +58,19 @@ class 分词器母机(object):
         自身.规则 = []
         自身.略过规则 = []
 
-    def 添了(自身, name, pattern, flags=0):
+    def 添了(自身, 词名, 模式, flags=0):
         """
-        Adds a rule with the given `name` and `pattern`. In case of ambiguity,
+        Adds a rule with the given `词名` and `模式`. In case of ambiguity,
         the first rule added wins.
         """
-        自身.规则.append(Rule(name, pattern, flags=flags))
+        自身.规则.append(词模式(词名, 模式, flags=flags))
 
-    def 略过(自身, pattern, flags=0):
+    def 略过(自身, 模式, flags=0):
         """
         Adds a rule whose matched value will be ignored. Ignored 规则 will be
         matched before regular ones.
         """
-        自身.略过规则.append(Rule("", pattern, flags=flags))
+        自身.略过规则.append(词模式("", 模式, flags=flags))
 
     def 产出(自身):
         """

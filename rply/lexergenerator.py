@@ -1,5 +1,5 @@
 from rply import 分词器母机
-from rply.分词器母机 import Rule
+from rply.分词器母机 import 词模式
 from rply.分词器 import 分词器
 
 class LexerGenerator(分词器母机):

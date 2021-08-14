@@ -122,19 +122,19 @@ class 语法分析器母机(object):
             ],
         }
 
-    def data_is_valid(自身, 语法, data):
-        if 语法.开头 != data["start"]:
+    def 数据无误(自身, 语法, 数据):
+        if 语法.开头 != 数据["start"]:
             return False
-        if sorted(语法.各词所在语法表) != data["terminals"]:
+        if sorted(语法.各词所在语法表) != 数据["terminals"]:
             return False
-        if sorted(语法.优先级) != sorted(data["precedence"]):
+        if sorted(语法.优先级) != sorted(数据["precedence"]):
             return False
         for key, (结合性, 层级) in iteritems(语法.优先级):
-            if data["precedence"][key] != [结合性, 层级]:
+            if 数据["precedence"][key] != [结合性, 层级]:
                 return False
-        if len(语法.各规则) != len(data["productions"]):
+        if len(语法.各规则) != len(数据["productions"]):
             return False
-        for 规则, (name, 模式, (结合性, 层级)) in zip(语法.各规则, data["productions"]):
+        for 规则, (name, 模式, (结合性, 层级)) in zip(语法.各规则, 数据["productions"]):
             if 规则.名称 != name:
                 return False
             if 规则.模式 != 模式:
@@ -168,7 +168,7 @@ class 语法分析器母机(object):
                 stacklevel=2
             )
 
-        语法细节.build_lritems()
+        语法细节.生成各lr项()
         语法细节.compute_first()
         语法细节.compute_follow()
 
@@ -184,9 +184,9 @@ class 语法分析器母机(object):
 
             if os.path.exists(cache_file):
                 with open(cache_file) as f:
-                    data = json.load(f)
-                if 自身.data_is_valid(语法细节, data):
-                    表 = LRTable.from缓存(语法细节, data)
+                    数据 = json.load(f)
+                if 自身.数据无误(语法细节, 数据):
+                    表 = LRTable.from缓存(语法细节, 数据)
         if 表 is None:
             表 = LRTable.from语法(语法细节)
 
@@ -279,22 +279,22 @@ class LRTable(object):
         自身.不知咋合 = 不知咋合
 
     @classmethod
-    def from缓存(本类, 语法, data):
+    def from缓存(本类, 语法, 数据):
         lr_action = [
             dict([(str(k), v) for k, v in iteritems(action)])
-            for action in data["lr_action"]
+            for action in 数据["lr_action"]
         ]
         lr_goto = [
             dict([(str(k), v) for k, v in iteritems(goto)])
-            for goto in data["lr_goto"]
+            for goto in 数据["lr_goto"]
         ]
         return LRTable(
             语法,
             lr_action,
             lr_goto,
-            data["default_reductions"],
-            data["取合不定"],
-            data["不知咋合"]
+            数据["default_reductions"],
+            数据["取合不定"],
+            数据["不知咋合"]
         )
 
     @classmethod

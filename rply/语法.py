@@ -82,7 +82,7 @@ class 语法(object):
         #     print(短语 + ' -> ' + str(自身.各短语对应语法号[短语]))
         return [p for p, 各规则 in iteritems(自身.各短语对应语法号) if not 各规则]
 
-    def build_lritems(自身):
+    def 生成各lr项(自身):
         """
         Walks the list of productions and builds a complete set of the LR
         items.
