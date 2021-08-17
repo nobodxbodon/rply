@@ -42,15 +42,15 @@ class 语法分析器母机(object):
 
     def 语法规则(自身, 描述, 优先级=None):
         """
-        A decorator that defines a production rule and registers the decorated
-        function to be called with the terminals and non-terminals matched by
-        that rule.
+        A decorator that defines one or many production rules and registers
+        the decorated function to be called with the terminals and
+        non-terminals matched by those rules.
 
         A `rule` should consist of a name defining the non-terminal returned
-        by the decorated function and a sequence of non-terminals and terminals
-        that are supposed to be replaced::
+        by the decorated function and one or more sequences of pipe-separated
+        non-terminals and terminals that are supposed to be replaced::
 
-            replacing_non_terminal : ATERMINAL non_terminal
+            replacing_non_terminal : TERMINAL1 non_term1 | TERMINAL2 non_term2
 
         The name of the non-terminal replacing the sequence is on the left,
         separated from the sequence by a colon. The whitespace around the colon
@@ -75,10 +75,13 @@ class 语法分析器母机(object):
         名称 = 部分[0]
         if 部分[1] != ":":
             raise ParserGeneratorError("Expecting :")
-        组成 = 部分[2:]
+        规则文本 = " ".join(部分[2:])
+        所有规则 = 规则文本.split("|")
 
         def inner(func):
-            自身.productions.append((名称, 组成, func, 优先级))
+            for 规则 in 所有规则:
+                各符号 = 规则.split()
+                自身.productions.append((名称, 各符号, func, 优先级))
             return func
         return inner
 
