@@ -88,7 +88,7 @@ class 语法(object):
         items.
         """
         for 规则 in 自身.各规则:
-            print(repr(规则))
+            # print(repr(规则))
             lastlri = 规则
             i = 0
             lr_items = []
