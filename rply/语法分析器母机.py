@@ -11,7 +11,7 @@ from appdirs import AppDirs
 from rply.报错 import ParserGeneratorError, ParserGeneratorWarning
 from rply.语法 import 语法
 from rply.语法分析器 import LRParser
-from rply.功用 import Counter, IdentityDict, iteritems, itervalues
+from rply.功用 import 计数器, IdentityDict, iteritems, itervalues
 
 
 LARGE_VALUE = sys.maxsize
@@ -19,7 +19,7 @@ LARGE_VALUE = sys.maxsize
 
 class 语法分析器母机(object):
     """
-    A ParserGenerator represents a set of production rules, that define a
+    A ParserGenerator represents a set of production 规则, that define a
     sequence of terminals and non-terminals to be replaced with a non-terminal,
     which can be turned into a parser.
 
@@ -27,30 +27,30 @@ class 语法分析器母机(object):
     :param 优先级: A list of tuples defining the order of operation for
                        avoiding ambiguity, consisting of a string defining
                        associativity (left, right or nonassoc) and a list of
-                       token names with the same associativity and level of
+                       token names with the same associativity and 层级 of
                        precedence.
     :param cache_id: A string specifying an ID for caching.
     """
     VERSION = 1
 
-    def __init__(self, 词表, 优先级=[], cache_id=None):
-        self.词表 = 词表
-        self.productions = []
-        self.优先级 = 优先级
-        self.cache_id = cache_id
-        self.错误处理 = None
+    def __init__(自身, 词表, 优先级=[], cache_id=None):
+        自身.词表 = 词表
+        自身.productions = []
+        自身.优先级 = 优先级
+        自身.cache_id = cache_id
+        自身.错误处理 = None
 
-    def 语法规则(self, 描述, 优先级=None):
+    def 语法规则(自身, 描述, 优先级=None):
         """
-        A decorator that defines a production rule and registers the decorated
-        function to be called with the terminals and non-terminals matched by
-        that rule.
+        A decorator that defines one or many production rules and registers
+        the decorated function to be called with the terminals and
+        non-terminals matched by those rules.
 
         A `rule` should consist of a name defining the non-terminal returned
-        by the decorated function and a sequence of non-terminals and terminals
-        that are supposed to be replaced::
+        by the decorated function and one or more sequences of pipe-separated
+        non-terminals and terminals that are supposed to be replaced::
 
-            replacing_non_terminal : ATERMINAL non_terminal
+            replacing_non_terminal : TERMINAL1 non_term1 | TERMINAL2 non_term2
 
         The name of the non-terminal replacing the sequence is on the left,
         separated from the sequence by a colon. The whitespace around the colon
@@ -75,14 +75,17 @@ class 语法分析器母机(object):
         名称 = 部分[0]
         if 部分[1] != ":":
             raise ParserGeneratorError("Expecting :")
-        组成 = 部分[2:]
+        规则文本 = " ".join(部分[2:])
+        所有规则 = 规则文本.split("|")
 
         def inner(func):
-            self.productions.append((名称, 组成, func, 优先级))
+            for 规则 in 所有规则:
+                各符号 = 规则.split()
+                自身.productions.append((名称, 各符号, func, 优先级))
             return func
         return inner
 
-    def 报错(self, func):
+    def 报错(自身, func):
         """
         Sets the error handler that is called with the state (if passed to the
         parser) and the token the parser errored on.
@@ -90,111 +93,111 @@ class 语法分析器母机(object):
         Currently error handlers must raise an exception. If an error handler
         is not defined, a :exc:`rply.ParsingError` will be raised.
         """
-        self.错误处理 = func
+        自身.错误处理 = func
         return func
 
-    def compute_grammar_hash(self, g):
+    def compute_grammar_hash(自身, 语法):
         hasher = hashlib.sha1()
-        hasher.update(g.start.encode())
-        hasher.update(json.dumps(sorted(g.各词所在语法表)).encode())
-        for term, (assoc, level) in sorted(iteritems(g.优先级)):
+        hasher.update(语法.开头.encode())
+        hasher.update(json.dumps(sorted(语法.各词所在语法表)).encode())
+        for term, (结合性, 层级) in sorted(iteritems(语法.优先级)):
             hasher.update(term.encode())
-            hasher.update(assoc.encode())
-            hasher.update(bytes(level))
-        for p in g.各规则:
-            hasher.update(p.name.encode())
-            hasher.update(json.dumps(p.prec).encode())
-            hasher.update(json.dumps(p.prod).encode())
+            hasher.update(结合性.encode())
+            hasher.update(bytes(层级))
+        for 规则 in 语法.各规则:
+            hasher.update(规则.名称.encode())
+            hasher.update(json.dumps(规则.优先级).encode())
+            hasher.update(json.dumps(规则.模式).encode())
         return hasher.hexdigest()
 
-    def serialize_table(self, table):
+    def serialize_table(自身, 表):
         return {
-            "lr_action": table.lr_action,
-            "lr_goto": table.lr_goto,
-            "sr_conflicts": table.sr_conflicts,
-            "rr_conflicts": table.rr_conflicts,
-            "default_reductions": table.default_reductions,
-            "start": table.grammar.start,
-            "terminals": sorted(table.grammar.各词所在语法表),
-            "precedence": table.grammar.优先级,
+            "lr_action": 表.lr_action,
+            "lr_goto": 表.lr_goto,
+            "取合不定": 表.取合不定,
+            "不知咋合": 表.不知咋合,
+            "default_reductions": 表.default_reductions,
+            "start": 表.语法.开头,
+            "terminals": sorted(表.语法.各词所在语法表),
+            "precedence": 表.语法.优先级,
             "productions": [
-                (p.name, p.prod, p.prec) for p in table.grammar.各规则
+                (规则.名称, 规则.模式, 规则.优先级) for 规则 in 表.语法.各规则
             ],
         }
 
-    def data_is_valid(self, g, data):
-        if g.start != data["start"]:
+    def 数据无误(自身, 语法, 数据):
+        if 语法.开头 != 数据["start"]:
             return False
-        if sorted(g.各词所在语法表) != data["terminals"]:
+        if sorted(语法.各词所在语法表) != 数据["terminals"]:
             return False
-        if sorted(g.优先级) != sorted(data["precedence"]):
+        if sorted(语法.优先级) != sorted(数据["precedence"]):
             return False
-        for key, (assoc, level) in iteritems(g.优先级):
-            if data["precedence"][key] != [assoc, level]:
+        for key, (结合性, 层级) in iteritems(语法.优先级):
+            if 数据["precedence"][key] != [结合性, 层级]:
                 return False
-        if len(g.各规则) != len(data["productions"]):
+        if len(语法.各规则) != len(数据["productions"]):
             return False
-        for p, (name, prod, (assoc, level)) in zip(g.各规则, data["productions"]):
-            if p.name != name:
+        for 规则, (规则名, 模式, (结合性, 层级)) in zip(语法.各规则, 数据["productions"]):
+            if 规则.名称 != 规则名:
                 return False
-            if p.prod != prod:
+            if 规则.模式 != 模式:
                 return False
-            if p.prec != (assoc, level):
+            if 规则.优先级 != (结合性, 层级):
                 return False
         return True
 
-    def 产出(self):
-        g = 语法(self.词表)
+    def 产出(自身):
+        语法细节 = 语法(自身.词表)
 
-        for level, (assoc, terms) in enumerate(self.优先级, 1):
+        for 层级, (结合性, terms) in enumerate(自身.优先级, 1):
             for term in terms:
-                g.set_precedence(term, assoc, level)
+                语法细节.设置优先级(term, 结合性, 层级)
 
-        for prod_name, syms, func, precedence in self.productions:
-            g.add_production(prod_name, syms, func, precedence)
+        for 规则名, 各符号, func, 优先级 in 自身.productions:
+            语法细节.添加规则(规则名, 各符号, func, 优先级)
 
-        g.牵头()
+        语法细节.牵头()
 
-        for unused_term in g.unused_terminals():
+        for 词 in 语法细节.无用词():
             warnings.warn(
-                "词 %r 无用" % unused_term,
+                "词 %r 无用" % 词,
                 ParserGeneratorWarning,
                 stacklevel=2
             )
-        for unused_prod in g.无用规则():
+        for 规则 in 语法细节.无用规则():
             warnings.warn(
-                "规则 %r 无用" % unused_prod,
+                "规则 %r 无用" % 规则,
                 ParserGeneratorWarning,
                 stacklevel=2
             )
 
-        g.build_lritems()
-        g.compute_first()
-        g.compute_follow()
+        语法细节.生成各lr项()
+        语法细节.compute_first()
+        语法细节.compute_follow()
 
-        table = None
-        if self.cache_id is not None:
+        表 = None
+        if 自身.cache_id is not None:
             cache_dir = AppDirs("rply").user_cache_dir
             cache_file = os.path.join(
                 cache_dir,
                 "%s-%s-%s.json" % (
-                    self.cache_id, self.VERSION, self.compute_grammar_hash(g)
+                    自身.cache_id, 自身.VERSION, 自身.compute_grammar_hash(语法细节)
                 )
             )
 
             if os.path.exists(cache_file):
                 with open(cache_file) as f:
-                    data = json.load(f)
-                if self.data_is_valid(g, data):
-                    table = LRTable.from_cache(g, data)
-        if table is None:
-            table = LRTable.from_grammar(g)
+                    数据 = json.load(f)
+                if 自身.数据无误(语法细节, 数据):
+                    表 = LRTable.from缓存(语法细节, 数据)
+        if 表 is None:
+            表 = LRTable.from语法(语法细节)
 
-            if self.cache_id is not None:
-                self._write_cache(cache_dir, cache_file, table)
+            if 自身.cache_id is not None:
+                自身._write_cache(cache_dir, cache_file, 表)
 
-        if table.sr_conflicts:
-            歧义 = table.sr_conflicts
+        if 表.取合不定:
+            歧义 = 表.取合不定
             细节 = '\n\n'.join(['词' + str(i[1]) + '有歧义，默认进行 ' + i[2] + '\n歧义序列：\n' + 输出序列(i[3]) for i in 歧义])
             warnings.warn(
                 "如下 %d 种情形取下个词还是合而为一？\n%s" % (
@@ -204,17 +207,17 @@ class 语法分析器母机(object):
                 ParserGeneratorWarning,
                 stacklevel=2,
             )
-        if table.rr_conflicts:
+        if 表.不知咋合:
             warnings.warn(
                 "%d 种情形不确定如何合而为一" % (
-                    len(table.rr_conflicts)
+                    len(表.不知咋合)
                 ),
                 ParserGeneratorWarning,
                 stacklevel=2,
             )
-        return LRParser(table, self.错误处理)
+        return LRParser(表, 自身.错误处理)
 
-    def _write_cache(self, cache_dir, cache_file, table):
+    def _write_cache(自身, cache_dir, cache_file, 表):
         if not os.path.exists(cache_dir):
             try:
                 os.makedirs(cache_dir, mode=0o0700)
@@ -224,14 +227,14 @@ class 语法分析器母机(object):
                 raise
 
         with tempfile.NamedTemporaryFile(dir=cache_dir, delete=False, mode="w") as f:
-            json.dump(self.serialize_table(table), f)
+            json.dump(自身.serialize_table(表), f)
         os.rename(f.name, cache_file)
 
 
 def 输出序列(lr表):
     信息 = ""
     for 项 in lr表:
-        信息 += '\t' + 项.name + ": " + " ".join(项.prod) + '\n'
+        信息 += '\t' + 项.规则名称 + ": " + " ".join(项.所在模式位置) + '\n'
     return 信息
 
 def digraph(X, R, FP):
@@ -269,146 +272,147 @@ def traverse(x, N, stack, F, X, R, FP):
 
 
 class LRTable(object):
-    def __init__(self, grammar, lr_action, lr_goto, default_reductions,
-                 sr_conflicts, rr_conflicts):
-        self.grammar = grammar
-        self.lr_action = lr_action
-        self.lr_goto = lr_goto
-        self.default_reductions = default_reductions
-        self.sr_conflicts = sr_conflicts
-        self.rr_conflicts = rr_conflicts
+    def __init__(自身, 语法, lr_action, lr_goto, default_reductions,
+                 取合不定, 不知咋合):
+        自身.语法 = 语法
+        自身.lr_action = lr_action
+        自身.lr_goto = lr_goto
+        自身.default_reductions = default_reductions
+        自身.取合不定 = 取合不定
+        自身.不知咋合 = 不知咋合
 
     @classmethod
-    def from_cache(cls, grammar, data):
+    def from缓存(本类, 语法, 数据):
         lr_action = [
             dict([(str(k), v) for k, v in iteritems(action)])
-            for action in data["lr_action"]
+            for action in 数据["lr_action"]
         ]
         lr_goto = [
             dict([(str(k), v) for k, v in iteritems(goto)])
-            for goto in data["lr_goto"]
+            for goto in 数据["lr_goto"]
         ]
         return LRTable(
-            grammar,
+            语法,
             lr_action,
             lr_goto,
-            data["default_reductions"],
-            data["sr_conflicts"],
-            data["rr_conflicts"]
+            数据["default_reductions"],
+            数据["取合不定"],
+            数据["不知咋合"]
         )
 
     @classmethod
-    def from_grammar(cls, grammar):
+    def from语法(本类, 语法):
         cidhash = IdentityDict()
         goto_cache = {}
-        add_count = Counter()
-        C = cls.lr0_items(grammar, add_count, cidhash, goto_cache)
+        计数 = 计数器()
+        C = 本类.lr0各项(语法, 计数, cidhash, goto_cache)
 
-        cls.add_lalr_lookaheads(grammar, C, add_count, cidhash, goto_cache)
+        本类.添加lalr预读(语法, C, 计数, cidhash, goto_cache)
 
         lr_action = [None] * len(C)
         lr_goto = [None] * len(C)
-        sr_conflicts = []
-        rr_conflicts = []
-        for st, I in enumerate(C):
-            # print(str(st) + '\n' + 输出序列(I) + '')
+        取合不定 = []
+        不知咋合 = []
+        for 状态号, I in enumerate(C):
+            # 显示所有语法要素序列
+            # print(str(状态号) + '\n' + 输出序列(I) + '')
             st_action = {}
             st_actionp = {}
             st_goto = {}
-            for p in I:
-                if p.getlength() == p.lr_index + 1:
-                    if p.name == "S'":
+            for lr项 in I:
+                if lr项.取长度() == lr项.索引 + 1:
+                    if lr项.规则名称 == "S'":
                         # Start symbol. Accept!
                         st_action["$end"] = 0
-                        st_actionp["$end"] = p
+                        st_actionp["$end"] = lr项
                     else:
-                        laheads = p.lookaheads[st]
+                        laheads = lr项.预读[状态号]
                         for a in laheads:
                             if a in st_action:
                                 r = st_action[a]
                                 if r > 0:
-                                    sprec, slevel = grammar.各规则[st_actionp[a].number].prec
-                                    rprec, rlevel = grammar.优先级.get(a, ("right", 0))
-                                    if (slevel < rlevel) or (slevel == rlevel and rprec == "left"):
-                                        st_action[a] = -p.number
-                                        st_actionp[a] = p
-                                        if not slevel and not rlevel:
-                                            sr_conflicts.append((st, repr(a), "reduce1"))
-                                        grammar.各规则[p.number].reduced += 1
-                                    elif not (slevel == rlevel and rprec == "nonassoc"):
-                                        if not rlevel:
-                                            sr_conflicts.append((st, repr(a), "shift1"))
+                                    sprec, 取词层级 = 语法.各规则[st_actionp[a].规则序号].优先级
+                                    合词优先方向, 合词层级 = 语法.优先级.get(a, ("right", 0))
+                                    if (取词层级 < 合词层级) or (取词层级 == 合词层级 and 合词优先方向 == "left"):
+                                        st_action[a] = -lr项.规则序号
+                                        st_actionp[a] = lr项
+                                        if not 取词层级 and not 合词层级:
+                                            取合不定.append((状态号, repr(a), "reduce1"))
+                                        语法.各规则[lr项.规则序号].reduced += 1
+                                    elif not (取词层级 == 合词层级 and 合词优先方向 == "nonassoc"):
+                                        if not 合词层级:
+                                            取合不定.append((状态号, repr(a), "shift1"))
                                 elif r < 0:
-                                    oldp = grammar.各规则[-r]
-                                    pp = grammar.各规则[p.number]
-                                    if oldp.number > pp.number:
-                                        st_action[a] = -p.number
-                                        st_actionp[a] = p
+                                    oldp = 语法.各规则[-r]
+                                    pp = 语法.各规则[lr项.规则序号]
+                                    if oldp.序号 > pp.序号:
+                                        st_action[a] = -lr项.规则序号
+                                        st_actionp[a] = lr项
                                         chosenp, rejectp = pp, oldp
-                                        grammar.各规则[p.number].reduced += 1
-                                        grammar.各规则[oldp.number].reduced -= 1
+                                        语法.各规则[lr项.规则序号].reduced += 1
+                                        语法.各规则[oldp.规则序号].reduced -= 1
                                     else:
                                         chosenp, rejectp = oldp, pp
-                                    rr_conflicts.append((st, repr(chosenp), repr(rejectp)))
+                                    不知咋合.append((状态号, repr(chosenp), repr(rejectp)))
                                 else:
-                                    raise ParserGeneratorError("Unknown conflict in state %d" % st)
+                                    raise ParserGeneratorError("Unknown conflict in state %d" % 状态号)
                             else:
-                                st_action[a] = -p.number
-                                st_actionp[a] = p
-                                grammar.各规则[p.number].reduced += 1
+                                st_action[a] = -lr项.规则序号
+                                st_actionp[a] = lr项
+                                语法.各规则[lr项.规则序号].reduced += 1
                 else:
-                    i = p.lr_index
-                    a = p.prod[i + 1]
-                    if a in grammar.各词所在语法表:
-                        g = cls.lr0_goto(I, a, add_count, goto_cache)
+                    i = lr项.索引
+                    a = lr项.所在模式位置[i + 1]
+                    if a in 语法.各词所在语法表:
+                        g = 本类.lr0_goto(I, a, 计数, goto_cache)
                         j = cidhash.get(g, -1)
                         if j >= 0:
                             if a in st_action:
                                 r = st_action[a]
                                 if r > 0:
                                     if r != j:
-                                        raise ParserGeneratorError("Shift/shift conflict in state %d" % st)
+                                        raise ParserGeneratorError("Shift/shift conflict in state %d" % 状态号)
                                 elif r < 0:
-                                    rprec, rlevel = grammar.各规则[st_actionp[a].number].prec
-                                    sprec, slevel = grammar.优先级.get(a, ("right", 0))
-                                    if (slevel > rlevel) or (slevel == rlevel and rprec == "right"):
-                                        grammar.各规则[st_actionp[a].number].reduced -= 1
+                                    合词优先方向, 合词层级 = 语法.各规则[st_actionp[a].规则序号].优先级
+                                    sprec, 取词层级 = 语法.优先级.get(a, ("right", 0))
+                                    if (取词层级 > 合词层级) or (取词层级 == 合词层级 and 合词优先方向 == "right"):
+                                        语法.各规则[st_actionp[a].规则序号].reduced -= 1
                                         st_action[a] = j
-                                        st_actionp[a] = p
-                                        if not rlevel:
-                                            sr_conflicts.append((st, repr(a), "shift2", I))
-                                    elif not (slevel == rlevel and rprec == "nonassoc"):
-                                        if not slevel and not rlevel:
-                                            sr_conflicts.append((st, repr(a), "reduce2"))
+                                        st_actionp[a] = lr项
+                                        if not 合词层级:
+                                            取合不定.append((状态号, repr(a), "shift2", I))
+                                    elif not (取词层级 == 合词层级 and 合词优先方向 == "nonassoc"):
+                                        if not 取词层级 and not 合词层级:
+                                            取合不定.append((状态号, repr(a), "reduce2"))
                                 else:
-                                    raise ParserGeneratorError("Unknown conflict in state %d" % st)
+                                    raise ParserGeneratorError("Unknown conflict in state %d" % 状态号)
                             else:
                                 st_action[a] = j
-                                st_actionp[a] = p
+                                st_actionp[a] = lr项
             nkeys = set()
             for ii in I:
-                for s in ii.unique_syms:
-                    if s in grammar.各短语对应语法号:
+                for s in ii.规则所含符号集合:
+                    if s in 语法.各短语对应语法号:
                         nkeys.add(s)
             for n in nkeys:
-                g = cls.lr0_goto(I, n, add_count, goto_cache)
+                g = 本类.lr0_goto(I, n, 计数, goto_cache)
                 j = cidhash.get(g, -1)
                 if j >= 0:
                     st_goto[n] = j
 
-            lr_action[st] = st_action
-            lr_goto[st] = st_goto
+            lr_action[状态号] = st_action
+            lr_goto[状态号] = st_goto
 
         default_reductions = [0] * len(lr_action)
-        for state, actions in enumerate(lr_action):
+        for 状态号, actions in enumerate(lr_action):
             actions = set(itervalues(actions))
             if len(actions) == 1 and next(iter(actions)) < 0:
-                default_reductions[state] = next(iter(actions))
-        return LRTable(grammar, lr_action, lr_goto, default_reductions, sr_conflicts, rr_conflicts)
+                default_reductions[状态号] = next(iter(actions))
+        return LRTable(语法, lr_action, lr_goto, default_reductions, 取合不定, 不知咋合)
 
     @classmethod
-    def lr0_items(cls, grammar, add_count, cidhash, goto_cache):
-        C = [cls.lr0_closure([grammar.各规则[0].lr_next], add_count)]
+    def lr0各项(本类, 语法, 计数, cidhash, goto_cache):
+        C = [本类.lr0_closure([语法.各规则[0].lr_next], 计数)]
         for i, I in enumerate(C):
             cidhash[I] = i
 
@@ -419,9 +423,9 @@ class LRTable(object):
 
             asyms = set()
             for ii in I:
-                asyms.update(ii.unique_syms)
+                asyms.update(ii.规则所含符号集合)
             for x in asyms:
-                g = cls.lr0_goto(I, x, add_count, goto_cache)
+                g = 本类.lr0_goto(I, x, 计数, goto_cache)
                 if not g:
                     continue
                 if g in cidhash:
@@ -431,8 +435,8 @@ class LRTable(object):
         return C
 
     @classmethod
-    def lr0_closure(cls, I, add_count):
-        add_count.incr()
+    def lr0_closure(本类, I, 计数):
+        计数.递增()
 
         J = I[:]
         added = True
@@ -440,20 +444,20 @@ class LRTable(object):
             added = False
             for j in J:
                 for x in j.lr_after:
-                    if x.lr0_added == add_count.value:
+                    if x.lr0_added == 计数.值:
                         continue
                     J.append(x.lr_next)
-                    x.lr0_added = add_count.value
+                    x.lr0_added = 计数.值
                     added = True
         return J
 
     @classmethod
-    def lr0_goto(cls, I, x, add_count, goto_cache):
+    def lr0_goto(本类, I, x, 计数, goto_cache):
         s = goto_cache.setdefault(x, IdentityDict())
 
         gs = []
-        for p in I:
-            n = p.lr_next
+        for 规则 in I:
+            n = 规则.lr_next
             if n and n.lr_before == x:
                 s1 = s.get(n)
                 if not s1:
@@ -464,61 +468,61 @@ class LRTable(object):
         g = s.get("$end")
         if not g:
             if gs:
-                g = cls.lr0_closure(gs, add_count)
+                g = 本类.lr0_closure(gs, 计数)
                 s["$end"] = g
             else:
                 s["$end"] = gs
         return g
 
     @classmethod
-    def add_lalr_lookaheads(cls, grammar, C, add_count, cidhash, goto_cache):
-        nullable = cls.compute_nullable_nonterminals(grammar)
-        trans = cls.find_nonterminal_transitions(grammar, C)
-        readsets = cls.compute_read_sets(grammar, C, trans, nullable, add_count, cidhash, goto_cache)
-        lookd, included = cls.compute_lookback_includes(grammar, C, trans, nullable, add_count, cidhash, goto_cache)
-        followsets = cls.compute_follow_sets(trans, readsets, included)
-        cls.add_lookaheads(lookd, followsets)
+    def 添加lalr预读(本类, 语法, C, 计数, cidhash, goto_cache):
+        nullable = 本类.compute_nullable_nonterminals(语法)
+        trans = 本类.find_nonterminal_transitions(语法, C)
+        readsets = 本类.compute_read_sets(语法, C, trans, nullable, 计数, cidhash, goto_cache)
+        lookd, included = 本类.compute_lookback_includes(语法, C, trans, nullable, 计数, cidhash, goto_cache)
+        followsets = 本类.compute_follow_sets(trans, readsets, included)
+        本类.添加预读(lookd, followsets)
 
     @classmethod
-    def compute_nullable_nonterminals(cls, grammar):
+    def compute_nullable_nonterminals(本类, 语法):
         nullable = set()
         num_nullable = 0
         while True:
-            for p in grammar.各规则[1:]:
-                if p.getlength() == 0:
-                    nullable.add(p.name)
+            for 规则 in 语法.各规则[1:]:
+                if 规则.取长度() == 0:
+                    nullable.add(规则.名称)
                     continue
-                for t in p.prod:
-                    if t not in nullable:
+                for 词 in 规则.模式:
+                    if 词 not in nullable:
                         break
                 else:
-                    nullable.add(p.name)
+                    nullable.add(规则.名称)
             if len(nullable) == num_nullable:
                 break
             num_nullable = len(nullable)
         return nullable
 
     @classmethod
-    def find_nonterminal_transitions(cls, grammar, C):
+    def find_nonterminal_transitions(本类, 语法, C):
         trans = []
-        for idx, state in enumerate(C):
-            for p in state:
-                if p.lr_index < p.getlength() - 1:
-                    t = (idx, p.prod[p.lr_index + 1])
-                    if t[1] in grammar.各短语对应语法号 and t not in trans:
+        for idx, 状态 in enumerate(C):
+            for lr项 in 状态:
+                if lr项.索引 < lr项.取长度() - 1:
+                    t = (idx, lr项.所在模式位置[lr项.索引 + 1])
+                    if t[1] in 语法.各短语对应语法号 and t not in trans:
                         trans.append(t)
         return trans
 
     @classmethod
-    def compute_read_sets(cls, grammar, C, ntrans, nullable, add_count, cidhash, goto_cache):
+    def compute_read_sets(本类, 语法, C, ntrans, nullable, 计数, cidhash, goto_cache):
         return digraph(
             ntrans,
-            R=lambda x: cls.reads_relation(C, x, nullable, add_count, cidhash, goto_cache),
-            FP=lambda x: cls.dr_relation(grammar, C, x, nullable, add_count, goto_cache)
+            R=lambda x: 本类.reads_relation(C, x, nullable, 计数, cidhash, goto_cache),
+            FP=lambda x: 本类.dr_relation(语法, C, x, nullable, 计数, goto_cache)
         )
 
     @classmethod
-    def compute_follow_sets(cls, ntrans, readsets, includesets):
+    def compute_follow_sets(本类, ntrans, readsets, includesets):
         return digraph(
             ntrans,
             R=lambda x: includesets.get(x, []),
@@ -526,92 +530,92 @@ class LRTable(object):
         )
 
     @classmethod
-    def dr_relation(cls, grammar, C, trans, nullable, add_count, goto_cache):
-        state, N = trans
+    def dr_relation(本类, 语法, C, trans, nullable, 计数, goto_cache):
+        状态号, N = trans
         terms = []
 
-        g = cls.lr0_goto(C[state], N, add_count, goto_cache)
-        for p in g:
-            if p.lr_index < p.getlength() - 1:
-                a = p.prod[p.lr_index + 1]
-                if a in grammar.各词所在语法表 and a not in terms:
+        g = 本类.lr0_goto(C[状态号], N, 计数, goto_cache)
+        for lr项 in g:
+            if lr项.索引 < lr项.取长度() - 1:
+                a = lr项.所在模式位置[lr项.索引 + 1]
+                if a in 语法.各词所在语法表 and a not in terms:
                     terms.append(a)
-        if state == 0 and N == grammar.各规则[0].prod[0]:
+        if 状态号 == 0 and N == 语法.各规则[0].模式[0]:
             terms.append("$end")
         return terms
 
     @classmethod
-    def reads_relation(cls, C, trans, empty, add_count, cidhash, goto_cache):
+    def reads_relation(本类, C, trans, empty, 计数, cidhash, goto_cache):
         rel = []
-        state, N = trans
+        状态号, N = trans
 
-        g = cls.lr0_goto(C[state], N, add_count, goto_cache)
+        g = 本类.lr0_goto(C[状态号], N, 计数, goto_cache)
         j = cidhash.get(g, -1)
-        for p in g:
-            if p.lr_index < p.getlength() - 1:
-                a = p.prod[p.lr_index + 1]
+        for lr项 in g:
+            if lr项.索引 < lr项.取长度() - 1:
+                a = lr项.所在模式位置[lr项.索引 + 1]
                 if a in empty:
                     rel.append((j, a))
         return rel
 
     @classmethod
-    def compute_lookback_includes(cls, grammar, C, trans, nullable, add_count, cidhash, goto_cache):
+    def compute_lookback_includes(本类, 语法, C, trans, nullable, 计数, cidhash, goto_cache):
         lookdict = {}
         includedict = {}
 
         dtrans = dict.fromkeys(trans, 1)
 
-        for state, N in trans:
+        for 状态号, N in trans:
             lookb = []
             includes = []
-            for p in C[state]:
-                if p.name != N:
+            for lr项 in C[状态号]:
+                if lr项.规则名称 != N:
                     continue
 
-                lr_index = p.lr_index
-                j = state
-                while lr_index < p.getlength() - 1:
-                    lr_index += 1
-                    t = p.prod[lr_index]
+                索引 = lr项.索引
+                j = 状态号
+                while 索引 < lr项.取长度() - 1:
+                    索引 += 1
+                    词 = lr项.所在模式位置[索引]
 
-                    if (j, t) in dtrans:
-                        li = lr_index + 1
-                        while li < p.getlength():
-                            if p.prod[li] in grammar.各词所在语法表:
+                    if (j, 词) in dtrans:
+                        li = 索引 + 1
+                        while li < lr项.取长度():
+                            if lr项.所在模式位置[li] in 语法.各词所在语法表:
                                 break
-                            if p.prod[li] not in nullable:
+                            if lr项.所在模式位置[li] not in nullable:
                                 break
                             li += 1
                         else:
-                            includes.append((j, t))
+                            includes.append((j, 词))
 
-                    g = cls.lr0_goto(C[j], t, add_count, goto_cache)
+                    g = 本类.lr0_goto(C[j], 词, 计数, goto_cache)
                     j = cidhash.get(g, -1)
 
                 for r in C[j]:
-                    if r.name != p.name:
+                    if r.规则名称 != lr项.规则名称:
                         continue
-                    if r.getlength() != p.getlength():
+                    if r.取长度() != lr项.取长度():
                         continue
                     i = 0
-                    while i < r.lr_index:
-                        if r.prod[i] != p.prod[i + 1]:
+                    while i < r.索引:
+                        if r.所在模式位置[i] != lr项.所在模式位置[i + 1]:
                             break
                         i += 1
                     else:
                         lookb.append((j, r))
 
             for i in includes:
-                includedict.setdefault(i, []).append((state, N))
-            lookdict[state, N] = lookb
+                includedict.setdefault(i, []).append((状态号, N))
+            lookdict[状态号, N] = lookb
         return lookdict, includedict
 
     @classmethod
-    def add_lookaheads(cls, lookbacks, followset):
+    def 添加预读(本类, lookbacks, followset):
         for trans, lb in iteritems(lookbacks):
-            for state, p in lb:
+            for 状态号, 规则 in lb:
                 f = followset.get(trans, [])
-                laheads = p.lookaheads.setdefault(state, [])
+                laheads = 规则.预读.setdefault(状态号, [])
                 for a in f:
                     if a not in laheads:
                         laheads.append(a)

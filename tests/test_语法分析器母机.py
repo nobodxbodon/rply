@@ -63,6 +63,25 @@ class TestParserGenerator(BaseTests):
 
         pg.产出()
 
+    def test_pipe_production(self):
+        pg = 语法分析器母机(["VALUE1", "VALUE2"])
+
+        @pg.语法规则("main : VALUE1 | VALUE2")
+        def main(p):
+            return p[0]
+
+        parser = pg.产出()
+
+        assert len(pg.productions) == 2
+
+        assert parser.parse(iter([
+            词("VALUE1", "3")
+        ])) == 词("VALUE1", "3")
+
+        assert parser.parse(iter([
+            词("VALUE2", "3")
+        ])) == 词("VALUE2", "3")
+
 
 class TestParserCaching(object):
     def test_simple_caching(self):
