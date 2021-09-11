@@ -68,7 +68,13 @@ class LRParser(object):
                     预读 = None
                     continue
                 else:
-                    raise 语法分析报错(None, 预读.getsourcepos())
+                    #print(预读)
+                    tokenizer.标记不符语法词法规则()
+                    return 自身.分析(tokenizer, state)
+                    # raise 语法分析报错(None, 预读.getsourcepos())
+
+    def 无空格分析(自身, tokenizer, state=None):
+        return 自身.分析(tokenizer, state)
 
     def _reduce_production(自身, t, 符号栈, 状态栈, 状态):
         # reduce a symbol on the stack and emit a production

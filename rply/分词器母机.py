@@ -14,6 +14,10 @@ class 词模式(object):
         m = 自身.正则.match(源码, 位置)
         return 范围(*m.span(0)) if m is not None else None
 
+    def __repr__(自身):
+        return "词名：{0}, 模式={1}".format(
+            自身.词名, 自身.正则
+        )
 
 class 范围(object):
     _attrs_ = ["起", "止"]

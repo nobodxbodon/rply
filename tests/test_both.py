@@ -1,4 +1,5 @@
 import operator
+import pytest
 
 from rply import LexerGenerator, ParserGenerator
 
@@ -36,4 +37,52 @@ class TestBoth(object):
         lexer = lg.build()
         parser = pg.build()
 
-        assert parser.parse(lexer.lex("3*4+5"))
+        assert parser.parse(lexer.lex("3*4+5")) == BoxInt(17)
+
+    def test_无空格_单字(self):
+        lg = LexerGenerator()
+        lg.add("数", r"\d")
+
+        pg = ParserGenerator(["数"])
+
+        @pg.production("main : 数")
+        def main(p):
+            return int(p[0].getstr())
+
+        lexer = lg.build()
+        parser = pg.build()
+
+        assert parser.无空格分析(lexer.lex('5')) == 5
+
+    def test_无空格_多字(self):
+        lg = LexerGenerator()
+        lg.add("数", r"\d")
+        lg.add("个", r"个")
+
+        pg = ParserGenerator(["数", "个"])
+
+        @pg.production("main : 数 个")
+        def main(p):
+            return int(p[0].getstr())
+
+        lexer = lg.build()
+        parser = pg.build()
+
+        assert parser.无空格分析(lexer.lex('5个')) == 5
+
+    @pytest.mark.skip(reason="需逐个字尝试匹配，而非一味贪婪匹配")
+    def test_无空格_需不贪婪匹配(self):
+        lg = LexerGenerator()
+        lg.add("五", r"5")
+        lg.add("数", r"\d+")
+
+        pg = ParserGenerator(["数", "五"])
+
+        @pg.production("main : 数 五")
+        def main(p):
+            return int(p[0].getstr())
+
+        lexer = lg.build()
+        parser = pg.build()
+
+        assert parser.无空格分析(lexer.分词('45')) == 4
