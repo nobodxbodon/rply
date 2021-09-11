@@ -71,7 +71,7 @@ class LRParser(object):
                     raise 语法分析报错(None, 预读.getsourcepos())
 
     # TODO：尚未兼容带空格分析的所有测试用例
-    def 无空格分析(自身, tokenizer, state=None):
+    def 按语法分词(自身, tokenizer, state=None):
         from rply.词 import 词
 
         预读 = None
@@ -132,7 +132,7 @@ class LRParser(object):
                 else:
                     #print(预读)
                     tokenizer.标记不符语法词法规则()
-                    return 自身.无空格分析(tokenizer, state)
+                    return 自身.按语法分词(tokenizer, state)
                     # raise 语法分析报错(None, 预读.getsourcepos())
 
     def _reduce_production(自身, t, 符号栈, 状态栈, 状态):

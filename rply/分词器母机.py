@@ -10,8 +10,8 @@ class 词模式(object):
         自身.词名 = 词名
         自身.正则 = re.compile(模式, flags=匹配参数)
 
-    def 匹配(自身, 源码, 位置):
-        m = 自身.正则.match(源码, 位置)
+    def 匹配(自身, 源码, 起点, 终点 = None):
+        m = 自身.正则.match(源码, 起点, 终点) if 终点 else 自身.正则.match(源码, 起点)
         return 范围(*m.span(0)) if m is not None else None
 
     def __repr__(自身):
