@@ -39,6 +39,23 @@ class TestBoth(object):
 
         assert parser.parse(lexer.lex("3*4+5")) == BoxInt(17)
 
+    @pytest.mark.skip(reason="如按原始分词方法，无法解析")
+    def test_按语法分词(self):
+        lg = LexerGenerator()
+        lg.add("关键词", r"5")
+        lg.add("数", r"\d")
+
+        pg = ParserGenerator(["数", "关键词"])
+
+        @pg.production("main : 数 关键词")
+        def main(p):
+            return int(p[0].getstr())
+
+        lexer = lg.build()
+        parser = pg.build()
+
+        assert parser.分析(lexer.分词('55')) == 5
+
     def test_无空格_单字(self):
         lg = LexerGenerator()
         lg.add("数", r"\d")
@@ -70,19 +87,35 @@ class TestBoth(object):
 
         assert parser.无空格分析(lexer.lex('5个')) == 5
 
-    @pytest.mark.skip(reason="需逐个字尝试匹配，而非一味贪婪匹配")
-    def test_无空格_需不贪婪匹配(self):
+    def test_无空格_按语法分词(self):
         lg = LexerGenerator()
-        lg.add("五", r"5")
-        lg.add("数", r"\d+")
+        lg.add("关键词", r"5")
+        lg.add("数", r"\d")
 
-        pg = ParserGenerator(["数", "五"])
+        pg = ParserGenerator(["数", "关键词"])
 
-        @pg.production("main : 数 五")
+        @pg.production("main : 数 关键词")
         def main(p):
             return int(p[0].getstr())
 
         lexer = lg.build()
         parser = pg.build()
 
-        assert parser.无空格分析(lexer.分词('45')) == 4
+        assert parser.无空格分析(lexer.分词('55')) == 5
+
+    @pytest.mark.skip(reason="需逐个字尝试匹配，而非一味贪婪匹配")
+    def test_无空格_需不贪婪匹配(self):
+        lg = LexerGenerator()
+        lg.add("关键词", r"5")
+        lg.add("数", r"\d+")
+
+        pg = ParserGenerator(["数", "五"])
+
+        @pg.production("main : 数 关键词")
+        def main(p):
+            return int(p[0].getstr())
+
+        lexer = lg.build()
+        parser = pg.build()
+
+        assert parser.无空格分析(lexer.分词('55')) == 5
