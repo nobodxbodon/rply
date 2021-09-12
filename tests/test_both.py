@@ -103,8 +103,7 @@ class TestBoth(object):
 
         assert parser.按语法分词(lexer.分词('55')) == 5
 
-    @pytest.mark.skip(reason="需逐个字尝试匹配，而非一味贪婪匹配")
-    def test_无空格_需不贪婪匹配(self):
+    def test_逐个尝试不贪婪匹配(self):
         lg = LexerGenerator()
         lg.add("关键词", r"5")
         lg.add("数", r"\d+")
@@ -119,3 +118,19 @@ class TestBoth(object):
         parser = pg.build()
 
         assert parser.按语法分词(lexer.分词('55')) == 5
+
+    def test_中文(self):
+        lg = LexerGenerator()
+        lg.添了('表', '表')
+        lg.添了('标识符', r'[_a-zA-Z\u4e00-\u9fa5][_a-zA-Z0-9\u4e00-\u9fa5]*')
+
+        pg = ParserGenerator(['表', '标识符'])
+
+        @pg.production("main : 标识符 表")
+        def main(p):
+            return p[0].getstr()
+
+        lexer = lg.build()
+        parser = pg.build()
+
+        assert parser.按语法分词(lexer.分词('读者表')) == '读者'
