@@ -119,7 +119,7 @@ class TestBoth(object):
 
         assert parser.按语法分词(lexer.分词('55')) == 5
 
-    def test_中文(self):
+    def test_中文1(self):
         lg = LexerGenerator()
         lg.添了('表', '表')
         lg.添了('标识符', r'[_a-zA-Z\u4e00-\u9fa5][_a-zA-Z0-9\u4e00-\u9fa5]*')
@@ -134,3 +134,20 @@ class TestBoth(object):
         parser = pg.build()
 
         assert parser.按语法分词(lexer.分词('读者表')) == '读者'
+
+    def test_中文2(self):
+        lg = LexerGenerator()
+        lg.添了('删除', '删除')
+        lg.添了('表', '表')
+        lg.添了('标识符', r'[_a-zA-Z\u4e00-\u9fa5][_a-zA-Z0-9\u4e00-\u9fa5]*')
+
+        pg = ParserGenerator(['删除', '表', '标识符'])
+
+        @pg.production("main : 删除 标识符 表")
+        def main(p):
+            return p[1].getstr()
+
+        lexer = lg.build()
+        parser = pg.build()
+
+        assert parser.按语法分词(lexer.分词('删除读者表')) == '读者'

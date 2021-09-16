@@ -75,13 +75,29 @@ class LRParser(object):
         from rply.词 import 词
 
         预读 = None
+        上个预读 = None
+
         预读栈 = []
+        上个预读栈 = 预读栈
 
         状态栈 = [0]
+        上个状态栈 = 状态栈
+
         符号栈 = [词("$end", "$end")]
+        上个符号栈 = 符号栈
 
         当前状态 = 0
+        上个状态 = 当前状态
+        print('lr_action: ' + str(自身.lr_table.lr_action))
+        print('lr_goto: ' + str(自身.lr_table.lr_goto))
         while True:
+            print("入循环，当前状态： " + str(当前状态))
+            上个状态 = 当前状态
+            上个状态栈 = 状态栈
+            上个符号栈 = 符号栈
+            上个预读栈 = 预读栈
+            上个预读 = 预读
+            print("状态栈：" + str(状态栈))
             if 自身.lr_table.default_reductions[当前状态]:
                 t = 自身.lr_table.default_reductions[当前状态]
                 当前状态 = 自身._reduce_production(
@@ -94,6 +110,8 @@ class LRParser(object):
                     预读 = 预读栈.pop()
                 else:
                     try:
+                        print('取下一词')
+                        tokenizer.记录状态(当前状态, 状态栈, 符号栈)
                         预读 = next(tokenizer)
                     except StopIteration:
                         预读 = None
@@ -102,25 +120,33 @@ class LRParser(object):
                     预读 = 词("$end", "$end")
 
             ltype = 预读.gettokentype()
+            print('预读词：' + str(预读) + ' 类型: ' + ltype + ' 当前状态：' + str(当前状态))
+            print('当前分词位置：' + str(tokenizer.位置))
             if ltype in 自身.lr_table.lr_action[当前状态]:
+                print('在状态')
                 t = 自身.lr_table.lr_action[当前状态][ltype]
                 if t > 0:
+                    print('大于0')
                     状态栈.append(t)
                     当前状态 = t
                     符号栈.append(预读)
                     预读 = None
                     continue
                 elif t < 0:
+                    print('小于0')
                     当前状态 = 自身._reduce_production(
                         t, 符号栈, 状态栈, state
                     )
                     continue
                 else:
+                    print('为0')
                     n = 符号栈[-1]
                     return n
             else:
+                print('不在状态')
                 # TODO: actual error handling here
                 if 自身.error_handler is not None:
+                    print("错误处理")
                     if state is None:
                         自身.error_handler(预读)
                     else:
@@ -130,10 +156,21 @@ class LRParser(object):
                     预读 = None
                     continue
                 else:
-                    #print(预读)
-                    tokenizer.标记不符语法词法规则()
-                    return 自身.按语法分词(tokenizer, state)
-                    # raise 语法分析报错(None, 预读.getsourcepos())
+                    print(预读)
+                    上个位置 = tokenizer.标记不符语法词法规则()
+                    上个状态 = tokenizer.回退点[上个位置][0] if 上个位置 in tokenizer.回退点 else -1
+                    上个状态栈 = tokenizer.回退点[上个位置][1] if 上个位置 in tokenizer.回退点 else [0]
+                    上个符号栈 = tokenizer.回退点[上个位置][2] if 上个位置 in tokenizer.回退点 else [词("$end", "$end")]
+                    print("上个位置：" + str(上个位置))
+                    print("上个状态：" + str(上个状态))
+                    print("上个状态栈" + str(上个状态栈))
+                    print("查找回退位置：" + str(tokenizer.不符语法词法规则))
+                    print("回退点: " + str(tokenizer.回退点))
+                    当前状态 = 上个状态
+                    状态栈 = 上个状态栈
+                    符号栈 = 上个符号栈
+                    预读栈 = 上个预读栈
+                    预读 = 上个预读
 
     def _reduce_production(自身, t, 符号栈, 状态栈, 状态):
         # reduce a symbol on the stack and emit a production
