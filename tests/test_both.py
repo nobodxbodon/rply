@@ -87,6 +87,7 @@ class TestBoth(object):
 
         assert parser.按语法分词(lexer.lex('5个')) == 5
 
+    #@pytest.mark.skip(reason="")
     def test_无空格_按语法分词(self):
         lg = LexerGenerator()
         lg.add("关键词", r"5")
@@ -103,6 +104,7 @@ class TestBoth(object):
 
         assert parser.按语法分词(lexer.分词('55')) == 5
 
+    #@pytest.mark.skip(reason="")
     def test_逐个尝试不贪婪匹配(self):
         lg = LexerGenerator()
         lg.add("关键词", r"5")
@@ -119,7 +121,8 @@ class TestBoth(object):
 
         assert parser.按语法分词(lexer.分词('55')) == 5
 
-    def test_中文1(self):
+    #@pytest.mark.skip(reason="")
+    def test_读者表(self):
         lg = LexerGenerator()
         lg.添了('表', '表')
         lg.添了('标识符', r'[_a-zA-Z\u4e00-\u9fa5][_a-zA-Z0-9\u4e00-\u9fa5]*')
@@ -135,7 +138,8 @@ class TestBoth(object):
 
         assert parser.按语法分词(lexer.分词('读者表')) == '读者'
 
-    def test_中文2(self):
+    #@pytest.mark.skip(reason="")
+    def test_删除读者表(self):
         lg = LexerGenerator()
         lg.添了('删除', '删除')
         lg.添了('表', '表')
@@ -151,3 +155,21 @@ class TestBoth(object):
         parser = pg.build()
 
         assert parser.按语法分词(lexer.分词('删除读者表')) == '读者'
+
+    @pytest.mark.skip(reason="")
+    def test_出生年为整数(self):
+        lg = LexerGenerator()
+        lg.添了('为', '为')
+        lg.添了('整数', '整数')
+        lg.添了('标识符', r'[_a-zA-Z\u4e00-\u9fa5][_a-zA-Z0-9\u4e00-\u9fa5]*')
+
+        pg = ParserGenerator(['为', '整数', '标识符'])
+
+        @pg.production("main : 标识符 为 整数")
+        def main(p):
+            return p[0].getstr()
+
+        lexer = lg.build()
+        parser = pg.build()
+
+        assert parser.按语法分词(lexer.分词('出生年为整数')) == '出生年'

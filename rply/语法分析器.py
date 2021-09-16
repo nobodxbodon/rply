@@ -1,4 +1,4 @@
-from rply.报错 import 语法分析报错
+from rply.报错 import 语法分析报错, 分词报错
 
 
 class LRParser(object):
@@ -111,10 +111,13 @@ class LRParser(object):
                 else:
                     try:
                         print('取下一词')
-                        tokenizer.记录状态(当前状态, 状态栈, 符号栈)
+                        tokenizer.记录状态(当前状态, 状态栈, 符号栈, 预读栈, 预读)
                         预读 = next(tokenizer)
                     except StopIteration:
                         预读 = None
+                    except 分词报错:
+                        if not tokenizer.回退():
+                            raise 语法分析报错(None, 预读.getsourcepos())
 
                 if 预读 is None:
                     预读 = 词("$end", "$end")
@@ -161,6 +164,8 @@ class LRParser(object):
                     上个状态 = tokenizer.回退点[上个位置][0] if 上个位置 in tokenizer.回退点 else -1
                     上个状态栈 = tokenizer.回退点[上个位置][1] if 上个位置 in tokenizer.回退点 else [0]
                     上个符号栈 = tokenizer.回退点[上个位置][2] if 上个位置 in tokenizer.回退点 else [词("$end", "$end")]
+                    上个预读栈 = tokenizer.回退点[上个位置][3] if 上个位置 in tokenizer.回退点 else []
+                    上个预读 = tokenizer.回退点[上个位置][4] if 上个位置 in tokenizer.回退点 else None
                     print("上个位置：" + str(上个位置))
                     print("上个状态：" + str(上个状态))
                     print("上个状态栈" + str(上个状态栈))
