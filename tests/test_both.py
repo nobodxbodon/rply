@@ -156,7 +156,7 @@ class TestBoth(object):
 
         assert parser.按语法分词(lexer.分词('删除读者表')) == '读者'
 
-    @pytest.mark.skip(reason="")
+    #@pytest.mark.skip(reason="")
     def test_出生年为整数(self):
         lg = LexerGenerator()
         lg.添了('为', '为')

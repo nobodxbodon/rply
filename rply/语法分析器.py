@@ -6,10 +6,10 @@ class LRParser(object):
         自身.lr_table = lr_table
         自身.error_handler = error_handler
 
-    def parse(自身, tokenizer, state=None):
-        return 自身.分析(tokenizer, state)
+    def parse(自身, 分词器, state=None):
+        return 自身.分析(分词器, state)
 
-    def 分析(自身, tokenizer, state=None):
+    def 分析(自身, 分词器, state=None):
         from rply.词 import 词
 
         预读 = None
@@ -32,7 +32,7 @@ class LRParser(object):
                     预读 = 预读栈.pop()
                 else:
                     try:
-                        预读 = next(tokenizer)
+                        预读 = next(分词器)
                     except StopIteration:
                         预读 = None
 
@@ -71,7 +71,7 @@ class LRParser(object):
                     raise 语法分析报错(None, 预读.getsourcepos())
 
     # TODO：尚未兼容带空格分析的所有测试用例
-    def 按语法分词(自身, tokenizer, state=None):
+    def 按语法分词(自身, 分词器, state=None):
         from rply.词 import 词
 
         预读 = None
@@ -111,12 +111,12 @@ class LRParser(object):
                 else:
                     try:
                         print('取下一词')
-                        tokenizer.记录状态(当前状态, 状态栈, 符号栈, 预读栈, 预读)
-                        预读 = next(tokenizer)
+                        分词器.记录状态(当前状态, 状态栈, 符号栈, 预读栈, 预读)
+                        预读 = next(分词器)
                     except StopIteration:
                         预读 = None
                     except 分词报错:
-                        if not tokenizer.回退():
+                        if 分词器.退出 or not 分词器.回退():
                             raise 语法分析报错(None, 预读.getsourcepos())
 
                 if 预读 is None:
@@ -124,7 +124,7 @@ class LRParser(object):
 
             ltype = 预读.gettokentype()
             print('预读词：' + str(预读) + ' 类型: ' + ltype + ' 当前状态：' + str(当前状态))
-            print('当前分词位置：' + str(tokenizer.位置))
+            print('当前分词位置：' + str(分词器.位置))
             if ltype in 自身.lr_table.lr_action[当前状态]:
                 print('在状态')
                 t = 自身.lr_table.lr_action[当前状态][ltype]
@@ -160,17 +160,17 @@ class LRParser(object):
                     continue
                 else:
                     print(预读)
-                    上个位置 = tokenizer.标记不符语法词法规则()
-                    上个状态 = tokenizer.回退点[上个位置][0] if 上个位置 in tokenizer.回退点 else -1
-                    上个状态栈 = tokenizer.回退点[上个位置][1] if 上个位置 in tokenizer.回退点 else [0]
-                    上个符号栈 = tokenizer.回退点[上个位置][2] if 上个位置 in tokenizer.回退点 else [词("$end", "$end")]
-                    上个预读栈 = tokenizer.回退点[上个位置][3] if 上个位置 in tokenizer.回退点 else []
-                    上个预读 = tokenizer.回退点[上个位置][4] if 上个位置 in tokenizer.回退点 else None
+                    上个位置 = 分词器.标记不符语法词法规则()
+                    上个状态 = 分词器.回退点[上个位置][0] if 上个位置 in 分词器.回退点 else -1
+                    上个状态栈 = 分词器.回退点[上个位置][1] if 上个位置 in 分词器.回退点 else [0]
+                    上个符号栈 = 分词器.回退点[上个位置][2] if 上个位置 in 分词器.回退点 else [词("$end", "$end")]
+                    上个预读栈 = 分词器.回退点[上个位置][3] if 上个位置 in 分词器.回退点 else []
+                    上个预读 = 分词器.回退点[上个位置][4] if 上个位置 in 分词器.回退点 else None
                     print("上个位置：" + str(上个位置))
                     print("上个状态：" + str(上个状态))
                     print("上个状态栈" + str(上个状态栈))
-                    print("查找回退位置：" + str(tokenizer.不符语法词法规则))
-                    print("回退点: " + str(tokenizer.回退点))
+                    print("查找回退位置：" + str(分词器.不符语法词法规则))
+                    print("回退点: " + str(分词器.回退点))
                     当前状态 = 上个状态
                     状态栈 = 上个状态栈
                     符号栈 = 上个符号栈
