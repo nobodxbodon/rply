@@ -1,7 +1,7 @@
 import operator
 import pytest
 
-from rply import LexerGenerator, ParserGenerator
+from rply import LexerGenerator, ParserGenerator, 分词器母机, 语法分析器母机
 
 from .功用 import BoxInt
 
@@ -57,175 +57,175 @@ class TestBoth(object):
         assert parser.分析(lexer.分词('55')) == 5
 
     def test_无空格_单字(self):
-        lg = LexerGenerator()
-        lg.add("数", r"\d")
+        分词母机 = 分词器母机()
+        分词母机.添了("数", r"\d")
 
-        pg = ParserGenerator(["数"])
+        分析器母机 = 语法分析器母机(["数"])
 
-        @pg.production("main : 数")
-        def main(p):
-            return int(p[0].getstr())
+        @分析器母机.语法规则("句 : 数")
+        def 句(片段):
+            return int(片段[0].getstr())
 
-        lexer = lg.build()
-        parser = pg.build()
+        分词器 = 分词母机.产出()
+        分析器 = 分析器母机.产出()
 
-        assert parser.按语法分词(lexer.lex('5')) == 5
+        assert 分析器.按语法分词(分词器.lex('5')) == 5
 
     def test_无空格_多字(self):
-        lg = LexerGenerator()
-        lg.add("数", r"\d")
-        lg.add("个", r"个")
+        分词母机 = 分词器母机()
+        分词母机.添了("数", r"\d")
+        分词母机.添了("个", r"个")
 
-        pg = ParserGenerator(["数", "个"])
+        分析器母机 = 语法分析器母机(["数", "个"])
 
-        @pg.production("main : 数 个")
-        def main(p):
-            return int(p[0].getstr())
+        @分析器母机.语法规则("句 : 数 个")
+        def 句(片段):
+            return int(片段[0].getstr())
 
-        lexer = lg.build()
-        parser = pg.build()
+        分词器 = 分词母机.产出()
+        分析器 = 分析器母机.产出()
 
-        assert parser.按语法分词(lexer.lex('5个')) == 5
+        assert 分析器.按语法分词(分词器.lex('5个')) == 5
 
-    #@pytest.mark.skip(reason="")
+    #@片段ytest.mark.skip(reason="")
     def test_无空格_按语法分词(self):
-        lg = LexerGenerator()
-        lg.add("关键词", r"5")
-        lg.add("数", r"\d")
+        分词母机 = 分词器母机()
+        分词母机.添了("关键词", r"5")
+        分词母机.添了("数", r"\d")
 
-        pg = ParserGenerator(["数", "关键词"])
+        分析器母机 = 语法分析器母机(["数", "关键词"])
 
-        @pg.production("main : 数 关键词")
-        def main(p):
-            return int(p[0].getstr())
+        @分析器母机.语法规则("句 : 数 关键词")
+        def 句(片段):
+            return int(片段[0].getstr())
 
-        lexer = lg.build()
-        parser = pg.build()
+        分词器 = 分词母机.产出()
+        分析器 = 分析器母机.产出()
 
-        assert parser.按语法分词(lexer.分词('55')) == 5
+        assert 分析器.按语法分词(分词器.分词('55')) == 5
 
     #@pytest.mark.skip(reason="")
     def test_逐个尝试不贪婪匹配(self):
-        lg = LexerGenerator()
-        lg.add("关键词", r"5")
-        lg.add("数", r"\d+")
+        分词母机 = 分词器母机()
+        分词母机.添了("关键词", r"5")
+        分词母机.添了("数", r"\d+")
 
-        pg = ParserGenerator(["数", "关键词"])
+        分析器母机 = 语法分析器母机(["数", "关键词"])
 
-        @pg.production("main : 数 关键词")
-        def main(p):
-            return int(p[0].getstr())
+        @分析器母机.语法规则("句 : 数 关键词")
+        def 句(片段):
+            return int(片段[0].getstr())
 
-        lexer = lg.build()
-        parser = pg.build()
+        分词器 = 分词母机.产出()
+        分析器 = 分析器母机.产出()
 
-        assert parser.按语法分词(lexer.分词('55')) == 5
+        assert 分析器.按语法分词(分词器.分词('55')) == 5
 
     #@pytest.mark.skip(reason="")
     def test_读者表(self):
-        lg = LexerGenerator()
-        lg.添了('表', '表')
-        lg.添了('标识符', r'[_a-zA-Z\u4e00-\u9fa5][_a-zA-Z0-9\u4e00-\u9fa5]*')
+        分词母机 = 分词器母机()
+        分词母机.添了('表', '表')
+        分词母机.添了('标识符', r'[_a-zA-Z\u4e00-\u9fa5][_a-zA-Z0-9\u4e00-\u9fa5]*')
 
-        pg = ParserGenerator(['表', '标识符'])
+        分析器母机 = 语法分析器母机(['表', '标识符'])
 
-        @pg.production("main : 标识符 表")
-        def main(p):
-            return p[0].getstr()
+        @分析器母机.语法规则("句 : 标识符 表")
+        def 句(片段):
+            return 片段[0].getstr()
 
-        lexer = lg.build()
-        parser = pg.build()
+        分词器 = 分词母机.产出()
+        分析器 = 分析器母机.产出()
 
-        assert parser.按语法分词(lexer.分词('读者表')) == '读者'
+        assert 分析器.按语法分词(分词器.分词('读者表')) == '读者'
 
     #@pytest.mark.skip(reason="")
     def test_删除读者表(self):
-        lg = LexerGenerator()
-        lg.添了('删除', '删除')
-        lg.添了('表', '表')
-        lg.添了('标识符', r'[_a-zA-Z\u4e00-\u9fa5][_a-zA-Z0-9\u4e00-\u9fa5]*')
+        分词母机 = 分词器母机()
+        分词母机.添了('删除', '删除')
+        分词母机.添了('表', '表')
+        分词母机.添了('标识符', r'[_a-zA-Z\u4e00-\u9fa5][_a-zA-Z0-9\u4e00-\u9fa5]*')
 
-        pg = ParserGenerator(['删除', '表', '标识符'])
+        分析器母机 = 语法分析器母机(['删除', '表', '标识符'])
 
-        @pg.production("main : 删除 标识符 表")
-        def main(p):
-            return p[1].getstr()
+        @分析器母机.语法规则("句 : 删除 标识符 表")
+        def 句(片段):
+            return 片段[1].getstr()
 
-        lexer = lg.build()
-        parser = pg.build()
+        分词器 = 分词母机.产出()
+        分析器 = 分析器母机.产出()
 
-        assert parser.按语法分词(lexer.分词('删除读者表')) == '读者'
+        assert 分析器.按语法分词(分词器.分词('删除读者表')) == '读者'
 
     def test_创建钟表表(self):
-        lg = LexerGenerator()
-        lg.添了('创建', '创建')
-        lg.添了('表', '表')
-        lg.添了('标识符', r'[_a-zA-Z\u4e00-\u9fa5][_a-zA-Z0-9\u4e00-\u9fa5]*')
+        分词母机 = 分词器母机()
+        分词母机.添了('创建', '创建')
+        分词母机.添了('表', '表')
+        分词母机.添了('标识符', r'[_a-zA-Z\u4e00-\u9fa5][_a-zA-Z0-9\u4e00-\u9fa5]*')
 
-        pg = ParserGenerator(['创建', '表', '标识符'])
+        分析器母机 = 语法分析器母机(['创建', '表', '标识符'])
 
-        @pg.production("main : 创建 标识符 表")
-        def main(p):
-            return p[1].getstr()
+        @分析器母机.语法规则("句 : 创建 标识符 表")
+        def 句(片段):
+            return 片段[1].getstr()
 
-        lexer = lg.build()
-        parser = pg.build()
+        分词器 = 分词母机.产出()
+        分析器 = 分析器母机.产出()
 
-        assert parser.按语法分词(lexer.分词('创建钟表表')) == '钟表'
+        assert 分析器.按语法分词(分词器.分词('创建钟表表')) == '钟表'
 
     #@pytest.mark.skip(reason="")
     def test_出生年为整数(self):
-        lg = LexerGenerator()
-        lg.添了('为', '为')
-        lg.添了('整数', '整数')
-        lg.添了('标识符', r'[_a-zA-Z\u4e00-\u9fa5][_a-zA-Z0-9\u4e00-\u9fa5]*')
+        分词母机 = 分词器母机()
+        分词母机.添了('为', '为')
+        分词母机.添了('整数', '整数')
+        分词母机.添了('标识符', r'[_a-zA-Z\u4e00-\u9fa5][_a-zA-Z0-9\u4e00-\u9fa5]*')
 
-        pg = ParserGenerator(['为', '整数', '标识符'])
+        分析器母机 = 语法分析器母机(['为', '整数', '标识符'])
 
-        @pg.production("main : 标识符 为 整数")
-        def main(p):
-            return p[0].getstr()
+        @分析器母机.语法规则("句 : 标识符 为 整数")
+        def 句(片段):
+            return 片段[0].getstr()
 
-        lexer = lg.build()
-        parser = pg.build()
+        分词器 = 分词母机.产出()
+        分析器 = 分析器母机.产出()
 
-        assert parser.按语法分词(lexer.分词('出生年为整数')) == '出生年'
+        assert 分析器.按语法分词(分词器.分词('出生年为整数')) == '出生年'
 
     def test_昵称为空的文本(self):
-        lg = LexerGenerator()
-        lg.添了('为', '为')
-        lg.添了('文本', '文本')
-        lg.添了('空', '空')
-        lg.添了('的', '的')
-        lg.添了('标识符', r'[_a-zA-Z\u4e00-\u9fa5][_a-zA-Z0-9\u4e00-\u9fa5]*')
+        分词母机 = 分词器母机()
+        分词母机.添了('为', '为')
+        分词母机.添了('文本', '文本')
+        分词母机.添了('空', '空')
+        分词母机.添了('的', '的')
+        分词母机.添了('标识符', r'[_a-zA-Z\u4e00-\u9fa5][_a-zA-Z0-9\u4e00-\u9fa5]*')
 
-        pg = ParserGenerator(['为', '文本', '标识符', '空', '的'])
+        分析器母机 = 语法分析器母机(['为', '文本', '标识符', '空', '的'])
 
-        @pg.production("main : 标识符 为 空 的 文本")
-        def main(p):
-            return p[0].getstr()
+        @分析器母机.语法规则("句 : 标识符 为 空 的 文本")
+        def 句(片段):
+            return 片段[0].getstr()
 
-        lexer = lg.build()
-        parser = pg.build()
+        分词器 = 分词母机.产出()
+        分析器 = 分析器母机.产出()
 
-        assert parser.按语法分词(lexer.分词('昵称为空的文本')) == '昵称'
+        assert 分析器.按语法分词(分词器.分词('昵称为空的文本')) == '昵称'
 
     @pytest.mark.skip(reason="无限回退")
     def test_昵称为不为空的文本(self):
-        lg = LexerGenerator()
-        lg.添了('为', '为')
-        lg.添了('文本', '文本')
-        lg.添了('不为空', '不为空')
-        lg.添了('的', '的')
-        lg.添了('标识符', r'[_a-zA-Z\u4e00-\u9fa5][_a-zA-Z0-9\u4e00-\u9fa5]*')
+        分词母机 = 分词器母机()
+        分词母机.添了('为', '为')
+        分词母机.添了('文本', '文本')
+        分词母机.添了('不为空', '不为空')
+        分词母机.添了('的', '的')
+        分词母机.添了('标识符', r'[_a-zA-Z\u4e00-\u9fa5][_a-zA-Z0-9\u4e00-\u9fa5]*')
 
-        pg = ParserGenerator(['为', '文本', '标识符', '不为空', '的'])
+        分析器母机 = 语法分析器母机(['为', '文本', '标识符', '不为空', '的'])
 
-        @pg.production("main : 标识符 为 不为空 的 文本")
-        def main(p):
-            return p[0].getstr()
+        @分析器母机.语法规则("句 : 标识符 为 不为空 的 文本")
+        def 句(片段):
+            return 片段[0].getstr()
 
-        lexer = lg.build()
-        parser = pg.build()
+        分词器 = 分词母机.产出()
+        分析器 = 分析器母机.产出()
 
-        assert parser.按语法分词(lexer.分词('昵称为不为空的文本')) == '昵称'
+        assert 分析器.按语法分词(分词器.分词('昵称为不为空的文本')) == '昵称'
