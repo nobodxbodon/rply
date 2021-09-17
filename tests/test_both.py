@@ -173,3 +173,22 @@ class TestBoth(object):
         parser = pg.build()
 
         assert parser.按语法分词(lexer.分词('出生年为整数')) == '出生年'
+
+    def test_昵称为空的文本(self):
+        lg = LexerGenerator()
+        lg.添了('为', '为')
+        lg.添了('文本', '文本')
+        lg.添了('空', '空')
+        lg.添了('的', '的')
+        lg.添了('标识符', r'[_a-zA-Z\u4e00-\u9fa5][_a-zA-Z0-9\u4e00-\u9fa5]*')
+
+        pg = ParserGenerator(['为', '文本', '标识符', '空', '的'])
+
+        @pg.production("main : 标识符 为 空 的 文本")
+        def main(p):
+            return p[0].getstr()
+
+        lexer = lg.build()
+        parser = pg.build()
+
+        assert parser.按语法分词(lexer.分词('昵称为空的文本')) == '昵称'
