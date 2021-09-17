@@ -156,6 +156,23 @@ class TestBoth(object):
 
         assert parser.按语法分词(lexer.分词('删除读者表')) == '读者'
 
+    def test_创建钟表表(self):
+        lg = LexerGenerator()
+        lg.添了('创建', '创建')
+        lg.添了('表', '表')
+        lg.添了('标识符', r'[_a-zA-Z\u4e00-\u9fa5][_a-zA-Z0-9\u4e00-\u9fa5]*')
+
+        pg = ParserGenerator(['创建', '表', '标识符'])
+
+        @pg.production("main : 创建 标识符 表")
+        def main(p):
+            return p[1].getstr()
+
+        lexer = lg.build()
+        parser = pg.build()
+
+        assert parser.按语法分词(lexer.分词('创建钟表表')) == '钟表'
+
     #@pytest.mark.skip(reason="")
     def test_出生年为整数(self):
         lg = LexerGenerator()
@@ -192,3 +209,23 @@ class TestBoth(object):
         parser = pg.build()
 
         assert parser.按语法分词(lexer.分词('昵称为空的文本')) == '昵称'
+
+    @pytest.mark.skip(reason="无限回退")
+    def test_昵称为不为空的文本(self):
+        lg = LexerGenerator()
+        lg.添了('为', '为')
+        lg.添了('文本', '文本')
+        lg.添了('不为空', '不为空')
+        lg.添了('的', '的')
+        lg.添了('标识符', r'[_a-zA-Z\u4e00-\u9fa5][_a-zA-Z0-9\u4e00-\u9fa5]*')
+
+        pg = ParserGenerator(['为', '文本', '标识符', '不为空', '的'])
+
+        @pg.production("main : 标识符 为 不为空 的 文本")
+        def main(p):
+            return p[0].getstr()
+
+        lexer = lg.build()
+        parser = pg.build()
+
+        assert parser.按语法分词(lexer.分词('昵称为不为空的文本')) == '昵称'

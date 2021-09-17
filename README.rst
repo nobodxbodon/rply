@@ -12,6 +12,10 @@ RPLY 木兰定制版
     - 添加 shift/reduce 歧义的调试信息，`详见此文 <https://zhuanlan.zhihu.com/p/369268306>`_。
     - `修复: 分词错误时列号定位有误 <https://github.com/alex/rply/pull/95#issuecomment-729513800>`_
 
+### 测试
+
+`pytest` 运行所有测试用例，或运行单个用例，如 `pytest tests/test_both.py`
+
 以下为 rply 原始文档。
 
 ---------------
