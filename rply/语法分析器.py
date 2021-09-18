@@ -13,6 +13,8 @@ class LRParser(object):
         from rply.词 import 词
 
         预读 = None
+
+        # TODO：此栈无用？
         预读栈 = []
 
         状态栈 = [0]
@@ -77,8 +79,8 @@ class LRParser(object):
         预读 = None
         上个预读 = None
 
+        # TODO：此栈无用？
         预读栈 = []
-        上个预读栈 = 预读栈
 
         状态栈 = [0]
         上个状态栈 = 状态栈
@@ -92,11 +94,6 @@ class LRParser(object):
         print('lr_goto: ' + str(自身.lr_table.lr_goto))
         while True:
             print("入循环，当前状态： " + str(当前状态))
-            上个状态 = 当前状态
-            上个状态栈 = 状态栈
-            上个符号栈 = 符号栈
-            上个预读栈 = 预读栈
-            上个预读 = 预读
             print("状态栈：" + str(状态栈))
             if 自身.lr_table.default_reductions[当前状态]:
                 t = 自身.lr_table.default_reductions[当前状态]
@@ -164,7 +161,6 @@ class LRParser(object):
                     上个状态 = 分词器.回退点[上个位置][0] if 上个位置 in 分词器.回退点 else -1
                     上个状态栈 = 分词器.回退点[上个位置][1] if 上个位置 in 分词器.回退点 else [0]
                     上个符号栈 = 分词器.回退点[上个位置][2] if 上个位置 in 分词器.回退点 else [词("$end", "$end")]
-                    上个预读栈 = 分词器.回退点[上个位置][3] if 上个位置 in 分词器.回退点 else []
                     上个预读 = 分词器.回退点[上个位置][4] if 上个位置 in 分词器.回退点 else None
                     print("上个位置：" + str(上个位置))
                     print("上个状态：" + str(上个状态))
@@ -174,7 +170,6 @@ class LRParser(object):
                     当前状态 = 上个状态
                     状态栈 = 上个状态栈
                     符号栈 = 上个符号栈
-                    预读栈 = 上个预读栈
                     预读 = 上个预读
 
     def _reduce_production(自身, t, 符号栈, 状态栈, 状态):
