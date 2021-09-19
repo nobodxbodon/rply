@@ -39,7 +39,7 @@ class TestBoth(object):
 
         assert parser.parse(lexer.lex("3*4+5")) == BoxInt(17)
 
-    @pytest.mark.skip(reason="如按原始分词方法，无法解析")
+    @pytest.mark.skip(reason="如按原始分词方法，无法解析。此类用例汇集在 test_按语法分词.py")
     def test_按语法分词(self):
         lg = LexerGenerator()
         lg.add("关键词", r"5")

@@ -113,7 +113,11 @@ class LRParser(object):
                             raise 语法分析报错(None, 预读.getsourcepos())
                         else:
                             上个位置 = 分词器.位置
+                            print(f"由于分词失败回退到：{上个位置}")
+
+                            分词器.标记分词失败规则()
                             当前状态, 状态栈, 符号栈, 预读栈, 预读 = 分词器.回退点[上个位置] if 上个位置 in 分词器.回退点 else (-1, [0], [词("$end", "$end")], [], None)
+                            continue
 
                 if 预读 is None:
                     预读 = 词("$end", "$end")
