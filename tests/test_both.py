@@ -87,7 +87,6 @@ class TestBoth(object):
 
         assert 分析器.按语法分词(分词器.lex('5个')) == 5
 
-    #@片段ytest.mark.skip(reason="")
     def test_无空格_按语法分词(self):
         分词母机 = 分词器母机()
         分词母机.添了("关键词", r"5")
@@ -104,7 +103,6 @@ class TestBoth(object):
 
         assert 分析器.按语法分词(分词器.分词('55')) == 5
 
-    #@pytest.mark.skip(reason="")
     def test_逐个尝试不贪婪匹配(self):
         分词母机 = 分词器母机()
         分词母机.添了("关键词", r"5")
@@ -121,7 +119,6 @@ class TestBoth(object):
 
         assert 分析器.按语法分词(分词器.分词('55')) == 5
 
-    #@pytest.mark.skip(reason="")
     def test_读者表(self):
         分词母机 = 分词器母机()
         分词母机.添了('表', '表')
@@ -138,7 +135,6 @@ class TestBoth(object):
 
         assert 分析器.按语法分词(分词器.分词('读者表')) == '读者'
 
-    #@pytest.mark.skip(reason="")
     def test_删除读者表(self):
         分词母机 = 分词器母机()
         分词母机.添了('删除', '删除')
@@ -173,7 +169,6 @@ class TestBoth(object):
 
         assert 分析器.按语法分词(分词器.分词('创建钟表表')) == '钟表'
 
-    #@pytest.mark.skip(reason="")
     def test_出生年为整数(self):
         分词母机 = 分词器母机()
         分词母机.添了('为', '为')
@@ -210,7 +205,7 @@ class TestBoth(object):
 
         assert 分析器.按语法分词(分词器.分词('昵称为空的文本')) == '昵称'
 
-    @pytest.mark.skip(reason="无限回退")
+    #@pytest.mark.skip(reason="无限回退")
     def test_昵称为不为空的文本(self):
         分词母机 = 分词器母机()
         分词母机.添了('为', '为')
