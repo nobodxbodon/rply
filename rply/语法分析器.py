@@ -73,7 +73,7 @@ class LRParser(object):
                     raise 语法分析报错(None, 预读.getsourcepos())
 
     # TODO：尚未兼容带空格分析的所有测试用例
-    def 按语法分词(自身, 分词器, state=None):
+    def 按语法分词(自身, 分词器, 最多回退数=30, state=None):
         from rply.词 import 词
 
         预读 = None
@@ -109,7 +109,7 @@ class LRParser(object):
                     except StopIteration:
                         预读 = None
                     except 分词报错:
-                        if 分词器.退出 or not 分词器.回退():
+                        if 分词器.退出 or not 分词器.回退(最多回退数):
                             raise 语法分析报错(None, 预读.getsourcepos())
                         else:
                             上个位置 = 分词器.位置
@@ -119,7 +119,7 @@ class LRParser(object):
                     预读 = 词("$end", "$end")
 
             ltype = 预读.gettokentype()
-            #print('预读词：' + str(预读) + ' 类型: ' + ltype + ' 当前状态：' + str(当前状态))
+            print('预读词：' + str(预读) + ' 类型: ' + ltype + ' 当前状态：' + str(当前状态))
             print('当前分词位置：' + str(分词器.位置))
             if ltype in 自身.lr_table.lr_action[当前状态]:
                 print('在状态')
@@ -156,7 +156,7 @@ class LRParser(object):
                     continue
                 else:
                     分词器.标记不符语法词法规则()
-                    分词器.回退()
+                    分词器.回退(最多回退数)
                     上个位置 = 分词器.位置
                     当前状态, 状态栈, 符号栈, 预读栈, 预读 = 分词器.回退点[上个位置] if 上个位置 in 分词器.回退点 else (-1, [0], [词("$end", "$end")], [], None)
 
