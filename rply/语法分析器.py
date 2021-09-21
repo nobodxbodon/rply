@@ -109,14 +109,11 @@ class LRParser(object):
                     except StopIteration:
                         预读 = None
                     except 分词报错:
-                        if 分词器.退出 or not 分词器.回退(最多回退数):
+                        if 分词器.退出:
                             raise 语法分析报错(None, 预读.getsourcepos())
                         else:
-                            上个位置 = 分词器.位置
-                            print(f"由于分词失败回退到：{上个位置}")
-
-                            分词器.标记失败规则()
-                            当前状态, 状态栈, 符号栈, 预读栈, 预读 = 分词器.回退点[上个位置] if 上个位置 in 分词器.回退点 else (-1, [0], [词("$end", "$end")], [], None)
+                            当前状态, 状态栈, 符号栈, 预读栈, 预读 = 分词器.回退(最多回退数)
+                            print(f"由于分词失败回退到：{分词器.位置}")
                             continue
 
                 if 预读 is None:
@@ -159,10 +156,8 @@ class LRParser(object):
                     预读 = None
                     continue
                 else:
-                    分词器.回退(最多回退数)
-                    分词器.标记失败规则()
-                    上个位置 = 分词器.位置
-                    当前状态, 状态栈, 符号栈, 预读栈, 预读 = 分词器.回退点[上个位置] if 上个位置 in 分词器.回退点 else (-1, [0], [词("$end", "$end")], [], None)
+                    当前状态, 状态栈, 符号栈, 预读栈, 预读 = 分词器.回退(最多回退数)
+                    print(f"由于语法错误回退到：{分词器.位置}")
 
     def _reduce_production(自身, t, 符号栈, 状态栈, 状态):
         # reduce a symbol on the stack and emit a production
