@@ -11,6 +11,7 @@ RPLY 木兰定制版
 - 改进：
     - 添加 shift/reduce 歧义的调试信息，`详见此文 <https://zhuanlan.zhihu.com/p/369268306>`_。
     - `修复: 分词错误时列号定位有误 <https://github.com/alex/rply/pull/95#issuecomment-729513800>`_
+- 【试验】通过根据语法规则分词，支持中文无空格语法，`详见此文 <https://zhuanlan.zhihu.com/p/412465957>`_。
 
 ### 测试
 
