@@ -1,4 +1,4 @@
-from rply.报错 import 语法分析报错, 分词报错
+from rply.报错 import 语法分析报错, 分词报错, 按语法分词报错
 
 
 class LRParser(object):

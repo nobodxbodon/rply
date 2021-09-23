@@ -38,5 +38,15 @@ class 语法分析报错(Exception):
         return 'ParsingError(%r, %r)' % (自身.信息, 自身.source_pos)
 
 
+class 按语法分词报错(Exception):
+    """
+    无法按语法规则进行分词时报错。给出最长搜索路径：各位置与对应词法规则名。
+    """
+    def __init__(自身, 最长路径):
+        自身.最长路径 = 最长路径
+
+    def __repr__(自身):
+        return '此处不符语法规则：%r，' % (自身.最长路径)
+
 class ParserGeneratorWarning(Warning):
     pass
