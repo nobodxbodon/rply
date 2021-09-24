@@ -1,6 +1,6 @@
 from rply.报错 import 语法分析报错, 分词报错, 按语法分词报错
 
-
+调试细节 = 0
 class LRParser(object):
     def __init__(自身, lr_table, error_handler):
         自身.lr_table = lr_table
@@ -86,11 +86,11 @@ class LRParser(object):
         符号栈 = [词("$end", "$end")]
 
         当前状态 = 0
-        print('lr_action: ' + str(自身.lr_table.lr_action))
-        print('lr_goto: ' + str(自身.lr_table.lr_goto))
+        调试输出('lr_action: ' + str(自身.lr_table.lr_action))
+        调试输出('lr_goto: ' + str(自身.lr_table.lr_goto))
         while True:
-            #print("入循环，当前状态： " + str(当前状态))
-            #print("状态栈：" + str(状态栈))
+            #调试输出("入循环，当前状态： " + str(当前状态))
+            #调试输出("状态栈：" + str(状态栈))
             if 自身.lr_table.default_reductions[当前状态]:
                 t = 自身.lr_table.default_reductions[当前状态]
                 当前状态 = 自身._reduce_production(
@@ -103,7 +103,7 @@ class LRParser(object):
                     预读 = 预读栈.pop()
                 else:
                     try:
-                        print('取下一词')
+                        调试输出('取下一词')
                         分词器.记录状态(当前状态, 状态栈, 符号栈, 预读栈, 预读)
                         预读 = next(分词器)
                     except StopIteration:
@@ -113,40 +113,41 @@ class LRParser(object):
                             raise 语法分析报错(None, 预读.getsourcepos())
                         else:
                             当前状态, 状态栈, 符号栈, 预读栈, 预读 = 分词器.回退(最多回退数)
-                            print(f"由于分词失败回退到：{分词器.位置}")
+                            调试输出(f"由于分词失败回退到：{分词器.位置}")
                             continue
 
                 if 预读 is None:
                     预读 = 词("$end", "$end")
 
             ltype = 预读.gettokentype()
-            print('预读词：' + str(预读) + ' 类型: ' + ltype + ' 当前状态：' + str(当前状态))
-            print('当前分词位置：' + str(分词器.位置))
+            调试输出('预读词：' + str(预读) + ' 类型: ' + ltype + ' 当前状态：' + str(当前状态))
+            调试输出('当前分词位置：' + str(分词器.位置))
             if ltype in 自身.lr_table.lr_action[当前状态]:
-                print('在状态')
+                调试输出('在状态')
                 t = 自身.lr_table.lr_action[当前状态][ltype]
                 if t > 0:
-                    #print('大于0')
+                    #调试输出('大于0')
                     状态栈.append(t)
                     当前状态 = t
                     符号栈.append(预读)
                     预读 = None
                     continue
                 elif t < 0:
-                    #print('小于0')
+                    #调试输出('小于0')
                     当前状态 = 自身._reduce_production(
                         t, 符号栈, 状态栈, state
                     )
                     continue
                 else:
-                    #print('为0')
+                    #调试输出('为0')
                     n = 符号栈[-1]
+                    print(f"回退次数：{分词器.回退次数}")
                     return n
             else:
-                print('不在状态')
+                调试输出('不在状态')
                 # TODO: actual error handling here
                 if 自身.error_handler is not None:
-                    print("错误处理")
+                    调试输出("错误处理")
                     if state is None:
                         自身.error_handler(预读)
                     else:
@@ -157,7 +158,7 @@ class LRParser(object):
                     continue
                 else:
                     当前状态, 状态栈, 符号栈, 预读栈, 预读 = 分词器.回退(最多回退数)
-                    print(f"由于语法错误回退到：{分词器.位置}")
+                    调试输出(f"由于语法错误回退到：{分词器.位置}")
 
     def _reduce_production(自身, t, 符号栈, 状态栈, 状态):
         # reduce a symbol on the stack and emit a production
@@ -179,3 +180,7 @@ class LRParser(object):
         当前状态 = 自身.lr_table.lr_goto[状态栈[-1]][规则名]
         状态栈.append(当前状态)
         return 当前状态
+
+def 调试输出(信息):
+    if 调试细节:
+        print(信息)

@@ -2,6 +2,7 @@ import operator
 import pytest
 
 from rply import LexerGenerator, ParserGenerator
+from rply import 分词器母机, 语法分析器母机
 
 from .功用 import BoxInt
 
@@ -55,3 +56,21 @@ class TestBoth(object):
         parser = pg.build()
 
         assert parser.分析(lexer.分词('55')) == 5
+
+    def test_读者表(self):
+        分词母机 = 分词器母机()
+        分词母机.添了('表', '表')
+        分词母机.添了('标识符', r'[_a-zA-Z\u4e00-\u9fa5][_a-zA-Z0-9\u4e00-\u9fa5]*'
+)
+
+        分词母机.略过(r"\s+")
+        分析器母机 = 语法分析器母机(['表', '标识符'])
+
+        @分析器母机.语法规则("句 : 标识符 表")
+        def 句(片段):
+            return 片段[0].getstr()
+
+        分词器 = 分词母机.产出()
+        分析器 = 分析器母机.产出()
+
+        assert 分析器.分析(分词器.分词('读者 表')) == '读者'
