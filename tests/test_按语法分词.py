@@ -595,6 +595,8 @@ class Test按语法分词(object):
         分词器 = 分词母机.产出(); 分析器 = 分析器母机.产出()
 
         assert 分析器.按语法分词(分词器.分词('创建读者表，编号为自动递增的整数主键，邮箱为不重复不为空的文本，出生年为整数。删除出生年小于2000的读者记录。删除读者表。'), 191) == 'CREATE TABLE 读者 ( 编号 INTEGER PRIMARY KEY AUTOINCREMENT, 邮箱 TEXT UNIQUE NOT NULL, 出生年 INTEGER ); DELETE FROM 读者 WHERE 出生年 < 2000; DROP TABLE 读者;'
+        # 回退次数大是由于单句字数多导致标识符长度从19开始试。可能改进：作预遍历以避免从最大匹配开始尝试。
         assert 分析器.按语法分词(分词器.分词('将编号为1的读者记录的出生年改为2001。'), 261) == 'UPDATE 读者 SET 出生年 = 2001 WHERE 编号 = 1;'
+        # 合并上两句，回退数为两者之和
         assert 分析器.按语法分词(分词器.分词('创建读者表，编号为自动递增的整数主键，邮箱为不重复不为空的文本，出生年为整数。将编号为1的读者记录的出生年改为2001。删除出生年小于2000的读者记录。删除读者表。'), 191 + 261 - 1) == 'CREATE TABLE 读者 ( 编号 INTEGER PRIMARY KEY AUTOINCREMENT, 邮箱 TEXT UNIQUE NOT NULL, 出生年 INTEGER ); UPDATE 读者 SET 出生年 = 2001 WHERE 编号 = 1; DELETE FROM 读者 WHERE 出生年 < 2000; DROP TABLE 读者;'
 
