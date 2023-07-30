@@ -13,7 +13,7 @@ setup(
     project_urls={
         "Source": "https://github.com/nobodxbodon/rply",
     },
-    version="0.8.0",
+    version="0.8.3",
     author="Xuan Wu",
     author_email="mulanrevive@gmail.com",
     packages=["rply"],

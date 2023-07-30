@@ -9,3 +9,5 @@ build/
 dist/
 
 临时
+.VSCodeCounter/
+.vscode/
