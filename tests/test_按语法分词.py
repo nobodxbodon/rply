@@ -756,9 +756,9 @@ class Test按语法分词(object):
         @分析器母机.语法规则("正负数 : 减 数")
         def 正负数(片段):
             if len(片段) == 1:
-                return int(片段[0].getstr().strip())
+                return int(片段[0].getstr())
             if len(片段) == 2:
-                return -int(片段[1].getstr().strip())
+                return -int(片段[1].getstr())
 
         分词器 = 分词母机.产出()
         分析器 = 分析器母机.产出()
