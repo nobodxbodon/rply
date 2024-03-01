@@ -1,7 +1,7 @@
 from rply.报错 import 分词报错, 按语法分词报错
 from rply.词 import 字符位置, 词
 
-调试细节 = 0
+调试细节 = 1
 class 分词器(object):
     def __init__(自身, 词规则, 略过规则):
         自身.词规则 = 词规则
