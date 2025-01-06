@@ -13,13 +13,14 @@ RPLY 木兰定制版
     - `修复: 分词错误时列号定位有误 <https://github.com/alex/rply/pull/95#issuecomment-729513800>`_
 - 【试验】通过根据语法规则分词，支持中文无空格语法，`演示在此 <https://zhuanlan.zhihu.com/p/412465957>`_。
 
-### 测试
+测试
+----
 
 `pytest` 运行所有测试用例，或运行单个用例，如 `pytest tests/test_both.py`
 
 依赖库：`py <https://pypi.org/project/py/>`_ （注：仅支持到 3.10）；`pytest <https://pypi.org/project/pytest/>`_
 
-在 Python 3.7-3.9 下通过测试：100 passed, 1 skipped
+在 Python 3.7-3.12 下通过测试：100 passed, 1 skipped
 
 以下为 rply 原始文档。
 
