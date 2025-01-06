@@ -19,7 +19,7 @@ RPLY 木兰定制版
 
 依赖库：`py <https://pypi.org/project/py/>`_ （注：仅支持到 3.10）；`pytest <https://pypi.org/project/pytest/>`_
 
-在 Python 3.7-3.9 下通过测试：99 passed, 1 skipped
+在 Python 3.7-3.9 下通过测试：100 passed, 1 skipped
 
 以下为 rply 原始文档。
 
