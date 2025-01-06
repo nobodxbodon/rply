@@ -13,7 +13,6 @@ matrix:
 install:
     - pip install -U pip
     - pip install tox
-    - pip install py
 script:
     - ./.travis/run.sh
 notifications:
