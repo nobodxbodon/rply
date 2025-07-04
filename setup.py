@@ -17,5 +17,5 @@ setup(
     author="Xuan Wu",
     author_email="mulanrevive@gmail.com",
     packages=["rply"],
-    install_requires=["appdirs"],
+    install_requires=["appdirs", "z3-solver"],
 )

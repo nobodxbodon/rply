@@ -50,7 +50,7 @@ class Test辩证(object):
             各值[片段[0]] = 新布尔量[0]
             各值[片段[2]] = 新布尔量[1]
 
-            s.add(functools.reduce(self.或者, list(各值.values()))) # 新布尔量))
+            s.add(functools.reduce(self.或者, list(各值.values())))
 
         @分析器母机.语法规则("结构句 : 假设 句 那么 句")
         def 假设(片段):
