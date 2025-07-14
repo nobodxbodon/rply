@@ -76,6 +76,7 @@ class Test辩证(object):
                     True,
                 )
 
+        # 待做：检查各句生成的z3
         @分析器母机.语法规则("结构句 : 除非 句 否则 句")
         def 除非(片段):
             除非条件 = 片段[1]
@@ -98,8 +99,8 @@ class Test辩证(object):
             变量 = 片段[0].getstr()
             新布尔量 = z3.Bools([变量])
             各值[变量] = 新布尔量[0]
-            #if 片段[1].getstr() == '没问题':
-            #    return 各值[变量] == False
+            if 片段[1].getstr() == '没问题':
+                return z3.Not(各值[变量])
             return 各值[变量]
 
         分词器 = 分词母机.产出()
