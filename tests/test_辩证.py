@@ -1,5 +1,9 @@
-# 需安装"z3-solver"库
-import z3
+
+import pytest
+try:
+    import z3
+except ImportError:
+    pytest.skip("z3-solver未安装", allow_module_level=True)
 
 from rply import 分词器母机, 语法分析器母机
 
