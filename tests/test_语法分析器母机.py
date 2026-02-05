@@ -50,6 +50,17 @@ class TestParserGenerator(BaseTests):
         with py.test.raises(ParserGeneratorError):
             pg.产出()
 
+    def test_未定义词(self):
+        pg = 语法分析器母机([])
+
+        @pg.语法规则("main : 括号")
+        def main(p):
+            pass
+
+        with py.test.raises(ParserGeneratorError) as 报错:
+            pg.产出()
+        assert str(报错.value) == "请先定义词 '括号'"
+
     def test_error_symbol(self):
         pg = 语法分析器母机(["VALUE"])
 

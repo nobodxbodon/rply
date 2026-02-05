@@ -142,6 +142,10 @@ class 语法(object):
         while changed:
             changed = False
             for n in 自身.各短语对应语法号:
+                if n not in 自身.各短语语法表:
+                    raise ParserGeneratorError(
+                        "请先定义词 '%s'" % n
+                    )
                 for 规则 in 自身.各短语语法表[n]:
                     for f in 自身._first(规则.模式):
                         if f not in 自身.first[n]:
