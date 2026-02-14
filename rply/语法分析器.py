@@ -70,7 +70,11 @@ class LRParser(object):
                     预读 = None
                     continue
                 else:
-                    raise 语法分析报错(None, 预读.getsourcepos())
+                    问题位置 = 预读.getsourcepos()
+                    行号 = 问题位置.lineno
+                    列号 = 问题位置.colno
+                    词段 = 预读.getstr()
+                    raise 语法分析报错(f"已分析：{符号栈}；无法分析第{行号}行第{列号}列的'{词段}'", 问题位置)
 
     # TODO：尚未兼容带空格分析的所有测试用例
     def 按语法分词(自身, 分词器, 最多回退数=30, state=None):

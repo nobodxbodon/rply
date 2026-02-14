@@ -163,8 +163,10 @@ class TestParser(BaseTests):
                 词("VALUE", "world", 字符位置(5, 10, 2)),
             ]))
 
-        assert exc_info.value.getsourcepos().lineno == 10
-        assert 'SourcePosition' in repr(exc_info.value)
+        报错信息 = exc_info.value
+        assert 报错信息.getsourcepos().lineno == 10
+        assert "Token('VALUE', 'hello')" in repr(报错信息)
+        assert "无法分析第10行第2列的'world'" in repr(报错信息)
 
     def test_parse_error_handler(self):
         pg = 语法分析器母机(["VALUE"])
