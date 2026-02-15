@@ -25,7 +25,7 @@ class 语法(object):
 
     def 添加规则(自身, 名称, 各符号, func, 优先级):
         if 名称 in 自身.各词所在语法表:
-            raise ParserGeneratorError("Illegal rule name %r" % 名称)
+            raise ParserGeneratorError("语法规则与分词规则重名%r，请为其一改名" % 名称)
 
         if 优先级 is None:
             precname = 最右侧词(各符号, 自身.各词所在语法表)

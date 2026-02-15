@@ -150,7 +150,7 @@ class TestLexer(object):
         with raises(分词报错) as excinfo:
             stream.next()
 
-        assert 'SourcePosition(' in repr(excinfo.value)
+        assert "请为第1行第1列的'f'添加分词匹配规则" in repr(excinfo.value)
         assert excinfo.value.source_pos.colno == 1
 
     def test_error_line_number(self):

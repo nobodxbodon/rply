@@ -21,8 +21,9 @@ class TestParserGenerator(BaseTests):
         def x(p):
             pass
 
-        with py.test.raises(ParserGeneratorError):
+        with py.test.raises(ParserGeneratorError) as 报错:
             pg.产出()
+        assert str(报错.value) == "语法规则与分词规则重名'VALUE'，请为其一改名"
 
     def test_duplicate_precedence(self):
         pg = 语法分析器母机([], 优先级=[
