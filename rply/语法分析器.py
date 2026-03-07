@@ -3,6 +3,7 @@ from rply.报错 import 语法分析报错, 分词报错, 按语法分词报错
 调试细节 = 0
 class LRParser(object):
     def __init__(自身, lr_table, error_handler):
+        调试输出(str(lr_table.lr_action))
         自身.lr_table = lr_table
         自身.error_handler = error_handler
 
@@ -18,6 +19,7 @@ class LRParser(object):
         预读栈 = []
 
         状态栈 = [0]
+        # 待做：此词有何用？
         符号栈 = [词("$end", "$end")]
 
         当前状态 = 0
@@ -42,7 +44,12 @@ class LRParser(object):
                     预读 = 词("$end", "$end")
 
             ltype = 预读.gettokentype()
+            # 待做：当前状态 序号不稳定，考虑换成顺序确定的数据结构以便调试
+            调试输出('预读词：' + str(预读) + ' 类型: ' + ltype + ' 当前状态：' + str(当前状态))
+            #调试输出('当前分词位置：' + str(分词器.位置))
+            调试输出('期待类型：' + str(自身.lr_table.lr_action[当前状态]))
             if ltype in 自身.lr_table.lr_action[当前状态]:
+                调试输出('在状态')
                 t = 自身.lr_table.lr_action[当前状态][ltype]
                 if t > 0:
                     状态栈.append(t)
@@ -59,6 +66,7 @@ class LRParser(object):
                     n = 符号栈[-1]
                     return n
             else:
+                调试输出('不在状态')
                 # TODO: actual error handling here
                 if 自身.error_handler is not None:
                     if state is None:
@@ -71,6 +79,8 @@ class LRParser(object):
                     continue
                 else:
                     问题位置 = 预读.getsourcepos()
+                    if 问题位置 is None:
+                        raise Exception(f"此词需识别但位置不明：{预读}")
                     行号 = 问题位置.lineno
                     列号 = 问题位置.colno
                     词段 = 预读.getstr()

@@ -198,6 +198,7 @@ class 语法分析器母机(object):
 
         if 表.取合不定:
             歧义 = 表.取合不定
+            #print(歧义)
             # 仅 shift2 有细节
             细节 = '\n\n'.join(['词' + str(i[1]) + '有歧义，默认进行 ' + i[2] + ('\n歧义序列：\n' + 输出序列(i[3]) if len(i) == 4 else "") for i in 歧义])
             warnings.warn(
